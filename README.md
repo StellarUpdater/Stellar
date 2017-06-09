@@ -19,22 +19,24 @@ RetroArch Nightly Updater
 * Updates latest cores
 
 ### How to use
-* Select your RetroArch folder
-* Select the Download from the menu
-* Click Update
+1. Select your RetroArch folder
+2. Select the Download from the menu
+3. Click Update
+
 * It will download the latest Nightly 7z and extract only retroarch.exe and retroarch_debug.exe to your folder.
 * The Check button will preview the file URL before downloading.
 * It should not overwrite your configs, but you should keep a backup before updating.
 * If RetroArch is installed in Program Files folder, you may need to Run As Administrator.
 
 ### Cores Update
-* Select your RetroArch folder
-* Select Cores from the Download menu
-* Click the Check button to preview download (optional)
-* Click Update
-It will check if Server Core Dates are more recent than PC Core Dates.  
-Downloads only Cores you currently have, won't add more.  
-Temp zip files are stored in %appdata% and deleted when complete.
+1. Select your RetroArch folder
+2. Select Cores from the Download menu
+3. Click the Check button to preview download (optional)
+4. Click Update
+
+* It will check if Server Core Dates are more recent than PC Core Dates.  
+* Downloads only Cores you currently have, won't add more.  
+* Temp zip files are stored in %appdata% and deleted when complete.
 
 #### To Exclude Core from Updates Download List
 * Check Button → Uncheck the Cores you don't want to update → Close Out → Click Update
