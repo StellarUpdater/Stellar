@@ -1,8 +1,10 @@
 ﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:System="clr-namespace:System;assembly=mscorlib" xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero" x:Name="windowStellar" x:Class="Stellar.MainWindow"
-        Title="Stellar ~ RetroArch Nightly Updater v0.80" Height="225" Width="500"
+        xmlns:System="clr-namespace:System;assembly=mscorlib" 
+        xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero" 
+        x:Name="windowStellar" x:Class="Stellar.MainWindow"
+        Title="Stellar ~ RetroArch Nightly Updater v0.8.2" Height="225" Width="500"
         ResizeMode="CanMinimize" Icon="Resources/logo.ico"
         UseLayoutRounding="True"
         WindowStartupLocation="CenterScreen"
@@ -444,7 +446,7 @@
         </Button>
 
         <!-- Progres Bar -->
-        <ProgressBar x:Name="progressBar" HorizontalAlignment="Left" Height="23" Margin="12,104,0,0" VerticalAlignment="Top" Width="460" ToolTip="Download &amp; Extraction Progress"/>
+        <ProgressBar x:Name="progressBar" HorizontalAlignment="Left" Height="23" Margin="12,104,0,0" VerticalAlignment="Top" Width="460" ToolTip="Download Progress"/>
 
         <!-- Info Button -->
         <Button x:Name="buttonInfo" HorizontalAlignment="Left" Margin="12,151,0,0" VerticalAlignment="Top" Width="30" Foreground="White" Background="Black" Height="23" BorderBrush="White" Cursor="Hand" Click="buttonInfo_Click" ToolTip="Info">
@@ -474,9 +476,10 @@
                     <Setter Property="Background" Value="Black" />
                 </Style>
             </ComboBox.Resources>
-            <System:String>Full Install</System:String>
-            <System:String>RA+Cores</System:String>
+            <System:String>New Install</System:String>
+            <System:String>Upgrade</System:String>
             <System:String>RetroArch</System:String>
+            <System:String>RA+Cores</System:String>
             <System:String>Cores</System:String>
             <System:String>Redist</System:String>
         </ComboBox>

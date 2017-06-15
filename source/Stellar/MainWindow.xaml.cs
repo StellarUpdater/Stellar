@@ -70,10 +70,9 @@ namespace Stellar
         // Lists - Buildbot Cores
         public static List<string> ListBuildbotCoresName = new List<string>(); // Buildbot File Name
         public static List<string> ListBuildbotCoresDate = new List<string>(); // Buildbot File Date & Time
-        public static List<string> ListBuildbotCoresFullInstall = new List<string>(); // Buildbot Name Full Install List
 
         // Lists Updated Cores
-        List<string> ListUpdatedCoresName = new List<string>(); // Updated Cores to Download
+        public static List<string> ListUpdatedCoresName = new List<string>(); // Updated Cores to Download
         public static ObservableCollection<string> CollectionUpdatedCoresName; // Displays List in Listbox
         public static Checklist checklist; // Checklist Window, do not change
         public static List<string> ListExcludedCores = new List<string>(); // Updated Cores to Download
@@ -133,10 +132,8 @@ namespace Stellar
 
         // Currently Selected String
         // Prevents cross-thread error and object reference not set error
-        //Object comboBoxDownloadItem; //notused
         //Object comboBoxArchitectureItem = null; //notused
-
-        String comboBoxDownloadItem;
+        public static String comboBoxDownloadItem;
 
         // Log
         public static bool logEnable; // Log Enable/Disable from Config Settings
@@ -204,7 +201,7 @@ namespace Stellar
             }
             catch
             {
-                // do nothing
+                
             }
 
             // ###############################################
@@ -212,27 +209,32 @@ namespace Stellar
             // ###############################################
             try
             {
-                textBoxLocation.Text = Settings.Default["retroarchPath"].ToString();
-                retroarchPath = Settings.Default["retroarchPath"].ToString();
+                if (!string.IsNullOrEmpty(Settings.Default["retroarchPath"].ToString()))
+                {
+                    textBoxLocation.Text = Settings.Default["retroarchPath"].ToString();
+                    retroarchPath = Settings.Default["retroarchPath"].ToString();
+                }
             }
             catch
             {
 
             }
 
-
             // ###############################################
             // Load 7-Zip Path from Saved Settings
             // ###############################################
-            // Load 7-Zip Path
-            configure.sevenZipPath = "<auto>"; // first time use
-
+            // Prevent Loading Corrupt Saved Settings
             try
             {
-                // If string has value besides <auto> or none
-                if (Settings.Default["sevenZipPath"].ToString() != "<auto>" && !string.IsNullOrEmpty(Settings.Default["sevenZipPath"].ToString())) // auto/null check
+                // first time use
+                if (string.IsNullOrEmpty(Settings.Default["sevenZipPath"].ToString())) // null check
                 {
                     // Load Saved Settings Override
+                    configure.sevenZipPath = "<auto>";
+                }
+                // load saved
+                else
+                {
                     configure.sevenZipPath = Settings.Default["sevenZipPath"].ToString();
                 }
             }
@@ -241,19 +243,21 @@ namespace Stellar
 
             }
 
-
             // ###############################################
             // Load WinRAR Path from Saved Settings
             // ###############################################
-            // Load Win-RAR Path
-            configure.winRARPath = "<auto>"; // first time use
-
+            // Prevent Loading Corrupt Saved Settings
             try
             {
-                // If string has value besides <auto> or none
-                if (Settings.Default["winRARPath"].ToString() != "<auto>" && !string.IsNullOrEmpty(Settings.Default["winRARPath"].ToString())) // auto/null check
+                // first time use
+                if (string.IsNullOrEmpty(Settings.Default["winRARPath"].ToString())) // null check
                 {
                     // Load Saved Settings Override
+                    configure.winRARPath = "<auto>";
+                }
+                // load saved
+                else
+                {
                     configure.winRARPath = Settings.Default["winRARPath"].ToString();
                 }
             }
@@ -262,22 +266,93 @@ namespace Stellar
 
             }
 
-
             // ###############################################
             // Load Log Enable/Disable from Saved Settings
             // ###############################################
-            configure.logEnable = false; // first time use
-            configure.logEnable = Settings.Default.logEnable; // Load Saved Settings Override
+            // Prevent Loading Corrupt Saved Settings
+            try
+            {
+                // first time use
+                if (string.IsNullOrEmpty(Settings.Default.logEnable.ToString())) // null check
+                {
+                    configure.logEnable = false;
+                }
+                // load saved
+                else
+                {
+                    configure.logEnable = Settings.Default.logEnable;
+                }
+            }
+            catch
+            {
+
+            }
 
             // ###############################################
             // Load Log Path from Saved Settings
             // ###############################################
-            // Load Log Path
-            configure.logPath = string.Empty; // first time use
-            // If string has value besides <auto> or none
-            if (!string.IsNullOrEmpty(Settings.Default["logPath"].ToString())) // null check
+            // Prevent Loading Corrupt Saved Settings
+            try
             {
-                configure.logPath = Settings.Default["logPath"].ToString(); // Load Saved Settings Override
+                // first time use
+                if (string.IsNullOrEmpty(Settings.Default["logPath"].ToString())) // null check
+                {
+                    configure.logPath = string.Empty;
+                }
+                // load saved
+                else
+                {
+                    configure.logPath = Settings.Default["logPath"].ToString();
+                }
+            }
+            catch
+            {
+
+            }
+
+            // ###############################################
+            // Load Dropdown Combobox Downloads (RA+Cores, RetroArch, Cores) from Saved Settings
+            // ###############################################
+            try
+            {
+                // first time use
+                if (string.IsNullOrEmpty(Settings.Default["download"].ToString())) // null check
+                {
+                    comboBoxDownload.SelectedItem = "RA+Cores";
+                }
+                // load saved
+                else
+                {
+                    comboBoxDownload.SelectedItem = Settings.Default["download"];
+                }
+
+            }
+            catch
+            {
+
+            }
+
+            // ###############################################
+            // Load Dropdown Combobox Architecture (32-bit, 64-bit, 64 w32) from Saved Settings
+            // ###############################################
+            // If Dropdown Combobox Architecture is Empty, set Default to 64-bit
+            try
+            {
+                // first time use
+                if (string.IsNullOrEmpty(Settings.Default["architecture"].ToString())) // null check
+                {
+                    comboBoxArchitecture.SelectedItem = "64-bit";
+                }
+                // load saved
+                else
+                {
+                    comboBoxArchitecture.SelectedItem = Settings.Default["architecture"];
+                }
+                
+            }
+            catch
+            {
+
             }
 
             // ###############################################
@@ -291,28 +366,7 @@ namespace Stellar
             // ###############################################
             comboBoxDownload.Foreground = Brushes.White;
             comboBoxDownload.Resources.Add(SystemColors.WindowBrushKey, Brushes.Black);
-
-            // ###############################################
-            // Load Dropdown Combobox Architecture (32-bit, 64-bit, 64 w32) from Saved Settings
-            // ###############################################
-
-            comboBoxArchitecture.SelectedItem = Settings.Default["architecture"];
-            // If Dropdown Combobox Architecture is Empty, set Default to 64-bit
-            if (comboBoxArchitecture.SelectedItem == null)
-            {
-                comboBoxArchitecture.SelectedItem = "64-bit";
-            }
-
-            // ###############################################
-            // Load Dropdown Combobox Downloads (RA+Cores, RetroArch, Cores) from Saved Settings
-            // ###############################################
-
-            comboBoxDownload.SelectedItem = Settings.Default["download"];
-            // If Dropdown Combobox Architecture is Empty, set Default to 64-bit
-            if (comboBoxDownload.SelectedItem == null)
-            {
-                comboBoxDownload.SelectedItem = "RA+Cores";
-            }
+            
         }
 
         // #####################################################################################################################
@@ -335,25 +389,66 @@ namespace Stellar
         public void clearAll()
         {
             // Lists
-            NightliesList.Clear();
-            NightliesList.TrimExcess();
-            ListPcCoresName.Clear();
-            ListPcCoresName.TrimExcess();
-            ListPcCoresDateModified.Clear();
-            ListPcCoresDateModified.TrimExcess();
-            ListPcCoresDateModifiedFormatted.Clear();
-            ListPcCoresDateModifiedFormatted.TrimExcess();
-            //ListPcCoresDateCreated.Clear();
-            //ListPcCoresDateCreated.TrimExcess();
-            //ListPcCoresDateCreatedFormatted.Clear();
-            //ListPcCoresDateCreatedFormatted.TrimExcess();
-            ListBuildbotCoresName.Clear();
-            ListBuildbotCoresName.TrimExcess();
-            ListBuildbotCoresDate.Clear();
-            ListBuildbotCoresDate.TrimExcess();
-            ListUpdatedCoresName.Clear();
-            ListUpdatedCoresName.TrimExcess();
-            CollectionUpdatedCoresName = null;
+            if (NightliesList != null)
+            {
+                NightliesList.Clear();
+                NightliesList.TrimExcess();
+            }
+
+            if (ListPcCoresName != null)
+            {
+                ListPcCoresName.Clear();
+                ListPcCoresName.TrimExcess();
+            }
+
+            if (ListPcCoresDateModified != null)
+            {
+                ListPcCoresDateModified.Clear();
+                ListPcCoresDateModified.TrimExcess();
+            }
+
+            if (ListPcCoresDateModifiedFormatted != null)
+            {
+                ListPcCoresDateModifiedFormatted.Clear();
+                ListPcCoresDateModifiedFormatted.TrimExcess();
+            }
+
+            //if (ListPcCoresDateCreated != null)
+            //{
+            //    ListPcCoresDateCreated.Clear();
+            //    ListPcCoresDateCreated.TrimExcess();
+            //}
+
+            //if (ListPcCoresDateCreatedFormatted != null)
+            //{
+            //    ListPcCoresDateCreatedFormatted.Clear();
+            //    ListPcCoresDateCreatedFormatted.TrimExcess();
+            //}
+
+            if (ListBuildbotCoresName != null)
+            {
+                ListBuildbotCoresName.Clear();
+                ListBuildbotCoresName.TrimExcess();
+            }
+
+            if (ListBuildbotCoresDate != null)
+            {
+                ListBuildbotCoresDate.Clear();
+                ListBuildbotCoresDate.TrimExcess();
+            }
+
+            if (ListUpdatedCoresName != null)
+            {
+                ListUpdatedCoresName.Clear();
+                ListUpdatedCoresName.TrimExcess();
+            }
+
+            if (CollectionUpdatedCoresName != null)
+            {
+                CollectionUpdatedCoresName = null;
+            }
+
+
             //ListExcludedCores.Clear(); // Dont clear Excluded Cores after Check
             //ListExcludedCores.TrimExcess();
 
@@ -418,7 +513,7 @@ namespace Stellar
 
                 // Add Core Created Dates to List ##############################
                 // Extracts original File Modified Date when overwriting
-                //ListPcCoresDateCreated = Directory.GetFiles(coresPath, "*_libretro.dll") //match ending of a core name
+                // ListPcCoresDateCreated = Directory.GetFiles(coresPath, "*_libretro.dll") //match ending of a core name
                 //    .Select(File.GetCreationTime) // Update all cores once to sync times, use File.GetCreationTime(path, DateTime.Now); //also might use File.GetLastWriteTime
                 //    .ToList();
             }
@@ -457,13 +552,13 @@ namespace Stellar
         // ###############################################
         public void parseBuildbotCoresPage() // Method
         {
-            // Begin Parse ############################
+            // #########################
+            // Begin Parse
+            // #########################
             // If No Internet Connect, program will crash. Use Try & Catch to display Error.
             try
             {
                 // Parse the HTML Page from parseUrl ############################
-                //parseCoresUlr is now defined in setArchitecture() method
-                //parseCoresUrl = parseUrl + "latest/"; //DONT USE, old
 
                 string buildbotCoresPage = wc.DownloadString(parseCoresUrl); // HTML Page
 
@@ -495,11 +590,11 @@ namespace Stellar
                 // Sort the Nighlies List, lastest core first
                 //ListBuildbotCoresName.Sort(); //Disable Sort???
 
-                // Create Full Install Cores List
-                ListBuildbotCoresFullInstall = ListBuildbotCoresName;
+                // Create New Install Cores List
+                //ListBuildbotCoresNewInstall = ListBuildbotCoresName;
 
                 // Log Buildbot Cores
-                //File.WriteAllLines("buildbotcores.log", ListBuildbotCoresFullInstall);
+                //File.WriteAllLines("buildbotcores.log", ListBuildbotCoresNewInstall);
 
 
                 // #########################
@@ -528,7 +623,7 @@ namespace Stellar
         // ###############################################
         public void updatedCores()
         {
-            // This part gets complicated #############
+            // This part gets complicated
             // For each Buildbot Date that is Greater than PC Date Modified Date, add a Buildbot Name to the Update List
 
             // Re-create ListbuilbotCoresName by comparing it to ListPcCoresName and keeping only Matches
@@ -637,7 +732,9 @@ namespace Stellar
                 System.Windows.MessageBox.Show("Please set WinRAR Path in Settings.");
             }
 
+            // #########################
             // Auto
+            // #########################
             // If 7-Zip or WinRAR Path is Configure Settings <Auto> ####################
             if (configure.sevenZipPath == "<auto>" && configure.winRARPath == "<auto>")
             {
@@ -679,8 +776,9 @@ namespace Stellar
                     System.Windows.MessageBox.Show("Please install 7-Zip or WinRAR to extract files.\n\nOr set Path in Settings.");
                 }
             }
-
+            // #########################
             // User Select
+            // #########################
             // If 7-Zip Path is (Not Auto) and is Configure Settings <User Selected Path> ####################
             if (configure.sevenZipPath != "<auto>" && !string.IsNullOrEmpty(configure.sevenZipPath)) // Check null again
             {
@@ -700,7 +798,9 @@ namespace Stellar
                 // CLI Arguments unzip files
                 extract = "7-Zip"; //args selector
             }
-
+            // #########################
+            // Not Auto
+            // #########################
             // If WinRAR Path is (Not Auto) and is Configure Settings <User Selected Path> ####################
             else if (configure.winRARPath != "<auto>" && !string.IsNullOrEmpty(configure.winRARPath)) // Check null again
             {
@@ -728,11 +828,14 @@ namespace Stellar
         // ###############################################
         public void parseBuildbotPage() // Method
         {
-            // Begin Parse ############################
+            // #########################
+            // Begin Parse
+            // #########################
             // If No Internet Connect, program will crash. Use Try & Catch to display Error.
-            // ###############################################
+
+            // #########################
             // Update Selected
-            // ###############################################
+            // #########################
             try
             {
                 // Parse the HTML Page from parseUrl
@@ -756,23 +859,27 @@ namespace Stellar
                 System.Windows.MessageBox.Show("Error: Cannot connect to Server.");
             }
 
-            // ###############################################
-            // Full Install Selected
-            // ###############################################
-            // Get Current Selected Item
-            //comboBoxDownloadItem = comboBoxDownload.SelectedItem;
-
+            // #########################
+            // New Install Selected
+            // #########################
             // RetroArch.exe
-            if ((string)comboBoxDownload.SelectedItem == "Full Install")
+            if ((string)comboBoxDownload.SelectedItem == "New Install")
             {
-                // Fetch the Full RetroArch + Redist (not dated)
+                // Fetch the RetroArch + Redist (not dated)
+                nightly7z = "RetroArch.7z";
+            }
+
+            // Partial Unpack RetroArch.7z
+            if ((string)comboBoxDownload.SelectedItem == "Upgrade")
+            {
+                // Fetch the RetroArch + Redist (not dated)
                 nightly7z = "RetroArch.7z";
             }
 
             // Redistributable
             if ((string)comboBoxDownload.SelectedItem == "Redist")
             {
-                // Fetch the Full RetroArch + Redist (not dated)
+                // Fetch the RetroArch + Redist (not dated)
                 nightly7z = "redist.7z";
             }
 
@@ -818,8 +925,8 @@ namespace Stellar
         // Display URLs in Download Textbox
         public void setUrls()
         {
-            // If Full Install Selected, Textbox will display URL
-            if ((string)comboBoxDownload.SelectedItem == "Full Install")
+            // If New Install Selected, Textbox will display URL
+            if ((string)comboBoxDownload.SelectedItem == "New Install")
             {
                 textBoxDownload.Text = parseUrl;
             }
@@ -858,6 +965,7 @@ namespace Stellar
         // ###############################################
         void wc_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
+            // Progress Info
             Dispatcher.BeginInvoke((MethodInvoker)delegate
             {
                 labelProgressInfo.Content = progressInfo;
@@ -878,524 +986,491 @@ namespace Stellar
             // Must be here
             waiter.Set();
 
+            //Progress Info
             Dispatcher.BeginInvoke((MethodInvoker)delegate
             {
-                // Progress Info
                 labelProgressInfo.Content = progressInfo;
             });
         }
 
+
         // ###############################################
-        // Start Download Method
+        // Downloads
         // ###############################################
-        private void startDownload()
+
+        // ###############################
+        // RetroArch Download (Method)
+        // ###############################
+        public void RetroArchDownload()
         {
-            this.Dispatcher.Invoke(() =>
+            // #########################
+            // Download
+            // #########################
+            waiter = new ManualResetEvent(false); //start a new waiter for next pass (clicking update again)
+
+            Uri downloadUrl = new Uri(nightlyUrl); // nightlyUrl = x84/x86_64 + nightly7z
+            //Uri downloadUrl = new Uri("http://127.0.0.1:8888/2016-08-19_RetroArch.7z"); // TESTING Virtual Server URL
+            //Async
+            wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wc_DownloadProgressChanged);
+            wc.DownloadFileCompleted += new AsyncCompletedEventHandler(wc_DownloadFileCompleted);
+            wc.DownloadFileAsync(downloadUrl, tempPath + nightly7z);
+
+            // Progress Info
+            progressInfo = "Downloading RetroArch...";
+
+            waiter.WaitOne();
+
+            // #########################
+            // Extract
+            // #########################
+            // Progress Info
+            progressInfo = "Extracting RetroArch...";
+
+            using (Process execExtract = new Process())
             {
-                // Start New Thread
-                Thread thread = new Thread(() =>
+                // Allow 0.1 seconds before Extracting Files
+                Thread.Sleep(100);
+
+                //exec7zip.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden; //use with ShellExecute
+                execExtract.StartInfo.UseShellExecute = false;
+                execExtract.StartInfo.Verb = "runas"; //use with ShellExecute for admin
+                execExtract.StartInfo.CreateNoWindow = true;
+                execExtract.StartInfo.RedirectStandardOutput = true; //set to false if using ShellExecute
+                execExtract.StartInfo.FileName = archiver; //archiver string
+                // Extract -o and Overwrite -y Selected Files -r
+
+                // #########################
+                // 7-Zip
+                // #########################
+                if (extract == "7-Zip")
                 {
-                    // ###############################################
-                    // Full Install Download
-                    // ###############################################
-                    if ((string)comboBoxDownloadItem == "Full Install")
-                    {
-                        waiter = new ManualResetEvent(false); //start a new waiter for next pass (clicking update again)
+                    // #########################
+                    // New Install
+                    // #########################
+                    if((string)comboBoxDownloadItem == "New Install"){
+                        // Extract All Files
+                        List<string> extractArgs = new List<string>() {
+                            "-r -y x",
+                            "\"" + tempPath + nightly7z + "\"",
+                            "-o\"" + retroarchPath + "\"",
+                            "*",
+                            "&& cd" + "\"" + retroarchPath + "\"", //change directory
+                            "&& mkdir cores" //create cores directory
+                        };
 
-                        //////////////////////////////////////
-                        // RetroArch Download
-                        //////////////////////////////////////
-                        Uri downloadUrl = new Uri(nightlyUrl); // nightlyUrl = x84/x86_64 + nightly7z
-                        //Uri downloadUrl = new Uri("http://127.0.0.1:8888/2016-08-19_RetroArch.7z"); // TESTING Virtual Server URL
-                        //Async
-                        wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wc_DownloadProgressChanged);
-                        wc.DownloadFileCompleted += new AsyncCompletedEventHandler(wc_DownloadFileCompleted);
-                        wc.DownloadFileAsync(downloadUrl, tempPath + nightly7z);
+                        // Join List with Spaces
+                        execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
 
-                        // Progress Info
-                        progressInfo = "Downloading RetroArch...";
-
-                        waiter.WaitOne();
-
-                        // Progress Info
-                        progressInfo = "RetroArch Complete";
-
-                        // Extract ##################
-                        using (Process execExtract = new Process())
-                        {
-                            // Allow 0.1 seconds before Extracting Files
-                            Thread.Sleep(100);
-
-                            //exec7zip.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden; //use with ShellExecute
-                            execExtract.StartInfo.UseShellExecute = false;
-                            execExtract.StartInfo.Verb = "runas"; //use with ShellExecute for admin
-                            execExtract.StartInfo.CreateNoWindow = true;
-                            execExtract.StartInfo.RedirectStandardOutput = true; //set to false if using ShellExecute
-                            execExtract.StartInfo.FileName = archiver; //archiver string
-                            // Extract -o and Overwrite -y Selected Files -r
-                            if (extract == "7-Zip")
-                            {
-                                // Extract All Files *
-                                execExtract.StartInfo.Arguments = " x " + "\"" + tempPath + nightly7z + "\"" + " -o" + "\"" + retroarchPath + "\"" + " * -r -y";
-                            }
-                            else if (extract == "WinRAR")
-                            {
-                                // Extract All Files *
-                                execExtract.StartInfo.Arguments = " x " + "\"" + tempPath + nightly7z + "\"" + " * " + "\"" + retroarchPath + "\"" + " -y";
-                            }
-                            execExtract.Start();
-                            execExtract.WaitForExit();
-                            execExtract.Close();
-                        }
-
-                        // Delete Temporary Nightly 7z file ##################
-                        using (Process deleteTemp = new Process())
-                        {
-                            // Allow 0.1 seconds before Deleting Temporary Files
-                            Thread.Sleep(100);
-
-                            //deleteTemp.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden; //use with ShellExecute
-                            deleteTemp.StartInfo.UseShellExecute = false;
-                            deleteTemp.StartInfo.Verb = "runas"; //use with ShellExecute for admin
-                            deleteTemp.StartInfo.CreateNoWindow = true;
-                            deleteTemp.StartInfo.RedirectStandardOutput = true; //set to false if using ShellExecute
-                            deleteTemp.StartInfo.FileName = "cmd.exe";
-                            deleteTemp.StartInfo.Arguments = "/c del " + "\"" + tempPath + nightly7z + "\"";
-                            deleteTemp.Start();
-                            deleteTemp.WaitForExit();
-                            deleteTemp.Close();
-                        }
-
-
-                        //////////////////////////////////////
-                        // Cores Download
-                        /////////////////////////////////////
-                        for (int i = 0; i < ListBuildbotCoresFullInstall.Count; i++) //problem core count & nightly7z
-                        {
-                            //Reset Waiter
-                            //Must be here
-                            waiter.Reset();
-
-                            Uri downloadUrl2 = new Uri(parseCoresUrl + ListBuildbotCoresFullInstall[i] + ".zip");
-                            //Uri downloadUrl2 = new Uri("http://127.0.0.1:8888/latest/" + ListBuildbotCoresFullInstall[i] + ".zip"); //TESTING
-                            //Async
-                            wc2.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wc_DownloadProgressChanged);
-                            wc2.DownloadFileCompleted += new AsyncCompletedEventHandler(wc_DownloadFileCompleted);
-                            wc2.DownloadFileAsync(downloadUrl2, tempPath + ListBuildbotCoresFullInstall[i] + ".zip", i);
-
-                            // Progress Info
-                            progressInfo = "Downloading " + ListBuildbotCoresFullInstall[i];
-
-                            //Wait until download is finished
-                            waiter.WaitOne();
-
-                            // If Last item in List
-                            if (i == ListBuildbotCoresFullInstall.Count - 1)
-                            {
-                                // Progress Info
-                                progressInfo = "RetroArch + Cores Install Complete";
-                            }
-
-                            // Extract ##################
-                            using (Process execExtract = new Process())
-                            {
-                                // Allow 0.1 seconds before extraction
-                                Thread.Sleep(100);
-
-                                //exec7zip.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden; //use with ShellExecute
-                                execExtract.StartInfo.UseShellExecute = false;
-                                execExtract.StartInfo.Verb = "runas"; //use with ShellExecute for admin
-                                execExtract.StartInfo.CreateNoWindow = true;
-                                execExtract.StartInfo.RedirectStandardOutput = true; //set to false if using ShellExecute
-                                execExtract.StartInfo.FileName = archiver; //archiver string
-                                // Extract -o and Overwrite -y Selected Files -r
-                                if (extract == "7-Zip")
-                                {
-                                    execExtract.StartInfo.Arguments = " e " + "\"" + tempPath + ListBuildbotCoresFullInstall[i] + ".zip" + "\"" + " -o" + "\"" + coresPath + "\"" + " -y"; //extract string
-                                }
-                                else if (extract == "WinRAR")
-                                {
-                                    execExtract.StartInfo.Arguments = " x " + "\"" + tempPath + ListBuildbotCoresFullInstall[i] + ".zip" + "\"" + " " + "\"" + coresPath + "\"" + " -y";
-                                }
-                                execExtract.Start();
-                                execExtract.WaitForExit();
-                                execExtract.Close();
-
-                                // Convert Local Time to Server Time
-                                // This doesn't work in a Method
-                                DateTime utcTime = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
-                                TimeZoneInfo tzi = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
-                                DateTime libretroServerTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, tzi); // .AddHours(12) Needs to be 6-12 hours ahead to be more recent than server? 24 Hour AM/PM Problem?
-
-                                // Set the File Date Time Stamp - Very Important! Let's file sync compare for next update.
-                                if (File.Exists(coresPath + ListBuildbotCoresFullInstall[i]))
-                                {
-                                    File.SetCreationTime(coresPath + ListBuildbotCoresFullInstall[i], libretroServerTime); // Created Date Time = Now, (used to be DateTime.Now)
-                                    File.SetLastWriteTime(coresPath + ListBuildbotCoresFullInstall[i], libretroServerTime); //maybe disable modified date?
-                                }
-                            }
-
-                            // Delete Temporary Nightly 7z file ##################
-                            using (Process deleteTemp = new Process())
-                            {
-                                // Allow 0.1 seconds before Deleting Temporary Files
-                                Thread.Sleep(100);
-
-                                //deleteTemp.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden; //use with ShellExecute
-                                deleteTemp.StartInfo.UseShellExecute = false;
-                                deleteTemp.StartInfo.Verb = "runas"; //use with ShellExecute for admin
-                                deleteTemp.StartInfo.CreateNoWindow = true;
-                                deleteTemp.StartInfo.RedirectStandardOutput = true; //set to false if using ShellExecute
-                                deleteTemp.StartInfo.FileName = "cmd.exe";
-                                deleteTemp.StartInfo.Arguments = "/c del " + "\"" + tempPath + ListBuildbotCoresFullInstall[i] + ".zip" + "\"";
-                                deleteTemp.Start();
-                                deleteTemp.WaitForExit();
-                                deleteTemp.Close();
-                            }
-
-                            // If Last item in List ####################################
-                            if (i == ListBuildbotCoresFullInstall.Count - 1)
-                            {
-                                // Clear list to prevent doubling up ##################
-                                clearAll();
-                            }
-                        }
                     }
+                    // #########################
+                    // Upgrade
+                    // #########################
+                    if((string)comboBoxDownloadItem == "Upgrade"){
+                        // Extract All Files, Exclude Configs
+                        List<string> extractArgs = new List<string>() {
+                            "-r -y x",
+                            "\"" + tempPath + nightly7z + "\"",
+                            "-xr!config -xr!saves -xr!states -xr!retroarch.default.cfg -xr!retroarch.cfg", //exclude files
+                            "-o\"" + retroarchPath + "\"",
+                            "*"
+                        };
 
-
-                    // ####################################
-                    // RetroArch Standalone Download
-                    // ####################################
-                    // If Download Combobox Cores or RA+Cores selected
-                    if ((string)comboBoxDownloadItem == "RA+Cores" || (string)comboBoxDownloadItem == "RetroArch")
-                    {
-                        waiter = new ManualResetEvent(false); //start a new waiter for next pass (clicking update again)
-
-                        // RetroArch Download ################## 
-                        Uri downloadUrl = new Uri(nightlyUrl); // nightlyUrl = x84/x86_64 + nightly7z
-                        //Uri downloadUrl = new Uri("http://127.0.0.1:8888/2016-08-19_RetroArch.7z"); // TESTING Virtual Server URL
-                        //Async
-                        wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wc_DownloadProgressChanged);
-                        wc.DownloadFileCompleted += new AsyncCompletedEventHandler(wc_DownloadFileCompleted);
-                        wc.DownloadFileAsync(downloadUrl, tempPath + nightly7z);
-
-                        // Progress Info
-                        progressInfo = "Downloading RetroArch...";
-
-                        waiter.WaitOne();
-
-                        // Progress Info
-                        progressInfo = "RetroArch Complete";
-
-                        // Extract ##################
-                        using (Process execExtract = new Process())
-                        {
-                            // Allow 0.1 seconds before Extracting Files
-                            Thread.Sleep(100);
-
-                            //exec7zip.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden; //use with ShellExecute
-                            execExtract.StartInfo.UseShellExecute = false;
-                            execExtract.StartInfo.Verb = "runas"; //use with ShellExecute for admin
-                            execExtract.StartInfo.CreateNoWindow = true;
-                            execExtract.StartInfo.RedirectStandardOutput = true; //set to false if using ShellExecute
-                            execExtract.StartInfo.FileName = archiver; //archiver string
-                            // Extract -o and Overwrite -y Selected Files -r
-                            if (extract == "7-Zip")
-                            {
-                                execExtract.StartInfo.Arguments = " e " + "\"" + tempPath + nightly7z + "\"" + " -o" + "\"" + retroarchPath + "\"" + " retroarch.exe retroarch_debug.exe -r -y";
-                            }
-                            else if (extract == "WinRAR")
-                            {
-                                execExtract.StartInfo.Arguments = " x " + "\"" + tempPath + nightly7z + "\"" + " retroarch.exe retroarch_debug.exe " + "\"" + retroarchPath + "\"" + " -y";
-                            }
-                            execExtract.Start();
-                            execExtract.WaitForExit();
-                            execExtract.Close();
-
-                            // Convert Local Time to Server Time
-                            // This doesn't work in a Method
-                            DateTime utcTime = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
-                            TimeZoneInfo tzi = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
-                            DateTime libretroServerTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, tzi);
-
-                            if (File.Exists(retroarchPath + "retroarch.exe"))
-                            {
-                                // Set the File Date Time Stamp - Very Important! Let's file sync compare for next update.
-                                File.SetCreationTime(retroarchPath + "retroarch.exe", libretroServerTime); //Use Server Timezone, (used to be DateTime.Now)
-                                File.SetLastWriteTime(retroarchPath + "retroarch.exe", libretroServerTime);
-                            }
-                            if (File.Exists(retroarchPath + "retroarch_debug.exe"))
-                            {
-                                // Set the File Date Time Stamp - Very Important! Let's file sync compare for next update.
-                                File.SetCreationTime(retroarchPath + "retroarch_debug.exe", libretroServerTime);  //(used to be DateTime.Now)
-                                File.SetLastWriteTime(retroarchPath + "retroarch_debug.exe", libretroServerTime);
-                            }
-                        }
-
-                        // Delete Temporary Nightly 7z file ##################
-                        using (Process deleteTemp = new Process())
-                        {
-                            // Allow 0.1 seconds before Deleting Temporary Files
-                            Thread.Sleep(100);
-
-                            //deleteTemp.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden; //use with ShellExecute
-                            deleteTemp.StartInfo.UseShellExecute = false;
-                            deleteTemp.StartInfo.Verb = "runas"; //use with ShellExecute for admin
-                            deleteTemp.StartInfo.CreateNoWindow = true;
-                            deleteTemp.StartInfo.RedirectStandardOutput = true; //set to false if using ShellExecute
-                            deleteTemp.StartInfo.FileName = "cmd.exe";
-                            deleteTemp.StartInfo.Arguments = "/c del " + "\"" + tempPath + nightly7z + "\"";
-                            deleteTemp.Start();
-                            deleteTemp.WaitForExit();
-                            deleteTemp.Close();
-                        }
-
-                        // If Update Complete, and not downloading Cores, Clear All
-                        if ((string)comboBoxDownloadItem == "RetroArch")
-                        {
-                            clearAll();
-
-                            waiter = new ManualResetEvent(false);
-                        }
+                        // Join List with Spaces
+                        execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
                     }
-
-
-                    // ####################################
-                    // Cores Download
-                    // ####################################
-                    if ((string)comboBoxDownloadItem == "RA+Cores" || (string)comboBoxDownloadItem == "Cores")
+                    // #########################
+                    // Update
+                    // #########################
+                    if ((string)comboBoxDownloadItem == "RetroArch" || (string)comboBoxDownloadItem == "RA+Cores")
                     {
-                        // Compare Lists ####################################
-                        // Change MainWindow's Excluded List to match Checklist's Excluded List
-                        try
-                        {
-                            ListExcludedCores = checklist.ListExcludedCores; // If Checklist Window is not opened first before being called, program will crash
-                        }
-                        catch
-                        {
-                            //ListExcludedCores = ListExcludedCores; // If Checklist Window is not opened first, use the MainWindow List
-                        }
+                        // Extract only retroarch.exe & retroarch_debug.exe
+                        List<string> extractArgs = new List<string>() {
+                            "-r -y e",
+                            "\"" + tempPath + nightly7z + "\"",
+                            "-o\"" + retroarchPath + "\"",
+                            "retroarch.exe retroarch_debug.exe"
+                        };
 
-                        // Remove Excluded Cores from the Update List
-                        ListUpdatedCoresName = ListUpdatedCoresName.Except(ListExcludedCores).ToList();
-
-
-                        // Begin ####################################
-                        for (int i = 0; i < ListUpdatedCoresName.Count; i++) //problem core count & nightly7z
-                        {
-                            //Reset Waiter
-                            //Must be here
-                            waiter.Reset();
-                        
-                            Uri downloadUrl2 = new Uri(parseCoresUrl + ListUpdatedCoresName[i] + ".zip");
-                            //Uri downloadUrl2 = new Uri("http://127.0.0.1:8888/latest/" + ListUpdatedCoresName[i] + ".zip"); //TESTING
-                            //Async
-                            wc2.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wc_DownloadProgressChanged);
-                            wc2.DownloadFileCompleted += new AsyncCompletedEventHandler(wc_DownloadFileCompleted);
-                            wc2.DownloadFileAsync(downloadUrl2, tempPath + ListUpdatedCoresName[i] + ".zip", i);
-
-                            // Progress Info
-                            progressInfo = "Downloading " + ListUpdatedCoresName[i];
-
-                            //Wait until download is finished
-                            waiter.WaitOne();
-
-                            // If Last item in List
-                            if (i == ListUpdatedCoresName.Count - 1)
-                            {
-                                // If "RA+Cores" Combobox Download Selected
-                                if ((string)comboBoxDownloadItem == "RA+Cores")
-                                {
-                                    // Progress Info
-                                    progressInfo = "RetroArch + Cores Update Complete";
-                                }
-                                // If "Cores" Combobox Download Selected
-                                if ((string)comboBoxDownloadItem == "Cores")
-                                {
-                                    // Progress Info
-                                    progressInfo = "Cores Update Complete";
-                                }
-                            }
-
-                            // Extract ##################
-                            using (Process execExtract = new Process())
-                            {
-                                // Allow 0.1 seconds before extraction
-                                Thread.Sleep(100);
-
-                                //exec7zip.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden; //use with ShellExecute
-                                execExtract.StartInfo.UseShellExecute = false;
-                                execExtract.StartInfo.Verb = "runas"; //use with ShellExecute for admin
-                                execExtract.StartInfo.CreateNoWindow = true;
-                                execExtract.StartInfo.RedirectStandardOutput = true; //set to false if using ShellExecute
-                                execExtract.StartInfo.FileName = archiver; //archiver string
-                                // Extract -o and Overwrite -y Selected Files -r
-                                if (extract == "7-Zip")
-                                {
-                                    execExtract.StartInfo.Arguments = " e " + "\"" + tempPath + ListUpdatedCoresName[i] + ".zip" + "\"" + " -o" + "\"" + coresPath + "\"" + " -y"; //extract string
-                                }
-                                else if (extract == "WinRAR")
-                                {
-                                    execExtract.StartInfo.Arguments = " x " + "\"" + tempPath + ListUpdatedCoresName[i] + ".zip" + "\"" + " " + "\"" + coresPath + "\"" + " -y";
-                                }
-                                //else if (extract == "PeaZip") //not working
-                                //{
-                                //    exec7zip.StartInfo.Arguments = "cd " + "\"" + coresPath + "\"" + " && " + "\"" + archiver + "\"" + " -ext2here " + "\"" + tempPath + ListUpdatedCoresName[i] + ".zip" + "\"";
-                                //}
-                                execExtract.Start();
-                                execExtract.WaitForExit();
-                                execExtract.Close();
-
-                                // Convert Local Time to Server Time
-                                // This doesn't work in a Method
-                                DateTime utcTime = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
-                                TimeZoneInfo tzi = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
-                                DateTime libretroServerTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, tzi); // .AddHours(12) Needs to be 6-12 hours ahead to be more recent than server? 24 Hour AM/PM Problem?
-
-                                // Set the File Date Time Stamp - Very Important! Let's file sync compare for next update.
-                                if (File.Exists(coresPath + ListUpdatedCoresName[i]))
-                                {
-                                    File.SetCreationTime(coresPath + ListUpdatedCoresName[i], libretroServerTime); // Created Date Time = Now, (used to be DateTime.Now)
-                                    File.SetLastWriteTime(coresPath + ListUpdatedCoresName[i], libretroServerTime); //maybe disable modified date?
-                                }
-                            }
-
-                            // Delete Temporary Nightly 7z file ##################
-                            using (Process deleteTemp = new Process())
-                            {
-                                // Allow 0.1 seconds before Deleting Temporary Files
-                                Thread.Sleep(100);
-
-                                //deleteTemp.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden; //use with ShellExecute
-                                deleteTemp.StartInfo.UseShellExecute = false;
-                                deleteTemp.StartInfo.Verb = "runas"; //use with ShellExecute for admin
-                                deleteTemp.StartInfo.CreateNoWindow = true;
-                                deleteTemp.StartInfo.RedirectStandardOutput = true; //set to false if using ShellExecute
-                                deleteTemp.StartInfo.FileName = "cmd.exe";
-                                deleteTemp.StartInfo.Arguments = "/c del " + "\"" + tempPath + ListUpdatedCoresName[i] + ".zip" + "\"";
-                                deleteTemp.Start();
-                                deleteTemp.WaitForExit();
-                                deleteTemp.Close();
-                            }
-
-
-                            // If Last item in List ####################################
-                            if (i == ListUpdatedCoresName.Count - 1)
-                            {
-                                    // Write Log Append ##################
-                                    if (configure.logEnable == true) // Only if Log is Enabled through Config Checkbox
-                                    {
-                                        using (FileStream fs = new FileStream(/*pass data*/configure.logPath + "stellar.log", FileMode.Append, FileAccess.Write))
-                                        using (StreamWriter sw = new StreamWriter(fs))
-                                        {
-                                            sw.WriteLine(DateTime.Now);
-                                            sw.WriteLine("######################################\n\n");
-                                            // Append List
-                                            for (int x = 0; x < ListUpdatedCoresName.Count; x++)
-                                            {
-                                                sw.WriteLine(ListUpdatedCoresName[x]);
-                                            }
-                                            sw.WriteLine(""); // Add return space
-                                            sw.WriteLine("");
-                                            // Close Log
-                                            sw.Close();
-                                        }
-                                    }
-
-
-                                // Clear list to prevent doubling up ##################
-                                clearAll();
-                            }
-
-                        }
+                        // Join List with Spaces
+                        execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
                     }
-
-
-                    // ####################################
-                    // Redistributable Download
-                    // ####################################
+                    // #########################
+                    // Redist
+                    // #########################
                     if ((string)comboBoxDownloadItem == "Redist")
                     {
-                        waiter = new ManualResetEvent(false); //start a new waiter for next pass (clicking update again)
+                        // Extract All Files
+                        List<string> extractArgs = new List<string>() {
+                            "-r -y x",
+                            "\"" + tempPath + nightly7z + "\"",
+                            "-o\"" + retroarchPath + "\"",
+                            "*"
+                        };
 
-                        // RetroArch Download ################## 
-                        Uri downloadUrl = new Uri(nightlyUrl); // nightlyUrl = x84/x86_64 + nightly7z (redist.7z)
-                        //Uri downloadUrl = new Uri("http://127.0.0.1:8888/2016-08-19_RetroArch.7z"); // TESTING Virtual Server URL
-                        //Async
-                        wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wc_DownloadProgressChanged);
-                        wc.DownloadFileCompleted += new AsyncCompletedEventHandler(wc_DownloadFileCompleted);
-                        wc.DownloadFileAsync(downloadUrl, tempPath + nightly7z);
+                        // Join List with Spaces
+                        execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
+                    }
+                }
 
+                // #########################
+                // WinRAR
+                // #########################
+                else if (extract == "WinRAR")
+                {
+                    // #########################
+                    // New Install
+                    // #########################
+                    if ((string)comboBoxDownloadItem == "New Install")
+                    {
+                        // Extract All Files
+                        List<string> extractArgs = new List<string>() {
+                            "-y x",
+                            "\"" + tempPath + nightly7z + "\"",
+                            "*",
+                            "\"" + retroarchPath + "\"",
+                        };
+
+                        // Join List with Spaces
+                        execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
+                    }
+                    // #########################
+                    // Upgrade
+                    // #########################
+                    if ((string)comboBoxDownloadItem == "Upgrade")
+                    {
+                        // Extract All Files, Exclude Configs
+                        List<string> extractArgs = new List<string>() {
+                            "-y x",
+                            "\"" + tempPath + nightly7z + "\"",
+                            "-xconfig -xsaves -xstates -xretroarch.default.cfg -xretroarch.cfg", //exclude files
+                            "\"" + retroarchPath + "\""
+                        };
+
+                        // Join List with Spaces
+                        execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
+
+                    }
+                    // #########################
+                    // Update
+                    // #########################
+                    if ((string)comboBoxDownloadItem == "RetroArch" || (string)comboBoxDownloadItem == "RA+Cores")
+                    {
+                        // Extract only retroarch.exe & retroarch_debug.exe
+                        List<string> extractArgs = new List<string>() {
+                            "-y x",
+                            "\"" + tempPath + nightly7z + "\"",
+                            "retroarch.exe retroarch_debug.exe",
+                            "\"" + retroarchPath + "\""
+                        };
+
+                        // Join List with Spaces
+                        execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
+                    }
+                    // #########################
+                    // Redist
+                    // #########################
+                    if ((string)comboBoxDownloadItem == "Redist")
+                    {
+                        // Extract only retroarch.exe & retroarch_debug.exe
+                        List<string> extractArgs = new List<string>() {
+                            "-y x",
+                            "\"" + tempPath + nightly7z + "\"",
+                            "*",
+                            "\"" + retroarchPath + "\"",
+                        };
+
+                        // Join List with Spaces
+                        execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
+                    }
+                }
+
+                // Start Extract
+                execExtract.Start();
+                execExtract.WaitForExit();
+                execExtract.Close();
+
+                // Convert Local Time to Server Time
+                // This doesn't work in a Method
+                DateTime utcTime = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
+                TimeZoneInfo tzi = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+                DateTime libretroServerTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, tzi);
+
+                if (File.Exists(retroarchPath + "retroarch.exe"))
+                {
+                    // Set the File Date Time Stamp - Very Important! Let's file sync compare for next update.
+                    File.SetCreationTime(retroarchPath + "retroarch.exe", libretroServerTime); //Use Server Timezone, (used to be DateTime.Now)
+                    File.SetLastWriteTime(retroarchPath + "retroarch.exe", libretroServerTime);
+                }
+
+                if (File.Exists(retroarchPath + "retroarch_debug.exe"))
+                {
+                    // Set the File Date Time Stamp - Very Important! Let's file sync compare for next update.
+                    File.SetCreationTime(retroarchPath + "retroarch_debug.exe", libretroServerTime);  //(used to be DateTime.Now)
+                    File.SetLastWriteTime(retroarchPath + "retroarch_debug.exe", libretroServerTime);
+                }
+            }
+
+            // Delete Temporary Nightly 7z file
+            //
+            using (Process deleteTemp = new Process())
+            {
+                // Allow 0.1 seconds before Deleting Temporary Files
+                Thread.Sleep(100);
+
+                //deleteTemp.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden; //use with ShellExecute
+                deleteTemp.StartInfo.UseShellExecute = false;
+                deleteTemp.StartInfo.Verb = "runas"; //use with ShellExecute for admin
+                deleteTemp.StartInfo.CreateNoWindow = true;
+                deleteTemp.StartInfo.RedirectStandardOutput = true; //set to false if using ShellExecute
+                deleteTemp.StartInfo.FileName = "cmd.exe";
+                deleteTemp.StartInfo.Arguments = "/c del " + "\"" + tempPath + nightly7z + "\"";
+                deleteTemp.Start();
+                deleteTemp.WaitForExit();
+                deleteTemp.Close();
+            }
+
+            // If Update Complete, and not downloading Cores, Clear All
+            //
+            if ((string)comboBoxDownloadItem == "RetroArch" 
+                || (string)comboBoxDownloadItem == "Upgrade" 
+                || (string)comboBoxDownloadItem == "Redist")
+            {
+                clearAll();
+
+                // Progress Info
+                Dispatcher.BeginInvoke((MethodInvoker)delegate
+                {
+                    labelProgressInfo.Content = "RetroArch Complete";
+                });
+
+                waiter = new ManualResetEvent(false);
+            }
+        }
+
+
+
+        // ###############################
+        // Cores Download (Method)
+        // ###############################
+        public void CoresDownload()
+        {
+            // #########################
+            // New Install
+            // #########################
+            // Change Cores List to All Available Buildbot Cores
+            if ((string)comboBoxDownloadItem == "New Install")
+            {
+                ListUpdatedCoresName = ListBuildbotCoresName;
+            }
+
+            // ###############################
+            // Update
+            // ###############################
+            // #########################
+            // Compare Lists
+            // #########################
+            // Change MainWindow's Excluded List to match Checklist's Excluded List
+            try
+            {
+                ListExcludedCores = checklist.ListExcludedCores; // If Checklist Window is not opened first before being called, program will crash
+            }
+            catch
+            {
+                //ListExcludedCores = ListExcludedCores; // If Checklist Window is not opened first, use the MainWindow List
+            }
+
+            // Remove Excluded Cores from the Update List
+            ListUpdatedCoresName = ListUpdatedCoresName.Except(ListExcludedCores).ToList();
+
+            // #########################
+            // Download
+            // #########################
+            for (int i = 0; i < ListUpdatedCoresName.Count; i++) //problem core count & nightly7z
+            {
+                //Reset Waiter, Must be here
+                waiter.Reset();
+
+                Uri downloadUrl2 = new Uri(parseCoresUrl + ListUpdatedCoresName[i] + ".zip");
+                //Uri downloadUrl2 = new Uri("http://127.0.0.1:8888/latest/" + ListUpdatedCoresName[i] + ".zip"); //TESTING
+                //Async
+                wc2.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wc_DownloadProgressChanged);
+                wc2.DownloadFileCompleted += new AsyncCompletedEventHandler(wc_DownloadFileCompleted);
+                wc2.DownloadFileAsync(downloadUrl2, tempPath + ListUpdatedCoresName[i] + ".zip", i);
+
+                // Progress Info
+                progressInfo = "Downloading " + ListUpdatedCoresName[i];
+
+                //Wait until download is finished
+                waiter.WaitOne();
+
+                // If Last item in List
+                //
+                if (i == ListUpdatedCoresName.Count - 1)
+                {
+                    // If "RA+Cores" Combobox Download Selected
+                    if ((string)comboBoxDownloadItem == "New Install" || (string)comboBoxDownloadItem == "RA+Cores")
+                    {
                         // Progress Info
-                        progressInfo = "Downloading Redistributable...";
+                        progressInfo = "RetroArch + Cores Update Complete";
+                    }
 
-                        waiter.WaitOne();
-
+                    // If "Cores" Combobox Download Selected
+                    if ((string)comboBoxDownloadItem == "Cores")
+                    {
                         // Progress Info
-                        progressInfo = "Redistributable Complete";
+                        progressInfo = "Cores Update Complete";
+                    }
+                }
 
-                        // Extract ##################
-                        using (Process execExtract = new Process())
+                // #########################
+                // Extract
+                // #########################
+                using (Process execExtract = new Process())
+                {
+                    // Allow 0.1 seconds before extraction
+                    Thread.Sleep(100);
+
+                    //exec7zip.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden; //use with ShellExecute
+                    execExtract.StartInfo.UseShellExecute = false;
+                    execExtract.StartInfo.Verb = "runas"; //use with ShellExecute for admin
+                    execExtract.StartInfo.CreateNoWindow = true;
+                    execExtract.StartInfo.RedirectStandardOutput = true; //set to false if using ShellExecute
+                    execExtract.StartInfo.FileName = archiver; //archiver string
+
+                    // Extract -o and Overwrite -y Selected Files -r
+                    // #########################
+                    // 7-Zip
+                    // #########################
+                    if (extract == "7-Zip")
+                    {
+                        List<string> extractArgs = new List<string>() {
+                            "-y e",
+                            "\"" + tempPath + ListUpdatedCoresName[i] + ".zip" + "\"",
+                            "-o\"" + coresPath + "\"",
+                        };
+
+                        // Join List with Spaces
+                        execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
+                    }
+                    // #########################
+                    // WinRAR
+                    // #########################
+                    else if (extract == "WinRAR")
+                    {
+                        List<string> extractArgs = new List<string>() {
+                            "-y x",
+                            "\"" + tempPath + ListUpdatedCoresName[i] + ".zip" + "\"",
+                            "\"" + coresPath + "\"",
+                        };
+
+                        // Join List with Spaces
+                        execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
+                    }
+
+                    execExtract.Start();
+                    execExtract.WaitForExit();
+                    execExtract.Close();
+
+                    // Convert Local Time to Server Time
+                    // This doesn't work in a Method
+                    DateTime utcTime = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
+                    TimeZoneInfo tzi = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+                    DateTime libretroServerTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, tzi); // .AddHours(12) Needs to be 6-12 hours ahead to be more recent than server? 24 Hour AM/PM Problem?
+
+                    // Set the File Date Time Stamp - Very Important! Let's file sync compare for next update.
+                    if (File.Exists(coresPath + ListUpdatedCoresName[i]))
+                    {
+                        File.SetCreationTime(coresPath + ListUpdatedCoresName[i], libretroServerTime); // Created Date Time = Now, (used to be DateTime.Now)
+                        File.SetLastWriteTime(coresPath + ListUpdatedCoresName[i], libretroServerTime); //maybe disable modified date?
+                    }
+                }
+
+                // Delete Temporary Nightly 7z file
+                //
+                using (Process deleteTemp = new Process())
+                {
+                    // Allow 0.1 seconds before Deleting Temporary Files
+                    Thread.Sleep(100);
+
+                    //deleteTemp.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden; //use with ShellExecute
+                    deleteTemp.StartInfo.UseShellExecute = false;
+                    deleteTemp.StartInfo.Verb = "runas"; //use with ShellExecute for admin
+                    deleteTemp.StartInfo.CreateNoWindow = true;
+                    deleteTemp.StartInfo.RedirectStandardOutput = true; //set to false if using ShellExecute
+                    deleteTemp.StartInfo.FileName = "cmd.exe";
+                    deleteTemp.StartInfo.Arguments = "/c del " + "\"" + tempPath + ListUpdatedCoresName[i] + ".zip" + "\"";
+                    deleteTemp.Start();
+                    deleteTemp.WaitForExit();
+                    deleteTemp.Close();
+                }
+
+
+                // If Last item in List
+                //
+                if (i == ListUpdatedCoresName.Count - 1)
+                {
+                    // Write Log Append ##################
+                    if (configure.logEnable == true) // Only if Log is Enabled through Config Checkbox
+                    {
+                        using (FileStream fs = new FileStream(/*pass data*/configure.logPath + "stellar.log", FileMode.Append, FileAccess.Write))
+                        using (StreamWriter sw = new StreamWriter(fs))
                         {
-                            // Allow 0.1 seconds before Extracting Files
-                            Thread.Sleep(100);
-
-                            //exec7zip.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden; //use with ShellExecute
-                            execExtract.StartInfo.UseShellExecute = false;
-                            execExtract.StartInfo.Verb = "runas"; //use with ShellExecute for admin
-                            execExtract.StartInfo.CreateNoWindow = true;
-                            execExtract.StartInfo.RedirectStandardOutput = true; //set to false if using ShellExecute
-                            execExtract.StartInfo.FileName = archiver; //archiver string
-                            // Extract -o and Overwrite -y Selected Files -r
-                            if (extract == "7-Zip")
+                            sw.WriteLine(DateTime.Now);
+                            sw.WriteLine("--------------------------------------\n\n");
+                            // Append List
+                            for (int x = 0; x < ListUpdatedCoresName.Count; x++)
                             {
-                                // Extract All Files *
-                                execExtract.StartInfo.Arguments = " x " + "\"" + tempPath + nightly7z + "\"" + " -o" + "\"" + retroarchPath + "\"" + " * -r -y";
+                                sw.WriteLine(ListUpdatedCoresName[x]);
                             }
-                            else if (extract == "WinRAR")
-                            {
-                                // Extract All Files *
-                                execExtract.StartInfo.Arguments = " x " + "\"" + tempPath + nightly7z + "\"" + " * " + "\"" + retroarchPath + "\"" + " -y";
-                            }
-                            execExtract.Start();
-                            execExtract.WaitForExit();
-                            execExtract.Close();
-                        }
-
-                        // Delete Temporary Nightly 7z file ##################
-                        using (Process deleteTemp = new Process())
-                        {
-                            // Allow 0.1 seconds before Deleting Temporary Files
-                            Thread.Sleep(100);
-
-                            //deleteTemp.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden; //use with ShellExecute
-                            deleteTemp.StartInfo.UseShellExecute = false;
-                            deleteTemp.StartInfo.Verb = "runas"; //use with ShellExecute for admin
-                            deleteTemp.StartInfo.CreateNoWindow = true;
-                            deleteTemp.StartInfo.RedirectStandardOutput = true; //set to false if using ShellExecute
-                            deleteTemp.StartInfo.FileName = "cmd.exe";
-                            deleteTemp.StartInfo.Arguments = "/c del " + "\"" + tempPath + nightly7z + "\"";
-                            deleteTemp.Start();
-                            deleteTemp.WaitForExit();
-                            deleteTemp.Close();
-                        }
-
-                        // If Update Complete, and not downloading Cores, Clear All
-                        if ((string)comboBoxDownloadItem == "Redistributable")
-                        {
-                            clearAll();
-
-                            waiter = new ManualResetEvent(false);
+                            sw.WriteLine(""); // Add return space
+                            sw.WriteLine("");
+                            // Close Log
+                            sw.Close();
                         }
                     }
 
-                }); //end thread
+                    // Clear list to prevent doubling up ##################
+                    clearAll();
+                }
+            }
+        }
 
-                // Start Download Thread
-                thread.Start();
 
-            }); //end dispatcher
 
+        // ###############################################
+        // Start Download (Method)
+        // ###############################################
+        private void StartDownload()
+        {
+            // Start New Thread
+            Thread thread = new Thread(() =>
+            {
+                // start a new waiter for next pass (clicking update again)
+                waiter = new ManualResetEvent(false); 
+
+                // RetroArch
+                if ((string)comboBoxDownloadItem == "New Install"
+                    || (string)comboBoxDownloadItem == "Upgrade" 
+                    || (string)comboBoxDownloadItem == "RetroArch" 
+                    || (string)comboBoxDownloadItem == "RA+Cores" 
+                    || (string)comboBoxDownloadItem == "Redist")
+                {
+                    RetroArchDownload();
+                }
+
+                // Cores
+                if ((string)comboBoxDownloadItem == "New Install"
+                    || (string)comboBoxDownloadItem == "RA+Cores"
+                    || (string)comboBoxDownloadItem == "Cores")
+                {
+                    CoresDownload();
+                }
+
+            }); //end thread
+
+
+            // Start Download Thread
+            thread.Start();
         }
 
 
@@ -1530,16 +1605,33 @@ namespace Stellar
             Settings.Default.Save();
             Settings.Default.Reload();
 
-            // Full Install
-            if ((string)comboBoxDownloadItem == "Full Install")
+            // New Install
+            //
+            if ((string)comboBoxDownloadItem == "New Install")
             {
                 // Change Update Button Text to "Install"
                 buttonUpdateTextBlock.Text = "Install";
 
-                // Warn user about Full Install
-                System.Windows.MessageBox.Show("This will install a New Nightly RetroArch + Cores. \n\nIt will overwrite any existing files/configs in the selected folder. \n\nDo not use the Full Install option to Update.");
+                // Warn user about New Install
+                System.Windows.MessageBox.Show("This will install a New Nightly RetroArch + Cores. \n\nIt will overwrite any existing files/configs in the selected folder. \n\nDo not use the New Install option to Update.");
 
-                // Save Download Combobox Settings back to RA+Cores instead of Full Install for next launch
+                // Save Download Combobox Settings back to RA+Cores instead of New Install for next launch
+                Settings.Default["download"] = "RA+Cores";
+                Settings.Default.Save();
+                Settings.Default.Reload();
+            }
+
+            // Upgrade
+            //
+            if ((string)comboBoxDownloadItem == "Upgrade")
+            {
+                // Change Update Button Text to "Upgrade"
+                buttonUpdateTextBlock.Text = "Upgrade";
+
+                // Warn user about Upgrade
+                System.Windows.MessageBox.Show("Backup your configs and custom shaders! Large Download. \n\nThis will fully upgrade RetroArch to the latest version. \n\nUpdate Cores separately using \"Cores\" menu option. \n\nFor small updates use the \"RetroArch\" or \"RA+Cores\" menu option");
+
+                // Save Download Combobox Settings back to RA+Cores instead of New Install for next launch
                 Settings.Default["download"] = "RA+Cores";
                 Settings.Default.Save();
                 Settings.Default.Reload();
@@ -1586,7 +1678,9 @@ namespace Stellar
             parseBuildbotPage();
 
             // If Downloading RetroArch and NOT Cores
-            if ((string)comboBoxDownload.SelectedItem == "RA+Cores" 
+            if ((string)comboBoxDownload.SelectedItem == "New Install"
+                || (string)comboBoxDownload.SelectedItem == "Upgrade" 
+                || (string)comboBoxDownload.SelectedItem == "RA+Cores" 
                 || (string)comboBoxDownload.SelectedItem == "RetroArch" 
                 || (string)comboBoxDownload.SelectedItem == "Redist")
             {
@@ -1647,12 +1741,27 @@ namespace Stellar
                     checklist.ShowDialog();
 
                     // Clear Name+Date Lists to prevent doubling up on next pass
-                    ListPcCoresNameDate.Clear();
-                    ListPcCoresNameDate.TrimExcess();
-                    ListBuildbotCoresNameDate.Clear();
-                    ListBuildbotCoresNameDate.TrimExcess();
-                    CollectionPcCoresNameDate.Clear();
-                    CollectionBuildbotNameDate.Clear();
+                    if (ListPcCoresNameDate != null)
+                    {
+                        ListPcCoresNameDate.Clear();
+                        ListPcCoresNameDate.TrimExcess();
+                    }
+
+                    if (ListBuildbotCoresNameDate != null)
+                    {
+                        ListBuildbotCoresNameDate.Clear();
+                        ListBuildbotCoresNameDate.TrimExcess();
+                    }
+
+                    if (CollectionPcCoresNameDate != null)
+                    {
+                        CollectionPcCoresNameDate.Clear();
+                    }
+
+                    if (CollectionBuildbotNameDate != null)
+                    {
+                        CollectionBuildbotNameDate.Clear();
+                    }
 
                     // Clear List to prevent doubling up
                     //ListUpdatedCoresName.Clear();
@@ -1709,9 +1818,9 @@ namespace Stellar
 
 
             // ###############################################
-            // If Full Install
+            // If New Install (RetroArch + Cores)
             // ###############################################
-            if ((string)comboBoxDownload.SelectedItem == "Full Install")
+            if ((string)comboBoxDownload.SelectedItem == "New Install")
             {
                 // Set Cores Folder (Dont Scan PC)
                 coresPath = retroarchPath + "cores\\";
@@ -1722,10 +1831,10 @@ namespace Stellar
 
 
             // ###############################################
-            // If Update
+            // If RetroArch or Cores Update
             // ###############################################
             // If Update Download Combobox Cores or RA+Cores selected
-            if ((string)comboBoxDownload.SelectedItem == "Cores" || (string)comboBoxDownload.SelectedItem == "RA+Cores")
+            if ((string)comboBoxDownload.SelectedItem == "RA+Cores" || (string)comboBoxDownload.SelectedItem == "Cores")
             {
                 // Call Methods - Build Cores Lists
                 scanPcCoresDir();
@@ -1740,23 +1849,38 @@ namespace Stellar
                 coresUpToDateCheck();
 
                 // Clear Name+Date Lists to prevent doubling up on next pass
-                ListPcCoresNameDate.Clear();
-                ListPcCoresNameDate.TrimExcess();
-                ListBuildbotCoresNameDate.Clear();
-                ListBuildbotCoresNameDate.TrimExcess();
-                CollectionPcCoresNameDate.Clear();
-                CollectionBuildbotNameDate.Clear();
+                if (ListPcCoresNameDate != null)
+                {
+                    ListPcCoresNameDate.Clear();
+                    ListPcCoresNameDate.TrimExcess();
+                }
+
+                if (ListBuildbotCoresNameDate != null)
+                {
+                    ListBuildbotCoresNameDate.Clear();
+                    ListBuildbotCoresNameDate.TrimExcess();
+                }
+
+                if (CollectionPcCoresNameDate != null)
+                {
+                    CollectionPcCoresNameDate.Clear();
+                }
+
+                if (CollectionPcCoresNameDate != null)
+                {
+                    CollectionBuildbotNameDate.Clear();
+                }
             }
 
 
 
             // ###############################################
-            // Check if Ready
+            // Ready
             // ###############################################
             if (ready == 1)
             {
                 // Start Download
-                startDownload();
+                StartDownload();
             }
             else
             {
