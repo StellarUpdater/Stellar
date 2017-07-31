@@ -10,7 +10,7 @@ RetroArch Nightly Updater
 
 ## Overview
 
-![Stellar](https://stellarupdater.github.io/img/program.jpg?raw=true)
+![Stellar](https://raw.githubusercontent.com/StellarUpdater/Stellar/master/images/stellar.png)
 
 ### How it works
 * It analyzes http://buildbot.libretro.com/nightly/windows/
