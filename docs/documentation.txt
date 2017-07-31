@@ -1,0 +1,123 @@
+RetroArch Nightly Updater v0.80 Documentation
+
+Visual Studio 2013 C#
+
+Guide
+--------------------------------------------------
+http://libretro.com/forums/showthread.php?t=6726
+
+
+--------------------------------------------------
+--------------------------------------------------
+Program Structure
+--------------------------------------------------
+--------------------------------------------------
+
+MainWindow
+--------------------------------------------------
+// #######################
+// Form
+// ####################### 
+• Strings, Vars, Ints, Lists, WebClient
+
+• InitializeComponent
+	• Window & Defaults
+	• Load Saved Settings
+
+// #######################
+// Methods
+// ####################### 
+• Close Button
+• Folder Browser Popup
+• Clear All
+• Scan PC Cores Directory
+• Parse Buildbot Cores HTML
+• Create Updated Cores List
+• Set Architecture
+	• Combobox Select Item
+• Set Archiver - Method
+	• 7-zip
+	• WinRAR
+• Parse Buildbot HTML
+• Set URLs
+• Download Handlers
+• Start Download
+	• Cores Download
+
+// #######################
+// Controls
+// ####################### 
+• Info Button
+• Stellar Site Button
+• RetroArch Site Button
+• RetroArch Forums Button
+• RetroArch Folder Open Button
+• Buildbot Directory Open Button
+
+• RA Folder Location Textbox
+	# Saves Settings
+	• Folder Browser Dialog Popup
+
+• Dropdown Combobox
+	# Determines HTML Page to Parse
+	# Saves Settings
+	• 32-bit
+	• 64-bit
+
+• Cores Checkbox
+
+• Check Button
+	• Check RetroArch Download
+	• Form Checklist - Available Cores
+
+• Update Button
+	• Uri Download
+		# Also connected to Progress Bar
+		• Initiate Download from URL
+	• Progress Bar
+		• Upon Download Completion
+			• Zip Extraction
+			• Temp Cleanup
+
+Configure
+--------------------------------------------------
+// #######################
+// Methods
+// ####################### 
+• Defaults
+• 7-Zip Folder Browser
+• WinRAR Folder Browser
+• Log Folder Browser
+
+// #######################
+// Controls
+// ####################### 
+• 7-Zip Path Textbox
+• 7-Zip Auto Path Button
+• WinRAR Path Textbox
+• WinRAR Auto Path Button
+• Log Checkbox
+• Log Path Textbox
+• Log Auto Path Button
+• Themes Combobox
+• Clear Saved Button
+
+Checklist
+--------------------------------------------------
+• InitializeComponent
+
+// #######################
+// Methods
+// #######################
+• Window & Defaults
+• Checklist Pass Data
+
+// #######################
+// Controls
+// ####################### 
+• Excluded ListView
+• Select All Button
+• Deselect All Button
+• Advanced Button
+	• PC Cores Name+Date ListBox
+	• Buildbot Cores Name+Date ListBox
