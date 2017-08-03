@@ -2,7 +2,6 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.IO;
 using Stellar.Properties;
 using System.Configuration;
@@ -37,10 +36,11 @@ namespace Stellar
     {
         private MainWindow mainwindow;
 
-        public static string sevenZipPath; // 7-Zip Config Settings Path (public - pass data)
-        public static string winRARPath; // WinRAR Config Settings Path (public - pass data)
-        public static string logPath; // stellar.log Config Settings Path (public - pass data)
-        public static bool logEnable; //checkBoxLogConfig, Enable or Disable Log, true or false - (public - pass data)
+        public static string sevenZipPath; // 7-Zip Config Settings Path
+        public static string winRARPath; // WinRAR Config Settings Path
+
+        public static string logPath; // stellar.log Config Settings Path
+        public static bool logEnable; //checkBoxLogConfig, Enable or Disable Log, true or false
 
         public static string theme; // Background Theme Image
 
@@ -54,6 +54,11 @@ namespace Stellar
             InitializeComponent();
 
             this.mainwindow = mainwindow;
+
+            this.MinWidth = 450;
+            this.MinHeight = 200;
+            this.MaxWidth = 450;
+            this.MaxHeight = 200;
 
 
             // -----------------------------------------------
@@ -79,32 +84,94 @@ namespace Stellar
                 }
             }
 
+            // --------------------------------------------------
+            // Load From Saved Settings
+            // --------------------------------------------------
+            // Theme CombBox
+            Configure.ConfigTheme(this);
 
+            // 7-Zip Path
+            Configure.Config7zipPath(this);
+
+            // WinRAR Path
+            Configure.ConfigWinRARPath(this);
+
+            // Log CheckBox
+            Configure.ConfigLogToggle(this);
+
+            // Log Path
+            Configure.ConfigLogPath(this);
+        }
+
+
+        /// <summary>
+        /// Load Theme
+        /// </summary>
+        public static void ConfigTheme(Configure configure)
+        {
             // -----------------------------------------------
             // Load Theme
             // -----------------------------------------------
             try
             {
                 // First Time Use
-                if (string.IsNullOrEmpty(Settings.Default["comboboxThemes"].ToString())) // null check
+                if (string.IsNullOrEmpty(Settings.Default["themes"].ToString())) // null check
                 {
-                    comboBoxThemeConfig.SelectedItem = "Milky Way";
+                    //System.Windows.MessageBox.Show("Debug");
 
-                    // Save Selected Item for next launch
-                    Settings.Default["comboboxThemes"] = "Milky Way";
+                    Configure.theme = "MilkyWay";
+
+                    // Set ComboBox if Configure Window is Open
+                    if (configure != null)
+                    {
+                        configure.comboBoxThemeConfig.SelectedItem = "Milky Way";
+                    }
+
+                    // Change Theme Resource
+                    App.Current.Resources.MergedDictionaries.Clear();
+                    App.Current.Resources.MergedDictionaries.Add(new ResourceDictionary()
+                    {
+                        Source = new Uri("Theme" + Configure.theme + ".xaml", UriKind.RelativeOrAbsolute)
+                    });
+
+                    // Save Theme for next launch
+                    Settings.Default["themes"] = Configure.theme; // Theme
+                    Settings.Default["comboboxThemes"] = "Milky Way"; // ComboBox Selected Item
                     Settings.Default.Save();
+                    Settings.Default.Reload();
                 }
                 // Saved Settings
                 else
                 {
-                    comboBoxThemeConfig.SelectedItem = Settings.Default["comboboxThemes"];
+                    //System.Windows.MessageBox.Show("Debug");
+
+                    Configure.theme = Settings.Default["themes"].ToString();
+
+                    // Set ComboBox if Configure Window is Open
+                    if (configure != null)
+                    {
+                        configure.comboBoxThemeConfig.SelectedItem = Settings.Default["comboboxThemes"];
+                    }
+
+                    // Change Theme Resource
+                    App.Current.Resources.MergedDictionaries.Clear();
+                    App.Current.Resources.MergedDictionaries.Add(new ResourceDictionary()
+                    {
+                        Source = new Uri("Theme" + Configure.theme + ".xaml", UriKind.RelativeOrAbsolute)
+                    });
                 }
             }
             catch
             {
 
             }
+        }
 
+        /// <summary>
+        /// Load 7-Zip Path
+        /// </summary>
+        public static void Config7zipPath(Configure configure)
+        {
             // -----------------------------------------------
             // Load 7-Zip Path from Saved Settings
             // -----------------------------------------------
@@ -113,21 +180,38 @@ namespace Stellar
                 // First Time Use
                 if (string.IsNullOrEmpty(Settings.Default["sevenZipPath"].ToString())) // null check
                 {
-                    sevenZipPath = "<auto>";
-                    textBox7zipConfig.Text = sevenZipPath;
+                    // Load Saved Settings Override
+                    Configure.sevenZipPath = "<auto>";
+
+                    // Set ComboBox if Configure Window is Open
+                    if (configure != null)
+                    {
+                        configure.textBox7zipConfig.Text = Configure.sevenZipPath;
+                    }
                 }
                 // Saved Settings
                 else
                 {
-                    sevenZipPath = Settings.Default["sevenZipPath"].ToString();
-                    textBox7zipConfig.Text = sevenZipPath;
+                    Configure.sevenZipPath = Settings.Default["sevenZipPath"].ToString();
+
+                    // Set ComboBox if Configure Window is Open
+                    if (configure != null)
+                    {
+                        configure.textBox7zipConfig.Text = Configure.sevenZipPath;
+                    }
                 }
             }
             catch
             {
 
             }
+        }
 
+        /// <summary>
+        /// Load WinRAR Path
+        /// </summary>
+        public static void ConfigWinRARPath(Configure configure)
+        {
             // -----------------------------------------------
             // Load WinRAR Path from Saved Settings
             // -----------------------------------------------
@@ -136,21 +220,39 @@ namespace Stellar
                 // First Time Use
                 if (string.IsNullOrEmpty(Settings.Default["winRARPath"].ToString())) // null check
                 {
-                    winRARPath = "<auto>";
-                    textBoxWinRARConfig.Text = winRARPath;
+                    // Load Saved Settings Override
+                    Configure.winRARPath = "<auto>";
+
+                    // Set ComboBox if Configure Window is Open
+                    if (configure != null)
+                    {
+                        configure.textBoxWinRARConfig.Text = Configure.winRARPath;
+                    }
+
                 }
                 // Saved Settings
                 else
                 {
-                    winRARPath = Settings.Default["winRARPath"].ToString();
-                    textBoxWinRARConfig.Text = winRARPath;
+                    Configure.winRARPath = Settings.Default["winRARPath"].ToString();
+
+                    // Set ComboBox if Configure Window is Open
+                    if (configure != null)
+                    {
+                        configure.textBoxWinRARConfig.Text = Configure.winRARPath;
+                    }
                 }
             }
             catch
             {
 
             }
+        }
 
+        /// <summary>
+        /// Load Log Toggle
+        /// </summary>
+        public static void ConfigLogToggle(Configure configure)
+        {
             // -----------------------------------------------
             // Load Log Enable/Disable from Saved Settings
             // -----------------------------------------------
@@ -159,21 +261,37 @@ namespace Stellar
                 // First Time Use
                 if (string.IsNullOrEmpty(Settings.Default.logEnable.ToString())) // null check
                 {
-                    logEnable = false;
-                    checkBoxLogConfig.IsChecked = false;
+                    Configure.logEnable = false;
+
+                    // Set ComboBox if Configure Window is Open
+                    if (configure != null)
+                    {
+                        configure.checkBoxLogConfig.IsChecked = false;
+                    }
                 }
                 // Saved Settings
                 else
                 {
-                    logEnable = Settings.Default.logEnable;
-                    checkBoxLogConfig.IsChecked = Settings.Default.checkBoxLog;
+                    Configure.logEnable = Settings.Default.logEnable;
+
+                    // Set ComboBox if Configure Window is Open
+                    if (configure != null)
+                    {
+                        configure.checkBoxLogConfig.IsChecked = Settings.Default.checkBoxLog;
+                    }
                 }
             }
             catch
             {
 
             }
+        }
 
+        /// <summary>
+        /// Load Log Path
+        /// </summary>
+        public static void ConfigLogPath(Configure configure)
+        {
             // -----------------------------------------------
             // Load Log Path from Saved Settings
             // -----------------------------------------------
@@ -182,14 +300,25 @@ namespace Stellar
                 // First Time Use
                 if (string.IsNullOrEmpty(Settings.Default["logPath"].ToString())) // null check
                 {
-                    logPath = string.Empty;
-                    textBoxLogConfig.Text = logPath;
+                    Configure.logPath = string.Empty;
+
+                    // Set ComboBox if Configure Window is Open
+                    if (configure != null)
+                    {
+                        configure.textBoxLogConfig.Text = Configure.logPath;
+                    }
                 }
                 // Saved Settings
                 else
                 {
-                    logPath = Settings.Default["logPath"].ToString();
-                    textBoxLogConfig.Text = logPath;
+
+                    Configure.logPath = Settings.Default["logPath"].ToString();
+
+                    // Set ComboBox if Configure Window is Open
+                    if (configure != null)
+                    {
+                        configure.textBoxLogConfig.Text = Configure.logPath;
+                    }
                 }
             }
             catch
@@ -536,11 +665,6 @@ namespace Stellar
         // -----------------------------------------------
         private void comboBoxThemeConfig_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Get the Main Window, may require configure window's owner set in MainWindow.xaml.cs
-            //MainWindow mainwindow = this.Owner as MainWindow;
-
-            //Application.Current.MainWindow = Configure;
-
             // Black
             if ((string)comboBoxThemeConfig.SelectedItem == "Black") //not used
             {

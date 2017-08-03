@@ -131,15 +131,32 @@
     <Window.Background>
         <ImageBrush ImageSource="Resources/Images/Backgrounds/Checklist.jpg" Stretch="None"/>
     </Window.Background>
+    
     <Grid>
-        <Label x:Name="labelCoresToDownload" Content="Cores To Download" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="10,9,0,0" VerticalAlignment="Top" Foreground="White" Width="303"/>
-        
+
         <!-- ListView Cores To Download -->
-        <ListView x:Name="listViewUpdatedCores" HorizontalAlignment="Left" Height="338" Margin="11,40,0,0" VerticalAlignment="Top" Width="302" Background="Transparent" Foreground="White" BorderThickness="0"
-              SelectionMode="Multiple"
-              ItemsSource="{Binding}"
-              IsSynchronizedWithCurrentItem="True"
-              SelectionChanged="listViewUpdatedCores_SelectionChanged">
+        <Label 
+            Content="Cores To Download" 
+            HorizontalContentAlignment="Center" 
+            HorizontalAlignment="Left"
+            Margin="10,9,0,0" 
+            VerticalAlignment="Top"
+            Foreground="White" 
+            Width="303"/>
+        
+        <ListView x:Name="listViewUpdatedCores" 
+                    HorizontalAlignment="Left" 
+                    Height="338" 
+                    Margin="11,40,0,0"
+                    VerticalAlignment="Top" 
+                    Width="302" 
+                    Background="Transparent"
+                    Foreground="White"
+                    BorderThickness="0"
+                    SelectionMode="Multiple"
+                    ItemsSource="{Binding}"
+                    IsSynchronizedWithCurrentItem="True"
+                    SelectionChanged="listViewUpdatedCores_SelectionChanged">
             <ListView.Resources>
                 <Style TargetType="{x:Type GridViewColumnHeader}">
                     <Setter Property="Visibility" Value="Collapsed" />
@@ -241,11 +258,29 @@
             <TextBlock Text="Advanced" Margin="0,-1,0,0"/>
         </Button>
         
+        
         <!-- ListView PC Core Dates -->
-        <ListView x:Name="listBoxPcCoresNameDate" HorizontalAlignment="Left" Height="338" Margin="337,40,-363,0" VerticalAlignment="Top" Width="360" Background="Transparent" Foreground="White" BorderThickness="0"
-        	SelectionMode="Multiple"
-        	ItemsSource="{Binding}"
-        	IsSynchronizedWithCurrentItem="True">
+        <Label
+            Content="PC Core Dates"
+            HorizontalContentAlignment="Center" 
+            HorizontalAlignment="Left" 
+            Margin="365,9,-334,0"
+            VerticalAlignment="Top"
+            Foreground="White" 
+            Width="303"/>
+        
+        <ListView x:Name="listBoxPcCoresNameDate" 
+                HorizontalAlignment="Left"
+                Height="338"
+                Margin="337,40,-363,0" 
+                VerticalAlignment="Top" 
+                Width="360"
+                Background="Transparent" 
+                Foreground="White"
+                BorderThickness="0"
+                SelectionMode="Multiple"
+                ItemsSource="{Binding}"
+                IsSynchronizedWithCurrentItem="True">
             <ListView.Resources>
                 <Style TargetType="{x:Type GridViewColumnHeader}">
                     <Setter Property="Visibility" Value="Collapsed" />
@@ -320,11 +355,29 @@
             </ListView.View>
         </ListView>
         
+        
         <!-- ListView Buildbot Core Dates -->
-        <ListView x:Name="listBoxBuildbotCoresNameDate" HorizontalAlignment="Left" Height="338" Margin="721,40,-747,0" VerticalAlignment="Top" Width="360" Background="Transparent" Foreground="White" BorderThickness="0"
-        	SelectionMode="Multiple"
-        	ItemsSource="{Binding}"
-        	IsSynchronizedWithCurrentItem="True">
+        <Label
+            Content="Buildbot Core Dates" 
+            HorizontalContentAlignment="Center"
+            HorizontalAlignment="Left" 
+            Margin="749,9,-718,0" 
+            VerticalAlignment="Top" 
+            Foreground="White" 
+            Width="303"/>
+        
+        <ListView x:Name="listBoxBuildbotCoresNameDate" 
+                    HorizontalAlignment="Left" 
+                    Height="338" 
+                    Margin="721,40,-747,0" 
+                    VerticalAlignment="Top"
+                    Width="360" 
+                    Background="Transparent"
+                    Foreground="White" 
+                    BorderThickness="0"
+                    SelectionMode="Multiple"
+                    ItemsSource="{Binding}"
+                    IsSynchronizedWithCurrentItem="True">
             <ListView.Resources>
                 <Style TargetType="{x:Type GridViewColumnHeader}">
                     <Setter Property="Visibility" Value="Collapsed" />
@@ -397,8 +450,6 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <Label x:Name="labelPcCoreDates" Content="PC Core Dates" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="365,9,-334,0" VerticalAlignment="Top" Foreground="White" Width="303"/>
-        <Label x:Name="labelBuildbotCoreDates" Content="Buildbot Core Dates" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="749,9,-718,0" VerticalAlignment="Top" Foreground="White" Width="303"/>
-
+        
     </Grid>
 </Window>

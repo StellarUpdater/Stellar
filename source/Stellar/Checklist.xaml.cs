@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -45,46 +44,23 @@ namespace Stellar
         // Window Defaults
         // -----------------------------------------------
 
-        // Pass Data from Main Window to Checklist Window
-        ObservableCollection<string> CollectionUpdatedCoresName;
-        ObservableCollection<string> CollectionPcCoresNameDate;
-        ObservableCollection<string> CollectionBuildbotNameDate;
-
-        public Checklist(ObservableCollection<string> CollectionUpdatedCoresName, ObservableCollection<string> CollectionPcCoresNameDate, ObservableCollection<string> CollectionBuildbotNameDate) // Pass both Updated Cores Name & PC Name+Date Observable Collection to Checklist Window
+        public Checklist() // Pass both Updated Cores Name & PC Name+Date Observable Collection to Checklist Window
         {
             InitializeComponent();
 
-            // Pass Data
-            this.CollectionUpdatedCoresName = CollectionUpdatedCoresName;
-            this.CollectionPcCoresNameDate = CollectionPcCoresNameDate;
-            this.CollectionBuildbotNameDate = CollectionBuildbotNameDate;
-
-
             // Add to List View
-            //listBoxUpdatedCores.ItemsSource = CollectionUpdatedCoresName; //List Box
-            listViewUpdatedCores.ItemsSource = CollectionUpdatedCoresName;
+            listViewUpdatedCores.ItemsSource = Queue.CollectionUpdatedCoresName;
             // Select All
             listViewUpdatedCores.SelectAll();
 
-
             // Load the Name+Date Lists #################
             // List Box Pc Cores Name+Date (Advanced)
-            listBoxPcCoresNameDate.ItemsSource = CollectionPcCoresNameDate;
+            listBoxPcCoresNameDate.ItemsSource = Queue.CollectionPcCoresNameDate;
             listBoxPcCoresNameDate.SelectedIndex = -1; // Deselect All at Initialize
 
             // List Box Buildbot Cores Name+Date (Advanced)
-            listBoxBuildbotCoresNameDate.ItemsSource = CollectionBuildbotNameDate;
+            listBoxBuildbotCoresNameDate.ItemsSource = Queue.CollectionBuildbotNameDate;
             listBoxBuildbotCoresNameDate.SelectedIndex = -1; // Deselect All at Initialize
-
-
-            // Load Excluded Cores ListView Checkboxes from Settigns - NOT WORKING
-            //if (ListExcludedCores.Count != 0) //if list is not empty (will crash otherwise)
-            //{
-            //    //listViewUpdatedCores = Properties.Settings.Default.excludedCores.Cast<string>().ToList();
-            //}
-
-            // Clear List to prevent doubling up
-            //CollectionUpdatedCoresName.Clear();
         }
 
         // -----------------------------------------------
@@ -94,8 +70,8 @@ namespace Stellar
         {
             // Clear Lists to prevent doubling up
             // Once Main List has been cleared, you can't get it back
-            CollectionPcCoresNameDate.Clear();
-            CollectionBuildbotNameDate.Clear();
+            Queue.CollectionPcCoresNameDate.Clear();
+            Queue.CollectionBuildbotNameDate.Clear();
         }
 
         // -----------------------------------------------

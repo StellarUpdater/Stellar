@@ -27,9 +27,10 @@
         xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
         xmlns:my="clr-namespace:Stellar"
         x:Class="Stellar.MainWindow"
-        Title="Stellar ~ RetroArch Nightly Updater (0.8.3-beta)" 
+        Title="Stellar ~ RetroArch Nightly Updater (0.8.4-beta)" 
         Height="225" Width="500"
-        ResizeMode="CanMinimize" Icon="logo.ico"
+        ResizeMode="CanMinimize" 
+        Icon="logo.ico"
         UseLayoutRounding="True"
         WindowStartupLocation="CenterScreen"
         Closing="Window_Closing" 
@@ -586,48 +587,226 @@
         </Grid.Background>
 
         <!-- Location TextBox -->
-        <TextBox x:Name="textBoxLocation" HorizontalAlignment="Left" Height="20" Margin="77,15,0,0" VerticalAlignment="Top" Width="369" Background="Black" Foreground="White" PreviewMouseDown="textBoxLocation_PreviewMouseDown" TextChanged="textBoxLocation_TextChanged" ToolTip="Click and Select your RetroArch Folder Path." Style="{DynamicResource TextBoxStyleCustom}"/>
-        <Label x:Name="labelLocation" Content="RA Folder" HorizontalAlignment="Left" Height="24" Margin="8,11,0,0" VerticalAlignment="Top" Width="65" Foreground="White" PreviewMouseDown="labelLocation_PreviewMouseDown" ToolTip="Click and Select your RetroArch Folder Path." />
+        <Label x:Name="labelLocation" 
+               Content="RA Folder"
+               HorizontalAlignment="Left"
+               Height="24"
+               Margin="8,11,0,0"
+               VerticalAlignment="Top"
+               Width="65" 
+               Foreground="White" 
+               PreviewMouseDown="labelLocation_PreviewMouseDown"
+               ToolTip="Click and Select your RetroArch Folder Path." />
+        
+        <TextBox x:Name="textBoxLocation"
+                 Style="{DynamicResource TextBoxStyleCustom}"
+                 HorizontalAlignment="Left"
+                 Height="20"
+                 Margin="77,15,0,0" 
+                 VerticalAlignment="Top"
+                 Width="369" 
+                 Background="Black" 
+                 Foreground="White" 
+                 PreviewMouseDown="textBoxLocation_PreviewMouseDown" 
+                 TextChanged="textBoxLocation_TextChanged" 
+                 ToolTip="Click and Select your RetroArch Folder Path." />
+        
 
         <!-- Download TextBox -->
-        <TextBox x:Name="textBoxDownload" HorizontalAlignment="Left" Height="20" Margin="77,50,0,0" VerticalAlignment="Top" Width="369" Foreground="White" Background="Black" IsReadOnly="True" IsUndoEnabled="False" Cursor="" ToolTip="File to be fetched." Style="{DynamicResource TextBoxStyleCustom}"/>
-        <Label x:Name="labelDownload" Content="Download" HorizontalAlignment="Left" Height="24" Margin="8,46,0,0" VerticalAlignment="Top" Width="65" Foreground="White" ToolTip="File to be fetched."/>
+        <Label x:Name="labelDownload" 
+               Content="Download" 
+               HorizontalAlignment="Left" 
+               Height="24"
+               Margin="8,46,0,0" 
+               VerticalAlignment="Top" 
+               Width="65"
+               Foreground="White" 
+               ToolTip="File to be fetched."/>
+        
+        <TextBox x:Name="textBoxDownload" 
+                 Style="{DynamicResource TextBoxStyleCustom}"
+                 HorizontalAlignment="Left"
+                 Height="20" 
+                 Margin="77,50,0,0"
+                 VerticalAlignment="Top"
+                 Width="369" 
+                 Foreground="White" 
+                 Background="Black"
+                 IsReadOnly="True"
+                 IsUndoEnabled="False" 
+                 Cursor="" 
+                 ToolTip="File to be fetched." />
+        
 
         <!-- Location Open Button -->
-        <Button x:Name="buttonRetroArchExplorer" HorizontalAlignment="Left" Margin="451,13,0,0" VerticalAlignment="Top" Width="20" Foreground="White" Background="Transparent" BorderThickness="0" Height="23" Cursor="Hand" Click="buttonRetroArchExplorer_Click" Style="{DynamicResource ButtonStyleQuickBrowse}" ToolTip="Open Folder">
-            <Image Source="Resources/Images/Buttons/folder.png" Width="11" Height="7" Stretch="Fill" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="1,0,0,0"/>
+        <Button x:Name="buttonRetroArchExplorer" 
+                Style="{DynamicResource ButtonStyleQuickBrowse}"
+                HorizontalAlignment="Left"
+                Margin="451,13,0,0"
+                VerticalAlignment="Top" 
+                Width="20" 
+                Foreground="White"
+                Background="Transparent"
+                BorderThickness="0" 
+                Height="23" 
+                Cursor="Hand" 
+                Click="buttonRetroArchExplorer_Click"
+                ToolTip="Open Folder">
+            <Image Source="Resources/Images/Buttons/folder.png"
+                   Width="11" 
+                   Height="7" 
+                   Stretch="Fill"
+                   HorizontalAlignment="Center" 
+                   VerticalAlignment="Center" 
+                   Margin="1,0,0,0"/>
         </Button>
 
         <!-- Buildbot Web Directory Button -->
-        <Button x:Name="buttonBuildBotDir" HorizontalAlignment="Left" Margin="451,48,0,0" VerticalAlignment="Top" Width="20" Foreground="White" Background="Transparent" BorderThickness="0" Height="23" Cursor="Hand" Click="buttonBuildBotDir_Click">
-            <Image Source="Resources/Images/Buttons/webdir.png" Width="11" Height="11" Stretch="Fill" HorizontalAlignment="Center" VerticalAlignment="Center" ToolTip="Open Buildbot Web Directory" Margin="1,0,0,0" />
+        <Button x:Name="buttonBuildBotDir" 
+                HorizontalAlignment="Left"
+                Margin="451,48,0,0" 
+                VerticalAlignment="Top"
+                Width="20" 
+                Foreground="White" 
+                Background="Transparent"
+                BorderThickness="0" 
+                Height="23" 
+                Cursor="Hand" 
+                Click="buttonBuildBotDir_Click">
+            <Image Source="Resources/Images/Buttons/webdir.png"
+                   Width="11" 
+                   Height="11" 
+                   Stretch="Fill" 
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center" 
+                   ToolTip="Open Buildbot Web Directory" 
+                   Margin="1,0,0,0" />
         </Button>
 
+        <!-- Progres Info -->
+        <Label x:Name="labelProgressInfo" 
+               Content="" 
+               HorizontalContentAlignment="Center"
+               HorizontalAlignment="Left" 
+               Height="26" 
+               Margin="12,76,0,0" 
+               VerticalAlignment="Top" 
+               Width="461" 
+               Foreground="White"/>
+
         <!-- Progres Bar -->
-        <ProgressBar x:Name="progressBar" HorizontalAlignment="Left" Height="23" Margin="12,104,0,0" VerticalAlignment="Top" Width="460" ToolTip="Download Progress"/>
+        <ProgressBar x:Name="progressBar" 
+                     HorizontalAlignment="Left" 
+                     Height="23" 
+                     Margin="12,104,0,0" 
+                     VerticalAlignment="Top" 
+                     Width="460" 
+                     ToolTip="Download Progress"/>
 
         <!-- Info Button -->
-        <Button x:Name="buttonInfo" HorizontalAlignment="Left" Margin="12,151,0,0" VerticalAlignment="Top" Width="26" Height="23" Foreground="White" Background="Black" BorderBrush="White" Cursor="Hand" Click="buttonInfo_Click" ToolTip="Info" Style="{DynamicResource ButtonStyleCustom}">
-            <Image Source="Resources/Images/Buttons/info.png" Width="5" Height="10" Stretch="Fill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <Button x:Name="buttonInfo" 
+                Style="{DynamicResource ButtonStyleCustom}"
+                HorizontalAlignment="Left"
+                Margin="12,151,0,0"
+                VerticalAlignment="Top"
+                Width="26" 
+                Height="23"
+                Foreground="White"
+                Background="Black"
+                BorderBrush="White"
+                Cursor="Hand"
+                Click="buttonInfo_Click"
+                ToolTip="Info" >
+            <Image Source="Resources/Images/Buttons/info.png" 
+                   Width="5" 
+                   Height="10" 
+                   Stretch="Fill" 
+                   HorizontalAlignment="Center" 
+                   VerticalAlignment="Center"/>
         </Button>
 
         <!-- Configure Button -->
-        <Button x:Name="buttonConfigure" HorizontalAlignment="Left" Margin="43,151,0,0" VerticalAlignment="Top" Width="26" Height="23" Foreground="White" Background="Black" BorderBrush="White" Cursor="Hand" RenderTransformOrigin="2.4,0.435" ToolTip="Configure Settings" Click="buttonConfigure_Click" Style="{DynamicResource ButtonStyleCustom}">
-            <Image Source="Resources/Images/Buttons/configuregear.png" Width="11" Height="11" Stretch="Fill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <Button x:Name="buttonConfigure"
+                Style="{DynamicResource ButtonStyleCustom}"
+                HorizontalAlignment="Left"
+                Margin="43,151,0,0" 
+                VerticalAlignment="Top" 
+                Width="26"
+                Height="23"
+                Foreground="White" 
+                Background="Black" 
+                BorderBrush="White" 
+                Cursor="Hand"
+                RenderTransformOrigin="2.4,0.435"
+                ToolTip="Configure Settings" 
+                Click="buttonConfigure_Click" >
+            <Image Source="Resources/Images/Buttons/configuregear.png"
+                   Width="11" 
+                   Height="11" 
+                   Stretch="Fill" 
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"/>
         </Button>
 
         <!-- Stellar Website Button -->
-        <Button x:Name="buttonStellarWebsite" HorizontalAlignment="Left" Margin="74,151,0,0" VerticalAlignment="Top" Width="26" Height="23" Foreground="White" Background="Black" BorderBrush="White" Cursor="Hand" RenderTransformOrigin="2.4,0.435" Click="buttonStellarWebsite_Click" ToolTip="Stellar Website" Style="{DynamicResource ButtonStyleCustom}">
-            <Image Source="Resources/Images/Buttons/web.png" Width="11" Height="11" Stretch="Fill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <Button x:Name="buttonStellarWebsite"
+                Style="{DynamicResource ButtonStyleCustom}"
+                HorizontalAlignment="Left" 
+                Margin="74,151,0,0"
+                VerticalAlignment="Top"
+                Width="26" 
+                Height="23" 
+                Foreground="White" 
+                Background="Black" 
+                BorderBrush="White" 
+                Cursor="Hand" 
+                RenderTransformOrigin="2.4,0.435" 
+                Click="buttonStellarWebsite_Click" 
+                ToolTip="Stellar Website" >
+            <Image Source="Resources/Images/Buttons/web.png" 
+                   Width="11" 
+                   Height="11"
+                   Stretch="Fill"
+                   HorizontalAlignment="Center" 
+                   VerticalAlignment="Center"/>
         </Button>
 
         <!-- Libretro Website Button -->
-        <Button x:Name="buttonRetroArchWebsite" HorizontalAlignment="Left" Margin="105,151,0,0" VerticalAlignment="Top" Width="26" Height="23" Foreground="White" Background="Black" BorderBrush="White" Cursor="Hand" RenderTransformOrigin="2.4,0.435" Click="buttonRetroArchWebsite_Click" ToolTip="RetroArch Website" Style="{DynamicResource ButtonStyleCustom}">
-            <Image Source="Resources/Images/Buttons/libretro.png" Width="11" Height="11" Stretch="Fill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <Button x:Name="buttonRetroArchWebsite" 
+                Style="{DynamicResource ButtonStyleCustom}"
+                HorizontalAlignment="Left"
+                Margin="105,151,0,0"
+                VerticalAlignment="Top"
+                Width="26"
+                Height="23"
+                Foreground="White" 
+                Background="Black"
+                BorderBrush="White" 
+                Cursor="Hand"
+                RenderTransformOrigin="2.4,0.435" 
+                Click="buttonRetroArchWebsite_Click"
+                ToolTip="RetroArch Website" >
+            <Image Source="Resources/Images/Buttons/libretro.png" 
+                   Width="11" 
+                   Height="11" 
+                   Stretch="Fill"
+                   HorizontalAlignment="Center" 
+                   VerticalAlignment="Center"/>
         </Button>
 
         <!-- Download ComboBox -->
-        <ComboBox x:Name="comboBoxDownload" HorizontalAlignment="Left" Margin="147,151,0,0" VerticalAlignment="Top" Width="85" Height="23" Background="Black" BorderBrush="White" SelectionChanged="comboBoxDownload_SelectionChanged" ToolTip="Select Download" ItemContainerStyle="{DynamicResource ComboBoxItemCustom}" Foreground="White" >
+        <ComboBox x:Name="comboBoxDownload"
+                  ItemContainerStyle="{DynamicResource ComboBoxItemCustom}" 
+                  Foreground="White"
+                  HorizontalAlignment="Left" 
+                  Margin="147,151,0,0"
+                  VerticalAlignment="Top" 
+                  Width="85" 
+                  Height="23" 
+                  Background="Black"
+                  BorderBrush="White" 
+                  SelectionChanged="comboBoxDownload_SelectionChanged"
+                  ToolTip="Select Download"  >
             <System:String>New Install</System:String>
             <System:String>Upgrade</System:String>
             <System:String>RetroArch</System:String>
@@ -637,22 +816,62 @@
             <System:String>Redist</System:String>
         </ComboBox>
 
-        <!-- Architecture ComboBox -->
-        <ComboBox x:Name="comboBoxArchitecture" HorizontalAlignment="Left" Margin="237,151,0,0" VerticalAlignment="Top" Width="85" Height="23" Background="Black" BorderBrush="White" SelectionChanged="comboBoxArchitecture_SelectionChanged" ToolTip="Architecture Type" ItemContainerStyle="{DynamicResource ComboBoxItemCustom}" Foreground="White">
+        <!-- Architecture ComboBox -->  
+        <ComboBox x:Name="comboBoxArchitecture" 
+                  ItemContainerStyle="{DynamicResource ComboBoxItemCustom}"
+                  HorizontalAlignment="Left"
+                  Margin="237,151,0,0" 
+                  VerticalAlignment="Top" 
+                  Width="85"
+                  Height="23"
+                  Background="Black"
+                  BorderBrush="White"
+                  SelectionChanged="comboBoxArchitecture_SelectionChanged" 
+                  ToolTip="Architecture Type"
+                  Foreground="White">
             <System:String>32-bit</System:String>
             <System:String>64-bit</System:String>
             <System:String>64 w32</System:String>
         </ComboBox>
-        <Label x:Name="labelProgressInfo" Content="" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Height="26" Margin="12,76,0,0" VerticalAlignment="Top" Width="461" Foreground="White"/>
 
         <!-- Check Button -->
-        <Button x:Name="buttonCheck" Padding="0" HorizontalAlignment="Left" Margin="327,151,0,0" VerticalAlignment="Top" Width="70" Foreground="White" Background="Black" Height="23" BorderBrush="White" Cursor="Hand" Click="buttonCheck_Click" ToolTip="Check if download is available." Style="{DynamicResource ButtonStyleCustom}">
-            <TextBlock Text="Check" Margin="0,-1,0,0"/>
+        <Button x:Name="buttonCheck"
+                Style="{DynamicResource ButtonStyleCustom}"
+                Padding="0" 
+                HorizontalAlignment="Left"
+                Margin="327,151,0,0" 
+                VerticalAlignment="Top"
+                Width="70" 
+                Foreground="White" 
+                Background="Black"
+                Height="23" 
+                BorderBrush="White" 
+                Cursor="Hand" 
+                Click="buttonCheck_Click" 
+                ToolTip="Check if download is available." >
+            <TextBlock 
+                Text="Check"
+                Margin="0,-1,0,0"/>
         </Button>
 
         <!-- Update Button -->
-        <Button x:Name="buttonUpdate" Padding="0" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="402,151,0,0" VerticalAlignment="Top" Width="70" Foreground="White" Background="Black" Height="23" BorderBrush="White" Cursor="Hand" Click="buttonUpdate_Click" Style="{DynamicResource ButtonStyleCustom}">
-            <TextBlock x:Name="buttonUpdateTextBlock" Text="Update" Margin="0,-1,0,0"/>
+        <Button x:Name="buttonUpdate"
+                Style="{DynamicResource ButtonStyleCustom}"
+                Padding="0" 
+                VerticalContentAlignment="Center" 
+                HorizontalAlignment="Left" 
+                Margin="402,151,0,0" 
+                VerticalAlignment="Top"
+                Width="70" 
+                Foreground="White" 
+                Background="Black" 
+                Height="23" 
+                BorderBrush="White" 
+                Cursor="Hand" 
+                Click="buttonUpdate_Click" >
+            <TextBlock x:Name="buttonUpdateTextBlock"
+                       Text="Update" 
+                       Margin="0,-1,0,0"/>
         </Button>
 
     </Grid>
