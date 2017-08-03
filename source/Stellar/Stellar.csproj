@@ -81,6 +81,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ThemeChaos.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="ThemeFlamingStar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -132,6 +136,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ThemeStarDust.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Parse.cs" />
@@ -176,7 +184,9 @@
     <Resource Include="Resources\Images\Backgrounds\SpiralGalaxy.jpg" />
     <Resource Include="Resources\Images\Backgrounds\SpiralNebula.jpg" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\Images\Backgrounds\Chaos.jpg" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\Buttons\configuregear.png" />
     <Resource Include="Resources\Images\Buttons\folder.png" />
@@ -191,6 +201,9 @@
     <Resource Include="Resources\Images\Icons\checklist.ico" />
     <Resource Include="Resources\Images\Icons\configure.ico" />
     <Resource Include="Resources\Images\Icons\logo.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\Backgrounds\StarDust.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

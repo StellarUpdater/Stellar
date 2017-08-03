@@ -44,9 +44,14 @@ namespace Stellar
         // Window Defaults
         // -----------------------------------------------
 
-        public Checklist() // Pass both Updated Cores Name & PC Name+Date Observable Collection to Checklist Window
+        public Checklist()
         {
             InitializeComponent();
+
+            this.MinWidth = 340;
+            this.MinHeight = 470;
+            this.MaxWidth = 1117;
+            this.MaxHeight = 470;
 
             // Add to List View
             listViewUpdatedCores.ItemsSource = Queue.CollectionUpdatedCoresName;

@@ -225,7 +225,6 @@ namespace Stellar
                 // Parse the index-extended cores text file from parseUrl
                 // -------------------------
 
-                //string buildbotCoresPage = Download.wc.DownloadString(parseCoresUrl); // HTML Page
                 string buildbotCoresIndex = Download.wc.DownloadString(indexextendedUrl); // index-extended cores text file
 
                 // Check if index-extended failed or is empty
@@ -234,10 +233,13 @@ namespace Stellar
                     System.Windows.MessageBox.Show("Error: Cores list is empty or failed to donwload index-extended.");
                 }
 
-                // Split the index-extended into 3 Lists, BuildbotCoreDate, BuildbotID, BuildbotCoresName
-                //
-                string[] lines = buildbotCoresIndex.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
+                // Split the index-extended by LineBreak Array
+                // Sort the Array by Core Name (3rd word in Line)
+                var lines = buildbotCoresIndex.Split("\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
+                    .OrderBy(s => s.Split(' ')[2])
+                    .ToArray();
 
+                // Split the index-extended into 3 Lists, BuildbotCoreDate, BuildbotID, BuildbotCoresName
                 foreach (string line in lines)
                 {
                     string[] arr = line.Split(' ');
@@ -278,10 +280,6 @@ namespace Stellar
                 {
                     Queue.ListBuildbotCoresNameDate[i] = Queue.ListBuildbotCoresName[i] + " " + Queue.ListBuildbotCoresDate[i];
                 }
-
-                // Sort
-                Queue.ListBuildbotCoresNameDate.Sort();
-
             }
             catch
             {

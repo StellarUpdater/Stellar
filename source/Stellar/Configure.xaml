@@ -23,7 +23,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:System="clr-namespace:System;assembly=mscorlib"
         xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero" 
-        x:Name="windowConfigure" x:Class="Stellar.Configure"
+        x:Name="windowConfigure" 
+        x:Class="Stellar.Configure"
         Title="Configure Settings" 
         Height="200" Width="450" 
         Icon="logo.ico"
@@ -752,6 +753,8 @@
             <System:String>Lagoon</System:String>
             <System:String>Solar Flare</System:String>
             <System:String>Dark Nebula</System:String>
+            <System:String>Star Dust</System:String>
+            <System:String>Chaos</System:String>
         </ComboBox>
 
         <!-- Clear Saved Settigns Button -->

@@ -33,7 +33,7 @@
         <!--Background-->
         <Setter Property="Background">
             <Setter.Value>
-                <ImageBrush ImageSource="Resources/Images/Backgrounds/SolarFlare.jpg" Stretch="UniformToFill" AlignmentX="Center" AlignmentY="Center"/>
+                <ImageBrush ImageSource="Resources/Images/Backgrounds/SolarFlare.jpg" Stretch="None" AlignmentX="Center" AlignmentY="Center"/>
             </Setter.Value>
         </Setter>
         <Setter Property="Template">

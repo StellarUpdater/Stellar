@@ -75,7 +75,7 @@ namespace Stellar
                 if (ListPcCoresName.Contains(ListBuildbotCoresName[i]))
                 {
                     // If Buildbot Core Modified Date greater than > PC Core Creation Date
-                    if (DateTime.Parse(ListBuildbotCoresDate[i]) >= DateTime.Parse(ListPcCoresDateModifiedFormatted[i]))
+                    if (DateTime.Parse(ListBuildbotCoresDate[i]) > DateTime.Parse(ListPcCoresDateModifiedFormatted[i]))
                     {
                         // Add Buildbot Core Name to Update List
                         ListUpdatedCoresName.Add(ListBuildbotCoresName[i]);

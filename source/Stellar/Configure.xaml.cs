@@ -34,8 +34,6 @@ namespace Stellar
     /// </summary>
     public partial class Configure : Window
     {
-        private MainWindow mainwindow;
-
         public static string sevenZipPath; // 7-Zip Config Settings Path
         public static string winRARPath; // WinRAR Config Settings Path
 
@@ -44,16 +42,10 @@ namespace Stellar
 
         public static string theme; // Background Theme Image
 
+
         public Configure()
         {
-            // Configure, dont remove
-        }
-
-        public Configure(MainWindow mainwindow) // Pass Constructor from MainWindow
-        {
             InitializeComponent();
-
-            this.mainwindow = mainwindow;
 
             this.MinWidth = 450;
             this.MinHeight = 200;
@@ -798,6 +790,36 @@ namespace Stellar
 
                 // Image Credit
                 labelTheme.Content = "NASA, Rho Ophiuchi";
+            }
+            // Star Dust
+            else if ((string)comboBoxThemeConfig.SelectedItem == "Star Dust")
+            {
+                theme = "StarDust";
+
+                // Change Theme Resource
+                App.Current.Resources.MergedDictionaries.Clear();
+                App.Current.Resources.MergedDictionaries.Add(new ResourceDictionary()
+                {
+                    Source = new Uri("Theme" + theme + ".xaml", UriKind.RelativeOrAbsolute)
+                });
+
+                // Image Credit
+                labelTheme.Content = "NASA, N159";
+            }
+            // Chaos
+            else if ((string)comboBoxThemeConfig.SelectedItem == "Chaos")
+            {
+                theme = "Chaos";
+
+                // Change Theme Resource
+                App.Current.Resources.MergedDictionaries.Clear();
+                App.Current.Resources.MergedDictionaries.Add(new ResourceDictionary()
+                {
+                    Source = new Uri("Theme" + theme + ".xaml", UriKind.RelativeOrAbsolute)
+                });
+
+                // Image Credit
+                labelTheme.Content = "NASA, NGC 6357";
             }
 
             // -------------------------

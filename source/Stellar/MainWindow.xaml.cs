@@ -212,6 +212,12 @@ namespace Stellar
                 Queue.ListBuildbotCoresDate.TrimExcess();
             }
 
+            if (Queue.ListBuildbotID != null)
+            {
+                Queue.ListBuildbotID.Clear();
+                Queue.ListBuildbotID.TrimExcess();
+            }
+
             if (Queue.ListUpdatedCoresName != null)
             {
                 Queue.ListUpdatedCoresName.Clear();
@@ -284,7 +290,7 @@ namespace Stellar
         // -----------------------------------------------
         private void buttonInfo_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.MessageBox.Show("RetroArch Nightly Updater (Unofficial) \nby wyzrd \n\nNew versions at https://stellarupdater.github.io. \n\nPlease install 7-Zip for this program to properly extract files. \nhttp://www.7-zip.org \n\nThis software is licensed under GNU GPLv3. \nSource code is included in the archive with this executable. \n\nImage Credit: \nESO/José Francisco (josefrancisco.org), Milky Way \nESO, NGC 1232, Galaxy \nNASA, IC 405 Flaming Star \nNASA, NGC 5189, Spiral Nebula \nNASA, M100, Galaxy \nNASA, IC 405, Lagoon \nNASA, Solar Flare \nNASA, NGC 2818 \nNASA, Rho Ophiuchi \n\nThis software comes with no warranty, express or implied, and the author makes no representation of warranties. The author claims no responsibility for damages resulting from any use or misuse of the software.");
+            System.Windows.MessageBox.Show("RetroArch Nightly Updater (Unofficial) \nby wyzrd \n\nNew versions at https://stellarupdater.github.io. \n\nPlease install 7-Zip for this program to properly extract files. \nhttp://www.7-zip.org \n\nThis software is licensed under GNU GPLv3. \nSource code is included in the archive with this executable. \n\nImage Credit: \nESO/José Francisco (josefrancisco.org), Milky Way \nESO, NGC 1232, Galaxy \nNASA, IC 405 Flaming Star \nNASA, NGC 5189, Spiral Nebula \nNASA, M100, Galaxy \nNASA, IC 405, Lagoon \nNASA, Solar Flare \nNASA, Rho Ophiuchi, Dark Nebula \nNASA, N159, Star Dust \nNASA, NGC 6357, Chaos \n\nThis software comes with no warranty, express or implied, and the author makes no representation of warranties. The author claims no responsibility for damages resulting from any use or misuse of the software.");
         }
 
         // -----------------------------------------------
@@ -292,9 +298,8 @@ namespace Stellar
         // -----------------------------------------------
         private void buttonConfigure_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow mainwindow = this;
             // Open Configure Window
-            configure = new Configure(mainwindow);
+            configure = new Configure();
             configure.Left = this.Left + 25;
             configure.Top = this.Top - 205;
             configure.Owner = Window.GetWindow(this);
@@ -575,11 +580,11 @@ namespace Stellar
                     Queue.CollectionBuildbotNameDate = new ObservableCollection<string>(Queue.ListBuildbotCoresNameDate);
 
 
-                    // Pass list into the constructor for Checklist Window
-                    //
-                    checklist = new Checklist(/*Queue.CollectionUpdatedCoresName, CollectionPcCoresNameDate, CollectionBuildbotNameDate*/);
+                    // Open Checklist Window
+                    checklist = new Checklist();
                     checklist.Owner = Window.GetWindow(this);
                     checklist.ShowDialog();
+
 
                     // -------------------------
                     // Clear Name+Date Lists to prevent doubling up on next pass
@@ -588,6 +593,12 @@ namespace Stellar
                     {
                         Queue.ListPcCoresNameDate.Clear();
                         Queue.ListPcCoresNameDate.TrimExcess();
+                    }
+
+                    if (Queue.ListBuildbotID != null)
+                    {
+                        Queue.ListBuildbotID.Clear();
+                        Queue.ListBuildbotID.TrimExcess();
                     }
 
                     if (Queue.ListBuildbotCoresNameDate != null)

@@ -831,7 +831,7 @@
                   Foreground="White">
             <System:String>32-bit</System:String>
             <System:String>64-bit</System:String>
-            <System:String>64 w32</System:String>
+            <!--<System:String>64 w32</System:String>-->
         </ComboBox>
 
         <!-- Check Button -->
