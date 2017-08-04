@@ -1,0 +1,63 @@
+﻿<Window x:Class="Stellar.Debugger"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Stellar"
+        mc:Ignorable="d"
+        Icon="logo.ico"
+        WindowStartupLocation="CenterScreen"
+        Title="Debug" 
+        Height="622" Width="1378">
+    <Grid>
+
+        <!-- PC -->
+        <Label Content="PC Name" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="202"/>
+        <Label Content="PC Date" HorizontalAlignment="Left" Margin="295,10,0,0" VerticalAlignment="Top" Width="202"/>
+        <Label Content="PC Name+Date" HorizontalAlignment="Left" Margin="502,7,0,0" VerticalAlignment="Top" Width="202"/>
+        <Label Content="PC Unknown" HorizontalAlignment="Left" Margin="787,7,0,0" VerticalAlignment="Top" Width="202"/>
+
+        <Label x:Name="labelPcNameCount" Content="" HorizontalAlignment="Left" Margin="222,10,0,0" VerticalAlignment="Top" Width="68" HorizontalContentAlignment="Right"/>
+        <Label x:Name="labelPcDateCount" Content="" HorizontalAlignment="Left" Margin="429,10,0,0" VerticalAlignment="Top" Width="68" HorizontalContentAlignment="Right"/>
+        <Label x:Name="labelPcNameDateCount" Content="" HorizontalAlignment="Left" Margin="714,7,0,0" VerticalAlignment="Top" Width="68" HorizontalContentAlignment="Right"/>
+        <Label x:Name="labelPcUnknownCount" Content="" HorizontalAlignment="Left" Margin="999,10,0,0" VerticalAlignment="Top" Width="68" HorizontalContentAlignment="Right"/>
+        
+        <ListBox x:Name="listBoxPcName" HorizontalAlignment="Left" Height="225" Margin="10,38,0,0" VerticalAlignment="Top" Width="280" FontSize="11"/>
+        <ListBox x:Name="listBoxPcDate"  HorizontalAlignment="Left" Height="225" Margin="295,38,0,0" VerticalAlignment="Top" Width="202" FontSize="11"/>
+        <ListBox x:Name="listBoxPcNameDate"  HorizontalAlignment="Left" Height="225" Margin="502,38,0,0" VerticalAlignment="Top" Width="280" FontSize="11"/>
+        <ListBox x:Name="listBoxPcUnknown"  HorizontalAlignment="Left" Height="225" Margin="787,38,0,0" VerticalAlignment="Top" Width="280" FontSize="11"/>
+
+
+        <!-- Buildbot -->
+        <Label Content="Buildbot Name" HorizontalAlignment="Left" Margin="10,272,0,0" VerticalAlignment="Top" Width="202"/>
+        <Label Content="Buildbot Date" HorizontalAlignment="Left" Margin="295,272,0,0" VerticalAlignment="Top" Width="202"/>
+        <Label Content="Buildbot Name+Date" HorizontalAlignment="Left" Margin="502,269,0,0" VerticalAlignment="Top" Width="207"/>
+        <Label Content="Buildbot New" HorizontalAlignment="Left" Margin="787,269,0,0" VerticalAlignment="Top" Width="207"/>
+        
+        <Label x:Name="labelBuildbotNameCount" Content="" HorizontalAlignment="Left" Margin="217,272,0,0" VerticalAlignment="Top" Width="68" HorizontalContentAlignment="Right"/>
+        <Label x:Name="labelBuildbotDateCount" Content="" HorizontalAlignment="Left" Margin="429,272,0,0" VerticalAlignment="Top" Width="68" HorizontalContentAlignment="Right"/>
+        <Label x:Name="labelBuildbotNameDateCount" Content="" HorizontalAlignment="Left" Margin="714,269,0,0" VerticalAlignment="Top" Width="68" HorizontalContentAlignment="Right"/>
+        <Label x:Name="labelBuildbotNewCount" Content="" HorizontalAlignment="Left" Margin="999,269,0,0" VerticalAlignment="Top" Width="68" HorizontalContentAlignment="Right"/>
+        
+        <ListBox x:Name="listBoxBuildbotName" HorizontalAlignment="Left" Height="225" Margin="10,300,0,0" VerticalAlignment="Top" Width="280" FontSize="11"/>
+        <ListBox x:Name="listBoxBuildbotDate"  HorizontalAlignment="Left" Height="225" Margin="295,300,0,0" VerticalAlignment="Top" Width="202" FontSize="11"/>
+        <ListBox x:Name="listBoxBuildbotNameDate"  HorizontalAlignment="Left" Height="225" Margin="502,300,0,0" VerticalAlignment="Top" Width="280" FontSize="11"/>
+        <ListBox x:Name="listBoxBuildbotNew"  HorizontalAlignment="Left" Height="225" Margin="787,300,0,0" VerticalAlignment="Top" Width="280" FontSize="11"/>
+
+
+        <!-- Update / Excluded -->
+        <Label Content="Update" HorizontalAlignment="Left" Margin="1072,269,0,0" VerticalAlignment="Top" Width="206" />
+        <Label Content="Excluded" HorizontalAlignment="Left" Margin="1072,7,0,0" VerticalAlignment="Top" Width="202" />
+
+        <Label x:Name="labelExcludedCount" Content="" HorizontalAlignment="Left" Margin="1283,7,0,0" VerticalAlignment="Top" Width="68" HorizontalContentAlignment="Right"/>
+        <Label x:Name="labelUpdateCount" Content="" HorizontalAlignment="Left" Margin="1283,269,0,0" VerticalAlignment="Top" Width="68" HorizontalContentAlignment="Right"/>
+
+        <ListBox x:Name="listBoxExcluded"  HorizontalAlignment="Left" Height="225" Margin="1072,38,0,0" VerticalAlignment="Top" Width="280" FontSize="11"/>
+        <ListBox x:Name="listBoxUpdate"  HorizontalAlignment="Left" Height="225" Margin="1072,300,0,0" VerticalAlignment="Top" Width="280" FontSize="11"/>
+
+        
+        <!-- Test Button -->
+        <Button x:Name="btnTest" Content="Test" HorizontalAlignment="Left" Margin="646,544,0,0" VerticalAlignment="Top" Width="75" Click="btnTest_Click"/>
+
+    </Grid>
+</Window>

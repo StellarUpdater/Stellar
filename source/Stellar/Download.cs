@@ -374,10 +374,10 @@ namespace Stellar
 
 
             // -------------------------
-            // Excluded
+            // Rejected
             // -------------------------
-            // Remove Excluded Cores from the Update List
-            Queue.ListUpdatedCoresName = Queue.ListUpdatedCoresName.Except(Checklist.ListExcludedCores).ToList();
+            // Remove Rejected Cores from the Update List
+            Queue.ListUpdatedCoresName = Queue.ListUpdatedCoresName.Except(Queue.ListRejectedCores).ToList();
 
             // -------------------------
             // Download

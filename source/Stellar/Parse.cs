@@ -60,14 +60,13 @@ namespace Stellar
                 // Add Core Modified Dates to List
                 // Extracts original File Modified Date when overwriting
                 //
-                Queue.ListPcCoresDateModified = Directory.GetFiles(Paths.coresPath, "*_libretro.dll") //match ending of a core name
-                    .Select(p => File.GetLastWriteTime(p))
-                    .Select(p => new DateTime(p.Year, p.Month, p.Day))
-                    .ToList();
+                Queue.ListPcCoresDate = Directory.GetFiles(Paths.coresPath, "*_libretro.dll") //match ending of a core name
+                        .Select(p => File.GetLastWriteTime(p)
+                        .ToString("yyyy-MM-dd"))
+                        .ToList();
             }
             catch
             {
-                //System.Windows.MessageBox.Show("Error.");
                 MainWindow.ready = 0;
             }
 
@@ -78,20 +77,71 @@ namespace Stellar
                 MainWindow.ready = 0;
             }
 
-            // Convert Core Dates to String to allow Date Formatting yyyy-MM-dd HH:mm Military Time
-            Queue.ListPcCoresDateModifiedFormatted = Queue.ListPcCoresDateModified.ConvertAll<string>(x => x.ToString("yyyy-MM-dd")); //Keep Here
-
 
             // -------------------------
             // PC Cores Join Name + Date List
             // -------------------------
-            // Convert Core Dates to String to allow Date Formatting yyyy-MM-dd HH:mm Military Time
             // Join Lists PC Name + PC Date (Formatted)
             for (int i = 0; i < Queue.ListPcCoresName.Count; i++)
             {
-                Queue.ListPcCoresNameDate.Add(Queue.ListPcCoresName[i] + " " + Queue.ListPcCoresDateModifiedFormatted[i]);
+                Queue.ListPcCoresNameDate.Add(Queue.ListPcCoresName[i] + " " + Queue.ListPcCoresDate[i]);
             }
 
+
+            // -------------------------
+            // Sort Correction
+            // -------------------------
+            // Recreate Lists as Sorted
+            Queue.ListPcCoresNameDate.Sort();
+
+
+            // -------------------------
+            // Remove Unkown Cores
+            // -------------------------
+            // Unknown PC Core Name+Dates that don't match Buildbot Core Name+Date
+            for (int i = 0; i < Queue.ListPcCoresName.Count; i++)
+            {
+                // If Buildbot Does Not Contain Core
+                if (!Queue.ListBuildbotCoresName.Contains(Queue.ListPcCoresName[i]))
+                {
+                    // Add PC Core Name to Exclusion List
+                    Queue.ListExcludedCoresNameDate.Add(Queue.ListPcCoresNameDate[i]);
+
+                    // Add PC Core Name to Unknown List (Debugger)
+                    Queue.ListPcCoresUnknownNameDate.Add(Queue.ListPcCoresNameDate[i]);
+                }
+            }
+
+            // Debug
+            //var message = string.Join(Environment.NewLine, Queue.ListExcludedCoresNameDate);
+            //System.Windows.MessageBox.Show(message);
+
+            // Recreate the PC Cores Name+Date List, Exclude Unknown Cores
+            Queue.ListPcCoresNameDate = Queue.ListPcCoresNameDate.Except(Queue.ListExcludedCoresNameDate).ToList();
+
+
+            // -------------------------
+            // Recreate SubLists
+            // -------------------------
+            // Clear
+            if (Queue.ListPcCoresName != null)
+            {
+                Queue.ListPcCoresName.Clear();
+                Queue.ListPcCoresName.TrimExcess();
+            }
+            if (Queue.ListPcCoresDate != null)
+            {
+                Queue.ListPcCoresDate.Clear();
+                Queue.ListPcCoresDate.TrimExcess();
+            }
+
+            // Split the ListPcCoresNameDate into 2 Lists, ListPcCoresName & ListPcCoresDate
+            foreach (string line in Queue.ListPcCoresNameDate)
+            {
+                string[] arr = line.Split(' ');
+                Queue.ListPcCoresName.Add(arr[0]);
+                Queue.ListPcCoresDate.Add(arr[1]);
+            }
 
         }
 
@@ -222,10 +272,10 @@ namespace Stellar
             try
             {
                 // -------------------------
-                // Parse the index-extended cores text file from parseUrl
+                // Download
                 // -------------------------
-
-                string buildbotCoresIndex = Download.wc.DownloadString(indexextendedUrl); // index-extended cores text file
+                // index-extended cores text file
+                string buildbotCoresIndex = Download.wc.DownloadString(indexextendedUrl);
 
                 // Check if index-extended failed or is empty
                 if (string.IsNullOrEmpty(buildbotCoresIndex))
@@ -233,6 +283,9 @@ namespace Stellar
                     System.Windows.MessageBox.Show("Error: Cores list is empty or failed to donwload index-extended.");
                 }
 
+                // -------------------------
+                // Sort
+                // -------------------------
                 // Split the index-extended by LineBreak Array
                 // Sort the Array by Core Name (3rd word in Line)
                 var lines = buildbotCoresIndex.Split("\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
@@ -248,11 +301,9 @@ namespace Stellar
                     Queue.ListBuildbotCoresName.Add(arr[2]);
                 }
 
-                // Debug
-                //var message = string.Join(Environment.NewLine, Queue.ListBuildbotCoresDate);
-                //System.Windows.MessageBox.Show(message);
-
-
+                // -------------------------
+                // Modify
+                // -------------------------
                 // Remove from the List all that do no tcontain .dll.zip (filters out unwanted)
                 Queue.ListBuildbotCoresName.RemoveAll(u => !u.Contains(".dll.zip"));
 
@@ -263,13 +314,10 @@ namespace Stellar
                         Queue.ListBuildbotCoresName[i] = Queue.ListBuildbotCoresName[i].Replace(".zip", "");
                 }
 
-                // Sort the Nighlies List, lastest core first
-                //ListBuildbotCoresName.Sort(); // Disable Sort
-
-
+                // -------------------------
+                // Combine
                 // -------------------------
                 // Buildbot Cores Name + Date List
-                // -------------------------
                 // Populate empty NameDate List to be modified for Join (Important!)
                 for (int i = 0; i < Queue.ListBuildbotCoresName.Count; i++)
                 {

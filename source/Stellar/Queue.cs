@@ -29,31 +29,65 @@ namespace Stellar
     public partial class Queue
     {
         // RetroArch Nightly
-        public static List<string> NightliesList = new List<string>(); // Create Nightlies 7z List to be filled by Parse
+        // Create Nightlies 7z List to be populated by Parse
+        public static List<string> NightliesList = new List<string>(); 
 
+        // -----------------------------------------------
         // PC Cores
-        public static List<string> ListPcCoresName = new List<string>(); // PC File Name
-        public static List<DateTime> ListPcCoresDateModified = new List<DateTime>(); // PC File Date & Time <DateTime> Important!
-        public static List<string> ListPcCoresDateModifiedFormatted = new List<string>(); // PC File Date & Time Formatted
+        // -----------------------------------------------
+        // Name
+        public static List<string> ListPcCoresName = new List<string>();
+        public static ObservableCollection<string> CollectionPcCoresName;
+        // Date
+        public static List<string> ListPcCoresDate = new List<string>();
+        public static ObservableCollection<string> CollectionPcCoresDate;
+        // Name+Date
+        public static List<string> ListPcCoresNameDate = new List<string>();
+        public static ObservableCollection<string> CollectionPcCoresNameDate; 
+        // Unknown Name+Date
+        public static List<string> ListPcCoresUnknownNameDate = new List<string>();
+        public static ObservableCollection<string> CollectionPcCoresUnknownNameDate;
 
+        // -----------------------------------------------
         // Buildbot Cores
-        public static List<string> ListBuildbotCoresName = new List<string>(); // Buildbot File Name
-        public static List<string> ListBuildbotCoresDate = new List<string>(); // Buildbot File Date & Time
-        public static List<string> ListBuildbotID = new List<string>(); // Buildbot Core ID's
+        // -----------------------------------------------
+        // Name
+        public static List<string> ListBuildbotCoresName = new List<string>();
+        public static ObservableCollection<string> CollectionBuildbotCoresName;
+        // Date
+        public static List<string> ListBuildbotCoresDate = new List<string>();
+        public static ObservableCollection<string> CollectionBuildbotCoresDate;
+        // ID
+        public static List<string> ListBuildbotID = new List<string>();
+        // Name+Date
+        public static List<string> ListBuildbotCoresNameDate = new List<string>();
+        public static ObservableCollection<string> CollectionBuildbotCoresNameDate; 
+        // New Name (Debugger)
+        public static List<string> ListBuildbotCoresNewName = new List<string>();
+        public static ObservableCollection<string> CollectionBuildbotCoresNewName;
 
-        // Updated Cores
-        public static List<string> ListUpdatedCoresName = new List<string>(); // Updated Cores to Download
-        public static ObservableCollection<string> CollectionUpdatedCoresName; // Displays List in Listbox
-        public static List<string> ListExcludedCores = new List<string>(); // Updated Cores to Download
+        // -----------------------------------------------
+        // Excluded Cores (Already Up To Date or Mismatched/Unknown)
+        // -----------------------------------------------
+        // Name
+        public static List<string> ListExcludedCoresName = new List<string>();
+        public static ObservableCollection<string> CollectionExcludedCoresName;
+        // Name+Date
+        public static List<string> ListExcludedCoresNameDate = new List<string>();
 
-        // PC Cores / Buildbot Cores Name + Date
-        public static List<DateTime> ListPcCoresDate = new List<DateTime>(); // PC File Date & Time <DateTime> Important!
-        public static List<string> ListPcCoresDateFormatted = new List<string>(); // PC File Date & Time Formatted
-        public static List<string> ListPcCoresNameDate = new List<string>(); // PC File Name+Date & Time
-        public static ObservableCollection<string> CollectionPcCoresNameDate; // PC Cores Name+Date Observable Collection
+        // -----------------------------------------------
+        // Rejected Cores (Checkbox)
+        // -----------------------------------------------
+        // Name
+        public static List<string> ListRejectedCores = new List<string>();
 
-        public static List<string> ListBuildbotCoresNameDate = new List<string>(); // Buildbot File Name + Date & Time
-        public static ObservableCollection<string> CollectionBuildbotNameDate; // Buildbot Cores Name+Date Observable Collection
+        // -----------------------------------------------
+        // Updated Cores to Download
+        // -----------------------------------------------
+        // Name
+        public static List<string> ListUpdatedCoresName = new List<string>();
+        public static ObservableCollection<string> CollectionUpdatedCoresName;
+
 
 
         // -----------------------------------------------
@@ -61,24 +95,27 @@ namespace Stellar
         // -----------------------------------------------
         public static void UpdatedCores(MainWindow mainwindow)
         {
-            // This part gets complicated
             // For each Buildbot Date that is Greater than PC Date Modified Date, add a Buildbot Name to the Update List
 
             // Re-create ListbuilbotCoresName by comparing it to ListPcCoresName and keeping only Matches
             ListBuildbotCoresName = ListPcCoresName.Intersect(ListBuildbotCoresName).ToList();
-            // ListBuildbotCoresName.Sort(); // Disable Sort
 
             // List Compare - Use the newly created ListbuilbotCoresName to draw Names from
             for (int i = 0; i < ListBuildbotCoresName.Count; i++)
             {
-                // If PC Core Name List Contains Buildbot Core Name [i]
+                // If PC Core Name List Contains the Buildbot Core Name [i]
                 if (ListPcCoresName.Contains(ListBuildbotCoresName[i]))
                 {
-                    // If Buildbot Core Modified Date greater than > PC Core Creation Date
-                    if (DateTime.Parse(ListBuildbotCoresDate[i]) > DateTime.Parse(ListPcCoresDateModifiedFormatted[i]))
+                    // If Buildbot Core Date Greater Than > PC Core Modified Date
+                    // Add Buildbot Core Name to Update List
+                    if (DateTime.Parse(ListBuildbotCoresDate[i]) > DateTime.Parse(ListPcCoresDate[i]))
                     {
-                        // Add Buildbot Core Name to Update List
                         ListUpdatedCoresName.Add(ListBuildbotCoresName[i]);
+                    }
+                    // Less Than, Add Buildbot Core Name to Exclusion List
+                    else
+                    {
+                        ListExcludedCoresName.Add(ListBuildbotCoresName[i]);
                     }
                 }
                 else
@@ -87,10 +124,8 @@ namespace Stellar
                     ListBuildbotCoresName.Remove(ListBuildbotCoresName[i]);
                 }
 
-                // Add Non-Matching Cores to Rejected List
-                //ListExcludedCores = ListPcCoresName.Except(ListBuildbotCoresName).ToList();
-                //ListExcludedCores.Sort(); //Disable Sort???
             }
+
         }
 
 
@@ -103,6 +138,9 @@ namespace Stellar
             // Make a List of All PC Cores
             // Subtract PC List from Buildbot List
             ListUpdatedCoresName = ListBuildbotCoresName.Except(ListPcCoresName).ToList();
+
+            // Debugger
+            ListBuildbotCoresNewName = ListBuildbotCoresName.Except(ListPcCoresName).ToList();
         }
 
 

@@ -30,8 +30,8 @@ namespace Stellar
     /// </summary>
     public partial class Checklist : Window
     {
-        // Checklist Window's (public) Excluded Cores List
-        public static List<string> ListExcludedCores = new List<string>();
+        // Checklist Window's (public) Rejected Cores List
+        //public static List<string> ListRejectedCores = new List<string>();
 
         // Toggle Window
         bool toggleWindow = true;
@@ -58,13 +58,13 @@ namespace Stellar
             // Select All
             listViewUpdatedCores.SelectAll();
 
-            // Load the Name+Date Lists #################
+            // Load the Name+Date Lists
             // List Box Pc Cores Name+Date (Advanced)
             listBoxPcCoresNameDate.ItemsSource = Queue.CollectionPcCoresNameDate;
             listBoxPcCoresNameDate.SelectedIndex = -1; // Deselect All at Initialize
 
             // List Box Buildbot Cores Name+Date (Advanced)
-            listBoxBuildbotCoresNameDate.ItemsSource = Queue.CollectionBuildbotNameDate;
+            listBoxBuildbotCoresNameDate.ItemsSource = Queue.CollectionBuildbotCoresNameDate;
             listBoxBuildbotCoresNameDate.SelectedIndex = -1; // Deselect All at Initialize
         }
 
@@ -76,26 +76,26 @@ namespace Stellar
             // Clear Lists to prevent doubling up
             // Once Main List has been cleared, you can't get it back
             Queue.CollectionPcCoresNameDate.Clear();
-            Queue.CollectionBuildbotNameDate.Clear();
+            Queue.CollectionBuildbotCoresNameDate.Clear();
         }
 
         // -----------------------------------------------
-        // Excluded List
+        // Rejected List
         // -----------------------------------------------
         private void listViewUpdatedCores_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             // If Unchecked
-            // For each item in (unchecked), Add to Excluded List
+            // For each item in (unchecked), Add to Rejected List
             foreach (string item in e.RemovedItems)
             {
-                ListExcludedCores.Add(item);
+                Queue.ListRejectedCores.Add(item);
             }
             // If Checked
-            // For each item in (checked), Remove from Excluded List
+            // For each item in (checked), Remove from Rejected List
             foreach (string item in e.AddedItems)
             {
-                ListExcludedCores.Remove(item);
-                ListExcludedCores.TrimExcess();
+                Queue.ListRejectedCores.Remove(item);
+                Queue.ListRejectedCores.TrimExcess();
             }
 
             // Save List to Settings - DISABLED FOR NOW
@@ -134,16 +134,9 @@ namespace Stellar
             // -------------------------
             if (toggleWindow == true)
             {
-                // set window size
                 this.Width = 1117;
-
-                // Reposition Window
                 this.Left = this.Left - 387;
-
-                // set window title
                 this.Title = "Checklist Advanced";
-
-                // set the toggle to false
                 toggleWindow = false;
             }
 
@@ -152,16 +145,9 @@ namespace Stellar
             // -------------------------
             else if (toggleWindow == false)
             {
-                // set window size
                 this.Width = 340;
-
-                // Reposition Window
                 this.Left = this.Left + 387;
-
-                // set window title
                 this.Title = "Checklist";
-
-                // set the toggle to true
                 toggleWindow = true;
             }
 

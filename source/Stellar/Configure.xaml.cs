@@ -34,6 +34,8 @@ namespace Stellar
     /// </summary>
     public partial class Configure : Window
     {
+        public static Debugger debugger; // Debug Window
+
         public static string sevenZipPath; // 7-Zip Config Settings Path
         public static string winRARPath; // WinRAR Config Settings Path
 
@@ -653,6 +655,16 @@ namespace Stellar
         }
 
         // -----------------------------------------------
+        // Debug Button
+        // -----------------------------------------------
+        private void btnDebug_Click(object sender, RoutedEventArgs e)
+        {
+            // Open Debugger Window
+            debugger = new Debugger();
+            debugger.ShowDialog();
+        }
+
+        // -----------------------------------------------
         // Set Theme (Combobox)
         // -----------------------------------------------
         private void comboBoxThemeConfig_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -843,6 +855,8 @@ namespace Stellar
             }
 
         }
+
+
     }
 
 }

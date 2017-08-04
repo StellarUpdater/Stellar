@@ -53,6 +53,11 @@ namespace Stellar
         {
             InitializeComponent();
 
+            this.MinWidth = 500;
+            this.MinHeight = 225;
+            this.MaxWidth = 500;
+            this.MaxHeight = 225;
+
             // -----------------------------------------------
             // Prevent Loading Corrupt App.Config
             // -----------------------------------------------
@@ -175,55 +180,100 @@ namespace Stellar
         // -----------------------------------------------
         public static void ClearAll()
         {
+            // -------------------------
+            // Strings
+            // -------------------------
+            Parse.parseUrl = string.Empty;
+            Paths.buildbotArchitecture = string.Empty;
+            Parse.nightly7z = string.Empty;
+
+            // -------------------------
             // Lists
+            // -------------------------
+            // RetroArch
             if (Queue.NightliesList != null)
             {
                 Queue.NightliesList.Clear();
                 Queue.NightliesList.TrimExcess();
             }
 
+            // PC Core Name
             if (Queue.ListPcCoresName != null)
             {
                 Queue.ListPcCoresName.Clear();
                 Queue.ListPcCoresName.TrimExcess();
             }
 
-            if (Queue.ListPcCoresDateModified != null)
+            // PC Core Date
+            if (Queue.ListPcCoresDate != null)
             {
-                Queue.ListPcCoresDateModified.Clear();
-                Queue.ListPcCoresDateModified.TrimExcess();
+                Queue.ListPcCoresDate.Clear();
+                Queue.ListPcCoresDate.TrimExcess();
             }
 
-            if (Queue.ListPcCoresDateModifiedFormatted != null)
+            // PC Unknown Name+Date
+            if (Queue.ListPcCoresUnknownNameDate != null)
             {
-                Queue.ListPcCoresDateModifiedFormatted.Clear();
-                Queue.ListPcCoresDateModifiedFormatted.TrimExcess();
+                Queue.ListPcCoresUnknownNameDate.Clear();
+                Queue.ListPcCoresUnknownNameDate.TrimExcess();
             }
 
+            // Buildbot Core Name
             if (Queue.ListBuildbotCoresName != null)
             {
                 Queue.ListBuildbotCoresName.Clear();
                 Queue.ListBuildbotCoresName.TrimExcess();
             }
 
+            // Buildbot Core Date
             if (Queue.ListBuildbotCoresDate != null)
             {
                 Queue.ListBuildbotCoresDate.Clear();
                 Queue.ListBuildbotCoresDate.TrimExcess();
             }
 
+            // Buildbot Core New Name
+            if (Queue.ListBuildbotCoresNewName != null)
+            {
+                Queue.ListBuildbotCoresNewName.Clear();
+                Queue.ListBuildbotCoresNewName.TrimExcess();
+            }
+
+            // Buildbot Core ID
             if (Queue.ListBuildbotID != null)
             {
                 Queue.ListBuildbotID.Clear();
                 Queue.ListBuildbotID.TrimExcess();
             }
 
+            // Excluded Core Name
+            if (Queue.ListExcludedCoresName != null)
+            {
+                Queue.ListExcludedCoresName.Clear();
+                Queue.ListExcludedCoresName.TrimExcess();
+            }
+
+            // Excluded Core Name ObservableCollection
+            if (Queue.CollectionExcludedCoresName != null)
+            {
+                Queue.CollectionExcludedCoresName = null;
+            }
+
+            // Excluded Core Name+Date
+            if (Queue.ListExcludedCoresNameDate != null)
+            {
+                Queue.ListExcludedCoresNameDate.Clear();
+                Queue.ListExcludedCoresNameDate.TrimExcess();
+            }
+
+            // Updated Cores Name
             if (Queue.ListUpdatedCoresName != null)
             {
                 Queue.ListUpdatedCoresName.Clear();
                 Queue.ListUpdatedCoresName.TrimExcess();
             }
-
+            
+            // Updated Cores Name Collection
             if (Queue.CollectionUpdatedCoresName != null)
             {
                 Queue.CollectionUpdatedCoresName = null;
@@ -231,14 +281,57 @@ namespace Stellar
 
             // Do Not Clear
             //
-            // ListExcludedCores
-            // ListPcCoresDateCreated
-            // ListPcCoresDateCreatedFormatted
+            // ListRejectedCores
+            // ListPcCoresNameDate
+            // ListBuildbotCoresNameDate
+        }
 
-            // Strings
-            Parse.parseUrl = string.Empty;
-            Paths.buildbotArchitecture = string.Empty;
-            Parse.nightly7z = string.Empty;
+        // -----------------------------------------------
+        // Clear Name+Dates
+        // -----------------------------------------------
+        public static void ClearNameDates()
+        {
+            // PC Cores Name+Date
+            if (Queue.ListPcCoresNameDate != null)
+            {
+                Queue.ListPcCoresNameDate.Clear();
+                Queue.ListPcCoresNameDate.TrimExcess();
+            }
+            // PC Cores Name+Date Collection
+            if (Queue.CollectionPcCoresNameDate != null)
+            {
+                Queue.CollectionPcCoresNameDate = null;
+            }
+
+            // PC Cores Unknown Name+Date
+            if (Queue.ListPcCoresUnknownNameDate != null)
+            {
+                Queue.ListPcCoresUnknownNameDate.Clear();
+            }
+            // PC Cores Unknown Name+Date Collection
+            if (Queue.CollectionPcCoresUnknownNameDate != null)
+            {
+                Queue.CollectionPcCoresUnknownNameDate = null;
+            }
+
+            // Buildbot Cores Name+Date
+            if (Queue.ListBuildbotCoresNameDate != null)
+            {
+                Queue.ListBuildbotCoresNameDate.Clear();
+                Queue.ListBuildbotCoresNameDate.TrimExcess();
+            }
+            // Buildbot Cores Name+Date Collection
+            if (Queue.CollectionBuildbotCoresNameDate != null)
+            {
+                Queue.CollectionBuildbotCoresNameDate = null;
+            }
+
+            // Excluded Core Name+Date
+            if (Queue.ListExcludedCoresNameDate != null)
+            {
+                Queue.ListExcludedCoresNameDate.Clear();
+                Queue.ListExcludedCoresNameDate.TrimExcess();
+            }
         }
 
 
@@ -535,11 +628,11 @@ namespace Stellar
                 || (string)comboBoxDownload.SelectedItem == "Cores"
                 || (string)comboBoxDownload.SelectedItem == "New Cores")
             {
-                // Call Methods - Build Cores Lists
-                Parse.ScanPcCoresDir(this);
-
                 // Call Parse Builtbot Page Method
                 Parse.ParseBuildbotCoresIndex(this);
+
+                // Call Methods - Build Cores Lists
+                Parse.ScanPcCoresDir(this);
 
                 // -------------------------
                 // Core Check
@@ -577,7 +670,7 @@ namespace Stellar
                     Queue.CollectionPcCoresNameDate = new ObservableCollection<string>(Queue.ListPcCoresNameDate);
 
                     // Add Buildbot Cores Name+Date to List Box (pass to constructor)
-                    Queue.CollectionBuildbotNameDate = new ObservableCollection<string>(Queue.ListBuildbotCoresNameDate);
+                    Queue.CollectionBuildbotCoresNameDate = new ObservableCollection<string>(Queue.ListBuildbotCoresNameDate);
 
 
                     // Open Checklist Window
@@ -589,33 +682,7 @@ namespace Stellar
                     // -------------------------
                     // Clear Name+Date Lists to prevent doubling up on next pass
                     // -------------------------
-                    if (Queue.ListPcCoresNameDate != null)
-                    {
-                        Queue.ListPcCoresNameDate.Clear();
-                        Queue.ListPcCoresNameDate.TrimExcess();
-                    }
-
-                    if (Queue.ListBuildbotID != null)
-                    {
-                        Queue.ListBuildbotID.Clear();
-                        Queue.ListBuildbotID.TrimExcess();
-                    }
-
-                    if (Queue.ListBuildbotCoresNameDate != null)
-                    {
-                        Queue.ListBuildbotCoresNameDate.Clear();
-                        Queue.ListBuildbotCoresNameDate.TrimExcess();
-                    }
-
-                    if (Queue.CollectionPcCoresNameDate != null)
-                    {
-                        Queue.CollectionPcCoresNameDate.Clear();
-                    }
-
-                    if (Queue.CollectionBuildbotNameDate != null)
-                    {
-                        Queue.CollectionBuildbotNameDate.Clear();
-                    }
+                    ClearNameDates();
                 }
             }
 
@@ -688,11 +755,11 @@ namespace Stellar
                 || (string)comboBoxDownload.SelectedItem == "Cores" 
                 || (string)comboBoxDownload.SelectedItem == "New Cores")
             {
-                // Call Methods - Build Cores Lists
-                Parse.ScanPcCoresDir(this);
-
                 // Call Parse Builtbot Page Method
                 Parse.ParseBuildbotCoresIndex(this);
+
+                // Call Methods - Build Cores Lists
+                Parse.ScanPcCoresDir(this);
 
                 // -------------------------
                 // Core Check
@@ -714,30 +781,11 @@ namespace Stellar
                 //
                 Queue.CoresUpToDateCheck(this);
 
+
                 // -------------------------
                 // Clear Name+Date Lists to prevent doubling up on next pass
                 // -------------------------
-                if (Queue.ListPcCoresNameDate != null)
-                {
-                    Queue.ListPcCoresNameDate.Clear();
-                    Queue.ListPcCoresNameDate.TrimExcess();
-                }
-
-                if (Queue.ListBuildbotCoresNameDate != null)
-                {
-                    Queue.ListBuildbotCoresNameDate.Clear();
-                    Queue.ListBuildbotCoresNameDate.TrimExcess();
-                }
-
-                if (Queue.CollectionPcCoresNameDate != null)
-                {
-                    Queue.CollectionPcCoresNameDate.Clear();
-                }
-
-                if (Queue.CollectionPcCoresNameDate != null)
-                {
-                    Queue.CollectionBuildbotNameDate.Clear();
-                }
+                ClearNameDates();
             }
 
 

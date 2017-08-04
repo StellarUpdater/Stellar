@@ -33,7 +33,7 @@
         Background="Black"
         >
     <Window.Resources>
-        
+
         <!-- ComboBox -->
         <Style x:Key="FocusVisual">
             <Setter Property="Control.Template">
@@ -579,7 +579,7 @@
                Height="24"
                Foreground="White"
                ToolTip="Path to 7-Zip exe"/>
-        
+
         <TextBox x:Name="textBox7zipConfig"
                  Style="{DynamicResource TextBoxStyleCustom}"
                  HorizontalAlignment="Left" 
@@ -627,7 +627,7 @@
                Height="24" 
                Foreground="White" 
                ToolTip="Path to WinRAR exe"/>
-        
+
         <TextBox x:Name="textBoxWinRARConfig" 
                  Style="{DynamicResource TextBoxStyleCustom}"
                  HorizontalAlignment="Left"
@@ -731,7 +731,7 @@
                Width="112" 
                Foreground="White" 
                FontSize="11"/>
-        
+
         <ComboBox x:Name="comboBoxThemeConfig" 
                   ItemContainerStyle="{DynamicResource ComboBoxItemCustom}"
                   HorizontalAlignment="Left" 
@@ -766,6 +766,7 @@
                Height="26" 
                Foreground="White" 
                ToolTip="Path to Save Log"/>
+
         
         <Button x:Name="buttonClearAllSavedSettings"
                 Style="{DynamicResource ButtonCustom}"
@@ -782,6 +783,24 @@
                 Click="buttonClearAllSavedSettings_Click" >
             <TextBlock 
                 Text="Clear Saved" 
+                Margin="0,-1,0,0"/>
+        </Button>
+
+        <!-- Debug -->
+        <Button x:Name="btnDebug"
+            Style="{DynamicResource ButtonCustom}"
+            HorizontalAlignment="Left"
+            Margin="397,120,0,0" 
+            VerticalAlignment="Top"
+            Width="23" 
+            Background="Black" 
+            Foreground="White" 
+            BorderBrush="White" 
+            Height="23"
+            Cursor="Hand" Click="btnDebug_Click" 
+            ToolTip="Debugger" >
+            <TextBlock 
+                Text="#" 
                 Margin="0,-1,0,0"/>
         </Button>
 
