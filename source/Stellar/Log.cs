@@ -35,7 +35,7 @@ namespace Stellar
                 using (StreamWriter sw = new StreamWriter(fs))
                 {
                     sw.WriteLine(DateTime.Now);
-                    sw.WriteLine("--------------------------------------\r\n\r\n");
+                    sw.WriteLine("--------------------------------------\r\n");
 
                     // Append List
                     for (int x = 0; x < Queue.ListUpdatedCoresName.Count; x++)
@@ -43,7 +43,7 @@ namespace Stellar
                         sw.WriteLine(Queue.ListUpdatedCoresName[x]);
                     }
 
-                    sw.WriteLine("\r\n\r\n");
+                    sw.WriteLine("\r\n");
 
                     // Close Log
                     sw.Close();
