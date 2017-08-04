@@ -30,9 +30,6 @@ namespace Stellar
     /// </summary>
     public partial class Checklist : Window
     {
-        // Checklist Window's (public) Rejected Cores List
-        //public static List<string> ListRejectedCores = new List<string>();
-
         // Toggle Window
         bool toggleWindow = true;
 
@@ -74,9 +71,8 @@ namespace Stellar
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             // Clear Lists to prevent doubling up
-            // Once Main List has been cleared, you can't get it back
-            Queue.CollectionPcCoresNameDate.Clear();
-            Queue.CollectionBuildbotCoresNameDate.Clear();
+            // Once Update List has been cleared, you can't get it back
+            MainWindow.ClearNameDates();
         }
 
         // -----------------------------------------------

@@ -6,6 +6,8 @@
         xmlns:local="clr-namespace:Stellar"
         mc:Ignorable="d"
         Icon="logo.ico"
+        UseLayoutRounding="True"
+        ResizeMode="CanMinimize" 
         WindowStartupLocation="CenterScreen"
         Title="Debug" 
         Height="622" Width="1378">
@@ -32,7 +34,7 @@
         <Label Content="Buildbot Name" HorizontalAlignment="Left" Margin="10,272,0,0" VerticalAlignment="Top" Width="202"/>
         <Label Content="Buildbot Date" HorizontalAlignment="Left" Margin="295,272,0,0" VerticalAlignment="Top" Width="202"/>
         <Label Content="Buildbot Name+Date" HorizontalAlignment="Left" Margin="502,269,0,0" VerticalAlignment="Top" Width="207"/>
-        <Label Content="Buildbot New" HorizontalAlignment="Left" Margin="787,269,0,0" VerticalAlignment="Top" Width="207"/>
+        <Label Content="Buildbot New-Missing" HorizontalAlignment="Left" Margin="787,269,0,0" VerticalAlignment="Top" Width="207"/>
         
         <Label x:Name="labelBuildbotNameCount" Content="" HorizontalAlignment="Left" Margin="217,272,0,0" VerticalAlignment="Top" Width="68" HorizontalContentAlignment="Right"/>
         <Label x:Name="labelBuildbotDateCount" Content="" HorizontalAlignment="Left" Margin="429,272,0,0" VerticalAlignment="Top" Width="68" HorizontalContentAlignment="Right"/>

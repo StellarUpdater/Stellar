@@ -339,13 +339,12 @@ namespace Stellar
                 || (string)mainwindow.comboBoxDownload.SelectedItem == "Upgrade"
                 || (string)mainwindow.comboBoxDownload.SelectedItem == "Redist")
                 {
+                    // Clear
                     MainWindow.ClearAll();
 
                     // Progress Info
-                    //Dispatcher.BeginInvoke((MethodInvoker)delegate
-                    //{
                     mainwindow.labelProgressInfo.Content = "RetroArch Complete";
-                    //});
+
 
                     waiter = new ManualResetEvent(false);
                 }
@@ -406,41 +405,43 @@ namespace Stellar
                 //
                 if (i == Queue.ListUpdatedCoresName.Count - 1)
                 {
-                    //progressInfo = "Complete";
-
                     // Cross Thread
                     mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
                     {
-                        // "RA+Cores" Combobox Download Selected
+                        // New Install
                         //
                         if ((string)mainwindow.comboBoxDownload.SelectedItem == "New Install")
                         {
                             // Progress Info
-                            mainwindow.labelProgressInfo.Content = "RetroArch + Cores Install Complete";
+                            progressInfo = "RetroArch + Cores Install Complete";
+                            mainwindow.labelProgressInfo.Content = progressInfo;
                         }
 
-                        // "RA+Cores" Combobox Download Selected
+                        // RA+Cores
                         //
                         else if ((string)mainwindow.comboBoxDownload.SelectedItem == "RA+Cores")
                         {
                             // Progress Info
-                            mainwindow.labelProgressInfo.Content = "RetroArch + Cores Update Complete";
+                            progressInfo = "RetroArch + Cores Update Complete";
+                            mainwindow.labelProgressInfo.Content = progressInfo;
                         }
 
-                        // "Cores" Combobox Download Selected
+                        // Cores
                         //
                         else if ((string)mainwindow.comboBoxDownload.SelectedItem == "Cores")
                         {
                             // Progress Info
-                            mainwindow.labelProgressInfo.Content = "Cores Update Complete";
+                            progressInfo = "Cores Update Complete";
+                            mainwindow.labelProgressInfo.Content = progressInfo;
                         }
 
-                        // "Cores" Combobox Download Selected
+                        // New Cores
                         //
                         else if ((string)mainwindow.comboBoxDownload.SelectedItem == "New Cores")
                         {
                             // Progress Info
-                            mainwindow.labelProgressInfo.Content = "Cores Install Complete";
+                            progressInfo = "Cores Install Complete";
+                            mainwindow.labelProgressInfo.Content = progressInfo;
                         }
                     });
                 }
@@ -532,25 +533,9 @@ namespace Stellar
                 //
                 if (i == Queue.ListUpdatedCoresName.Count - 1)
                 {
-                    // Write Log Append ##################
-                    if (Configure.logEnable == true) // Only if Log is Enabled through Config Checkbox
-                    {
-                        using (FileStream fs = new FileStream(/*pass data*/Configure.logPath + "stellar.log", FileMode.Append, FileAccess.Write))
-                        using (StreamWriter sw = new StreamWriter(fs))
-                        {
-                            sw.WriteLine(DateTime.Now);
-                            sw.WriteLine("--------------------------------------\n\n");
-                            // Append List
-                            for (int x = 0; x < Queue.ListUpdatedCoresName.Count; x++)
-                            {
-                                sw.WriteLine(Queue.ListUpdatedCoresName[x]);
-                            }
-                            sw.WriteLine(""); // Add return space
-                            sw.WriteLine("");
-                            // Close Log
-                            sw.Close();
-                        }
-                    }
+                    // Write Log Append
+                    //
+                    Log.WriteLog();
 
                     // Clear list to prevent doubling up
                     //
@@ -568,12 +553,10 @@ namespace Stellar
         public static void StartDownload(MainWindow mainwindow)
         {
             // -------------------------
-            // RetroArch
+            // RetroArch Standalone
             // -------------------------
-            if ((string)mainwindow.comboBoxDownload.SelectedItem == "New Install"
-                || (string)mainwindow.comboBoxDownload.SelectedItem == "Upgrade"
+            if ((string)mainwindow.comboBoxDownload.SelectedItem == "Upgrade"
                 || (string)mainwindow.comboBoxDownload.SelectedItem == "RetroArch"
-                || (string)mainwindow.comboBoxDownload.SelectedItem == "RA+Cores"
                 || (string)mainwindow.comboBoxDownload.SelectedItem == "Redist")
             {
                 // Start New Thread
@@ -593,11 +576,35 @@ namespace Stellar
             }
 
             // -------------------------
-            // Cores
+            // RetroArch + Cores
             // -------------------------
-            if ((string)mainwindow.comboBoxDownload.SelectedItem == "New Install"
-                || (string)mainwindow.comboBoxDownload.SelectedItem == "RA+Cores"
-                || (string)mainwindow.comboBoxDownload.SelectedItem == "Cores"
+            else if ((string)mainwindow.comboBoxDownload.SelectedItem == "New Install"
+                || (string)mainwindow.comboBoxDownload.SelectedItem == "RA+Cores")
+            {
+                // Start New Thread
+                //
+                Thread worker = new Thread(() =>
+                {
+                    // start a new waiter for next pass (clicking update again)
+                    waiter = new ManualResetEvent(false);
+
+                    RetroArchDownload(mainwindow);
+
+                    waiter = new ManualResetEvent(false);
+
+                    CoresDownload(mainwindow);
+
+                }); //end thread
+
+                // Start Download Thread
+                //
+                worker.Start();
+            }
+
+            // -------------------------
+            // Cores Only
+            // -------------------------
+            else if ((string)mainwindow.comboBoxDownload.SelectedItem == "Cores"
                 || (string)mainwindow.comboBoxDownload.SelectedItem == "New Cores")
             {
                 // Start New Thread
@@ -614,6 +621,7 @@ namespace Stellar
                 //
                 worker.Start();
             }
+
         }
     }
 }

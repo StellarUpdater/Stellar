@@ -697,10 +697,6 @@ namespace Stellar
         // -----------------------------------------------
         private void buttonUpdate_Click(object sender, RoutedEventArgs e)
         {
-            // Get the currently selected item
-            //comboBoxDownloadItem = comboBoxDownload.SelectedItem.ToString();
-
-
             // Add backslash to Location Textbox path if missing
             if (!textBoxLocation.Text.EndsWith("\\") && textBoxLocation.Text != "")
             {

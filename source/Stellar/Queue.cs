@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 
 /* ----------------------------------------------------------------------
@@ -95,7 +96,7 @@ namespace Stellar
         // -----------------------------------------------
         public static void UpdatedCores(MainWindow mainwindow)
         {
-            // For each Buildbot Date that is Greater than PC Date Modified Date, add a Buildbot Name to the Update List
+            // For each Buildbot Date that is Greater than PC Modified Date, add a Buildbot Name to the Update List
 
             // Re-create ListbuilbotCoresName by comparing it to ListPcCoresName and keeping only Matches
             ListBuildbotCoresName = ListPcCoresName.Intersect(ListBuildbotCoresName).ToList();
@@ -108,7 +109,7 @@ namespace Stellar
                 {
                     // If Buildbot Core Date Greater Than > PC Core Modified Date
                     // Add Buildbot Core Name to Update List
-                    if (DateTime.Parse(ListBuildbotCoresDate[i]) > DateTime.Parse(ListPcCoresDate[i]))
+                    if (DateTime.ParseExact(ListBuildbotCoresDate[i], "yyyy-MM-dd", CultureInfo.InvariantCulture) > DateTime.ParseExact(ListPcCoresDate[i], "yyyy-MM-dd", CultureInfo.InvariantCulture))
                     {
                         ListUpdatedCoresName.Add(ListBuildbotCoresName[i]);
                     }
@@ -138,9 +139,6 @@ namespace Stellar
             // Make a List of All PC Cores
             // Subtract PC List from Buildbot List
             ListUpdatedCoresName = ListBuildbotCoresName.Except(ListPcCoresName).ToList();
-
-            // Debugger
-            ListBuildbotCoresNewName = ListBuildbotCoresName.Except(ListPcCoresName).ToList();
         }
 
 
