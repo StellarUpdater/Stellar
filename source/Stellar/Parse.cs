@@ -93,7 +93,7 @@ namespace Stellar
             // Upgrade Selected
             // -------------------------
             // Partial Unpack RetroArch.7z
-            if ((string)mainwindow.comboBoxDownload.SelectedItem == "Upgrade")
+            else if ((string)mainwindow.comboBoxDownload.SelectedItem == "Upgrade")
             {
                 // Fetch the RetroArch + Redist (not dated)
                 nightly7z = "RetroArch.7z";
@@ -103,7 +103,7 @@ namespace Stellar
             // Redist Selected
             // -------------------------
             // Redistributable
-            if ((string)mainwindow.comboBoxDownload.SelectedItem == "Redist")
+            else if ((string)mainwindow.comboBoxDownload.SelectedItem == "Redist")
             {
                 // Fetch the RetroArch + Redist (not dated)
                 nightly7z = "redist.7z";
@@ -135,7 +135,7 @@ namespace Stellar
 
             // If 64-bit OR 64 w32 Selected, change Download URL to x86_64
             //
-            if ((string)mainwindow.comboBoxArchitecture.SelectedItem == "64-bit" || (string)mainwindow.comboBoxArchitecture.SelectedItem == "64 w32")
+            else if ((string)mainwindow.comboBoxArchitecture.SelectedItem == "64-bit" || (string)mainwindow.comboBoxArchitecture.SelectedItem == "64 w32")
             {
                 // Last Item in Nightlies List is available
                 if (!string.IsNullOrEmpty(nightly7z))

@@ -15,9 +15,9 @@ namespace Stellar
         {
             InitializeComponent();
 
-            this.MinWidth = 1378;
+            this.MinWidth = 1328;
             this.MinHeight = 622;
-            this.MaxWidth = 1378;
+            this.MaxWidth = 1328;
             this.MaxHeight = 622;
         }
 

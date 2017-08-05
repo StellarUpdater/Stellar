@@ -184,8 +184,11 @@ namespace Stellar
             // Strings
             // -------------------------
             Parse.parseUrl = string.Empty;
+            Parse.parseCoresUrl = string.Empty;
+            Parse.indexextendedUrl = string.Empty;
             Paths.buildbotArchitecture = string.Empty;
             Parse.nightly7z = string.Empty;
+            Download.extractArgs = string.Empty;
 
             // -------------------------
             // Lists

@@ -40,6 +40,8 @@ namespace Stellar
         public static WebClient wc2 = new WebClient();
         public static ManualResetEvent waiter = new ManualResetEvent(false); // Download one at a time
 
+        public static string extractArgs;
+
         // Progress Label Info
         public static string progressInfo;
 
@@ -63,7 +65,6 @@ namespace Stellar
                 double bytesIn = double.Parse(e.BytesReceived.ToString());
                 double totalBytes = double.Parse(e.TotalBytesToReceive.ToString());
                 double percentage = bytesIn / totalBytes * 100;
-                //labelProgress.Text = "Downloaded " + e.BytesReceived + " of " + e.TotalBytesToReceive;
                 mainwindow.progressBar.Value = int.Parse(Math.Truncate(percentage).ToString());
             }));
         }
@@ -88,6 +89,85 @@ namespace Stellar
         // -----------------------------------------------
         // Downloads
         // -----------------------------------------------
+
+        // -----------------------------------------------
+        // Start Download (Method)
+        // -----------------------------------------------
+        public static void StartDownload(MainWindow mainwindow)
+        {
+            // -------------------------
+            // RetroArch Standalone
+            // -------------------------
+            if ((string)mainwindow.comboBoxDownload.SelectedItem == "Upgrade"
+                || (string)mainwindow.comboBoxDownload.SelectedItem == "RetroArch"
+                || (string)mainwindow.comboBoxDownload.SelectedItem == "Redist")
+            {
+                // Start New Thread
+                //
+                Thread worker = new Thread(() =>
+                {
+                    // start a new waiter for next pass (clicking update again)
+                    waiter = new ManualResetEvent(false);
+
+                    RetroArchDownload(mainwindow);
+
+                }); //end thread
+
+                // Start Download Thread
+                //
+                worker.Start();
+            }
+
+            // -------------------------
+            // RetroArch + Cores
+            // -------------------------
+            else if ((string)mainwindow.comboBoxDownload.SelectedItem == "New Install"
+                || (string)mainwindow.comboBoxDownload.SelectedItem == "RA+Cores")
+            {
+                // Start New Thread
+                //
+                Thread worker = new Thread(() =>
+                {
+                    // start a new waiter for next pass (clicking update again)
+                    waiter = new ManualResetEvent(false);
+
+                    RetroArchDownload(mainwindow);
+
+                    waiter = new ManualResetEvent(false);
+
+                    CoresDownload(mainwindow);
+
+                }); //end thread
+
+                // Start Download Thread
+                //
+                worker.Start();
+            }
+
+            // -------------------------
+            // Cores Only
+            // -------------------------
+            else if ((string)mainwindow.comboBoxDownload.SelectedItem == "Cores"
+                || (string)mainwindow.comboBoxDownload.SelectedItem == "New Cores")
+            {
+                // Start New Thread
+                Thread worker = new Thread(() =>
+                {
+                    // start a new waiter for next pass (clicking update again)
+                    waiter = new ManualResetEvent(false);
+
+                    CoresDownload(mainwindow);
+
+                }); //end thread
+
+                // Start Download Thread
+                //
+                worker.Start();
+            }
+
+        }
+
+
 
         // -------------------------
         // RetroArch Download (Method)
@@ -123,6 +203,7 @@ namespace Stellar
                 // Allow 0.1 seconds before Extracting Files
                 Thread.Sleep(100);
 
+
                 //exec7zip.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden; //use with ShellExecute
                 execExtract.StartInfo.UseShellExecute = false;
                 execExtract.StartInfo.Verb = "runas"; //use with ShellExecute for admin
@@ -131,82 +212,84 @@ namespace Stellar
                 execExtract.StartInfo.FileName = Archiver.archiver; //archiver string
                 // Extract -o and Overwrite -y Selected Files -r
 
+                //object comboBoxDownloadItem = mainwindow.comboBoxDownload.Dispatcher.Invoke((() =>
+                //{
+                //    return mainwindow.comboBoxDownload.SelectedItem;
+                //}));
+
                 // -------------------------
                 // 7-Zip
                 // -------------------------
                 if (Archiver.extract == "7-Zip")
                 {
-                    // Cross Thread
-                    mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
+                    // -------------------------
+                    // New Install
+                    // -------------------------
+                    if ((string)mainwindow.comboBoxDownload.Dispatcher.Invoke((() => { return mainwindow.comboBoxDownload.SelectedItem; })) == "New Install")
                     {
-                        // -------------------------
-                        // New Install
-                        // -------------------------
-                        if ((string)mainwindow.comboBoxDownload.SelectedItem == "New Install")
-                        {
-                            // Extract All Files
-                            List<string> extractArgs = new List<string>() {
-                                "-r -y x",
-                                "\"" + Paths.tempPath + Parse.nightly7z + "\"",
-                                "-o\"" + Paths.retroarchPath + "\"",
-                                "*",
-                                "&& cd" + "\"" + Paths.retroarchPath + "\"", //change directory
-                                "&& mkdir cores" //create cores directory
-                            };
+                        // Extract All Files
+                        List<string> extractArgs = new List<string>() {
+                            "-r -y x",
+                            "\"" + Paths.tempPath + Parse.nightly7z + "\"",
+                            "-o\"" + Paths.retroarchPath + "\"",
+                            "*",
+                            "&& cd" + "\"" + Paths.retroarchPath + "\"", //change directory
+                            "&& mkdir cores" //create cores directory
+                        };
 
-                            // Join List with Spaces
-                            execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
-                        }
-                        // -------------------------
-                        // Upgrade
-                        // -------------------------
-                        if ((string)mainwindow.comboBoxDownload.SelectedItem == "Upgrade")
-                        {
-                            // Extract All Files, Exclude Configs
-                            List<string> extractArgs = new List<string>() {
-                                "-r -y x",
-                                "\"" + Paths.tempPath + Parse.nightly7z + "\"",
-                                "-xr!config -xr!saves -xr!states -xr!retroarch.default.cfg -xr!retroarch.cfg", //exclude files
-                                "-o\"" + Paths.retroarchPath + "\"",
-                                "*"
-                            };
+                        // Join List with Spaces
+                        execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
+                    }
+                    // -------------------------
+                    // Upgrade
+                    // -------------------------
+                    else if ((string)mainwindow.comboBoxDownload.Dispatcher.Invoke((() => { return mainwindow.comboBoxDownload.SelectedItem; })) == "Upgrade")
+                    {
+                        // Extract All Files, Exclude Configs
+                        List<string> extractArgs = new List<string>() {
+                            "-r -y x",
+                            "\"" + Paths.tempPath + Parse.nightly7z + "\"",
+                            "-xr!config -xr!saves -xr!states -xr!retroarch.default.cfg -xr!retroarch.cfg", //exclude files
+                            "-o\"" + Paths.retroarchPath + "\"",
+                            "*"
+                        };
 
-                            // Join List with Spaces
-                            execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
-                        }
-                        // -------------------------
-                        // Update
-                        // -------------------------
-                        if ((string)mainwindow.comboBoxDownload.SelectedItem == "RetroArch" || (string)mainwindow.comboBoxDownload.SelectedItem == "RA+Cores")
-                        {
-                            // Extract only retroarch.exe & retroarch_debug.exe
-                            List<string> extractArgs = new List<string>() {
-                                "-r -y e",
-                                "\"" + Paths.tempPath + Parse.nightly7z + "\"",
-                                "-o\"" + Paths.retroarchPath + "\"",
-                                "retroarch.exe retroarch_debug.exe"
-                            };
+                        // Join List with Spaces
+                        execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
+                    }
+                    // -------------------------
+                    // Update
+                    // -------------------------
+                    else if ((string)mainwindow.comboBoxDownload.Dispatcher.Invoke((() => { return mainwindow.comboBoxDownload.SelectedItem; })) == "RetroArch" 
+                            || (string)mainwindow.comboBoxDownload.Dispatcher.Invoke((() => { return mainwindow.comboBoxDownload.SelectedItem; })) == "RA+Cores")
+                    {
+                        // Extract only retroarch.exe & retroarch_debug.exe
+                        List<string> extractArgs = new List<string>() {
+                            "-r -y e",
+                            "\"" + Paths.tempPath + Parse.nightly7z + "\"",
+                            "-o\"" + Paths.retroarchPath + "\"",
+                            "retroarch.exe retroarch_debug.exe"
+                        };
 
-                            // Join List with Spaces
-                            execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
-                        }
-                        // -------------------------
-                        // Redist
-                        // -------------------------
-                        if ((string)mainwindow.comboBoxDownload.SelectedItem == "Redist")
-                        {
-                            // Extract All Files
-                            List<string> extractArgs = new List<string>() {
-                                "-r -y x",
-                                "\"" + Paths.tempPath + Parse.nightly7z + "\"",
-                                "-o\"" + Paths.retroarchPath + "\"",
-                                "*"
-                            };
+                        // Join List with Spaces
+                        execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
+                    }
+                    // -------------------------
+                    // Redist
+                    // -------------------------
+                    else if ((string)mainwindow.comboBoxDownload.Dispatcher.Invoke((() => { return mainwindow.comboBoxDownload.SelectedItem; })) == "Redist")
+                    {
+                        // Extract All Files
+                        List<string> extractArgs = new List<string>() {
+                            "-r -y e",
+                            "\"" + Paths.tempPath + Parse.nightly7z + "\"",
+                            "-o\"" + Paths.retroarchPath + "\"",
+                            "*"
+                        };
 
-                            // Join List with Spaces
-                            execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
-                        }
-                    });
+                        // Join List with Spaces
+                        execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
+                    }
                 }
 
                 // -------------------------
@@ -214,75 +297,71 @@ namespace Stellar
                 // -------------------------
                 else if (Archiver.extract == "WinRAR")
                 {
-                    // Cross Thread
-                    mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
+                    // -------------------------
+                    // New Install
+                    // -------------------------
+                    if ((string)mainwindow.comboBoxDownload.SelectedItem == "New Install")
                     {
-                        // -------------------------
-                        // New Install
-                        // -------------------------
-                        if ((string)mainwindow.comboBoxDownload.SelectedItem == "New Install")
-                        {
-                            // Extract All Files
-                            List<string> extractArgs = new List<string>() {
-                                "-y x",
-                                "\"" + Paths.tempPath + Parse.nightly7z + "\"",
-                                "*",
-                                "\"" + Paths.retroarchPath + "\"",
-                            };
+                        // Extract All Files
+                        List<string> extractArgs = new List<string>() {
+                            "-y x",
+                            "\"" + Paths.tempPath + Parse.nightly7z + "\"",
+                            "*",
+                            "\"" + Paths.retroarchPath + "\"",
+                        };
 
-                            // Join List with Spaces
-                            execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
-                        }
-                        // -------------------------
-                        // Upgrade
-                        // -------------------------
-                        if ((string)mainwindow.comboBoxDownload.SelectedItem == "Upgrade")
-                        {
-                            // Extract All Files, Exclude Configs
-                            List<string> extractArgs = new List<string>() {
-                                "-y x",
-                                "\"" + Paths.tempPath + Parse.nightly7z + "\"",
-                                "-xconfig -xsaves -xstates -xretroarch.default.cfg -xretroarch.cfg", //exclude files
-                                "\"" + Paths.retroarchPath + "\""
-                            };
+                        // Join List with Spaces
+                        execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
+                    }
+                    // -------------------------
+                    // Upgrade
+                    // -------------------------
+                    else if ((string)mainwindow.comboBoxDownload.SelectedItem == "Upgrade")
+                    {
+                        // Extract All Files, Exclude Configs
+                        List<string> extractArgs = new List<string>() {
+                            "-y x",
+                            "\"" + Paths.tempPath + Parse.nightly7z + "\"",
+                            "-xconfig -xsaves -xstates -xretroarch.default.cfg -xretroarch.cfg", //exclude files
+                            "\"" + Paths.retroarchPath + "\""
+                        };
 
-                            // Join List with Spaces
-                            execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
+                        // Join List with Spaces
+                        execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
 
-                        }
-                        // -------------------------
-                        // Update
-                        // -------------------------
-                        if ((string)mainwindow.comboBoxDownload.SelectedItem == "RetroArch" || (string)mainwindow.comboBoxDownload.SelectedItem == "RA+Cores")
-                        {
-                            // Extract only retroarch.exe & retroarch_debug.exe
-                            List<string> extractArgs = new List<string>() {
-                                "-y x",
-                                "\"" + Paths.tempPath + Parse.nightly7z + "\"",
-                                "retroarch.exe retroarch_debug.exe",
-                                "\"" + Paths.retroarchPath + "\""
-                            };
+                    }
+                    // -------------------------
+                    // Update
+                    // -------------------------
+                    else if ((string)mainwindow.comboBoxDownload.SelectedItem == "RetroArch" || (string)mainwindow.comboBoxDownload.SelectedItem == "RA+Cores")
+                    {
+                        // Extract only retroarch.exe & retroarch_debug.exe
+                        List<string> extractArgs = new List<string>() {
+                            "-y x",
+                            "\"" + Paths.tempPath + Parse.nightly7z + "\"",
+                            "retroarch.exe retroarch_debug.exe",
+                            "\"" + Paths.retroarchPath + "\""
+                        };
 
-                            // Join List with Spaces
-                            execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
-                        }
-                        // -------------------------
-                        // Redist
-                        // -------------------------
-                        if ((string)mainwindow.comboBoxDownload.SelectedItem == "Redist")
-                        {
-                            // Extract only retroarch.exe & retroarch_debug.exe
-                            List<string> extractArgs = new List<string>() {
-                                "-y x",
-                                "\"" + Paths.tempPath + Parse.nightly7z + "\"",
-                                "*",
-                                "\"" + Paths.retroarchPath + "\"",
-                            };
+                        // Join List with Spaces
+                        execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
+                    }
+                    // -------------------------
+                    // Redist
+                    // -------------------------
+                    else if ((string)mainwindow.comboBoxDownload.SelectedItem == "Redist")
+                    {
+                        // Extract only retroarch.exe & retroarch_debug.exe
+                        List<string> extractArgs = new List<string>() {
+                            "-y x",
+                            "\"" + Paths.tempPath + Parse.nightly7z + "\"",
+                            "*",
+                            "\"" + Paths.retroarchPath + "\"",
+                        };
 
-                            // Join List with Spaces
-                            execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
-                        }
-                    });
+                        // Join List with Spaces
+                        execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
+                    }
                 }
 
                 // Start Extract
@@ -546,82 +625,5 @@ namespace Stellar
         }
 
 
-
-        // -----------------------------------------------
-        // Start Download (Method)
-        // -----------------------------------------------
-        public static void StartDownload(MainWindow mainwindow)
-        {
-            // -------------------------
-            // RetroArch Standalone
-            // -------------------------
-            if ((string)mainwindow.comboBoxDownload.SelectedItem == "Upgrade"
-                || (string)mainwindow.comboBoxDownload.SelectedItem == "RetroArch"
-                || (string)mainwindow.comboBoxDownload.SelectedItem == "Redist")
-            {
-                // Start New Thread
-                //
-                Thread worker = new Thread(() =>
-                {
-                    // start a new waiter for next pass (clicking update again)
-                    waiter = new ManualResetEvent(false);
-
-                    RetroArchDownload(mainwindow);
-
-                }); //end thread
-
-                // Start Download Thread
-                //
-                worker.Start();
-            }
-
-            // -------------------------
-            // RetroArch + Cores
-            // -------------------------
-            else if ((string)mainwindow.comboBoxDownload.SelectedItem == "New Install"
-                || (string)mainwindow.comboBoxDownload.SelectedItem == "RA+Cores")
-            {
-                // Start New Thread
-                //
-                Thread worker = new Thread(() =>
-                {
-                    // start a new waiter for next pass (clicking update again)
-                    waiter = new ManualResetEvent(false);
-
-                    RetroArchDownload(mainwindow);
-
-                    waiter = new ManualResetEvent(false);
-
-                    CoresDownload(mainwindow);
-
-                }); //end thread
-
-                // Start Download Thread
-                //
-                worker.Start();
-            }
-
-            // -------------------------
-            // Cores Only
-            // -------------------------
-            else if ((string)mainwindow.comboBoxDownload.SelectedItem == "Cores"
-                || (string)mainwindow.comboBoxDownload.SelectedItem == "New Cores")
-            {
-                // Start New Thread
-                Thread worker = new Thread(() =>
-                {
-                    // start a new waiter for next pass (clicking update again)
-                    waiter = new ManualResetEvent(false);
-
-                    CoresDownload(mainwindow);
-
-                }); //end thread
-
-                // Start Download Thread
-                //
-                worker.Start();
-            }
-
-        }
     }
 }

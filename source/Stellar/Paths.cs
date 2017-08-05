@@ -66,7 +66,7 @@ namespace Stellar
             // -------------------------
             // If 64-bit Selected, change Download Architecture to x86_64
             // -------------------------
-            if ((string)mainwindow.comboBoxArchitecture.SelectedItem == "64-bit")
+            else if ((string)mainwindow.comboBoxArchitecture.SelectedItem == "64-bit")
             {
                 // Set Parse URL
                 Parse.parseUrl = Parse.libretro_x86_64;
@@ -82,7 +82,7 @@ namespace Stellar
             // -------------------------
             // If win32 Selected, change Download Architecture to x86_64_w32
             // -------------------------
-            if ((string)mainwindow.comboBoxArchitecture.SelectedItem == "64 w32")
+            else if ((string)mainwindow.comboBoxArchitecture.SelectedItem == "64 w32")
             {
                 // Set Parse URL
                 Parse.parseUrl = Parse.libretro_x86_64; //64-bit URL, w32 is cores-only
@@ -113,33 +113,21 @@ namespace Stellar
 
             // If RA+Cores or Cores Selected, Textbox will display URL
             //
-            if ((string)mainwindow.comboBoxDownload.SelectedItem == "RA+Cores" || (string)mainwindow.comboBoxDownload.SelectedItem == "RetroArch")
+            else if ((string)mainwindow.comboBoxDownload.SelectedItem == "RA+Cores" || (string)mainwindow.comboBoxDownload.SelectedItem == "RetroArch")
             {
                 mainwindow.textBoxDownload.Text = Parse.parseUrl;
             }
 
             // If Cores Selected, Textbox will display URL
             //
-            if ((string)mainwindow.comboBoxDownload.SelectedItem == "Cores" || (string)mainwindow.comboBoxDownload.SelectedItem == "New Cores")
+            else if ((string)mainwindow.comboBoxDownload.SelectedItem == "Cores" || (string)mainwindow.comboBoxDownload.SelectedItem == "New Cores")
             {
                 mainwindow.textBoxDownload.Text = Parse.parseCoresUrl;
             }
 
-            // If Cores Selected, Textbox will display URL
-            //
-            if ((string)mainwindow.comboBoxDownload.SelectedItem == "Cores" || (string)mainwindow.comboBoxDownload.SelectedItem == "New Cores")
-            {
-                if ((string)mainwindow.comboBoxArchitecture.SelectedItem == "32-bit"
-                    || (string)mainwindow.comboBoxArchitecture.SelectedItem == "64-bit"
-                    || (string)mainwindow.comboBoxArchitecture.SelectedItem == "64 w32")
-                {
-                    mainwindow.textBoxDownload.Text = Parse.parseCoresUrl;
-                }
-            }
-
             // If Redist Selected, Textbox will display URL
             //
-            if ((string)mainwindow.comboBoxDownload.SelectedItem == "Redist")
+            else if ((string)mainwindow.comboBoxDownload.SelectedItem == "Redist")
             {
                 mainwindow.textBoxDownload.Text = Parse.parseUrl;
             }

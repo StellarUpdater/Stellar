@@ -94,6 +94,7 @@ namespace Stellar
                     System.Windows.MessageBox.Show("Please install 7-Zip or WinRAR to extract files.\n\nOr set Path in Settings.");
                 }
             }
+
             // -------------------------
             // User Select
             // -------------------------
@@ -117,6 +118,7 @@ namespace Stellar
                 // CLI Arguments unzip files
                 extract = "7-Zip"; //args selector
             }
+
             // -------------------------
             // Not Auto
             // -------------------------
