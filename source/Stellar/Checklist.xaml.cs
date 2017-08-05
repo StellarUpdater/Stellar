@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -49,6 +50,19 @@ namespace Stellar
             this.MinHeight = 470;
             this.MaxWidth = 1117;
             this.MaxHeight = 470;
+
+            // Trim List if new
+            Queue.ListUpdatedCoresName.TrimExcess();
+
+            // Add Updated Cores List to List Box
+            Queue.CollectionUpdatedCoresName = new ObservableCollection<string>(Queue.ListUpdatedCoresName);
+
+            // Add PC Cores Name+Date to List Box
+            Queue.CollectionPcCoresNameDate = new ObservableCollection<string>(Queue.ListPcCoresNameDate);
+
+            // Add Buildbot Cores Name+Date to List Box 
+            Queue.CollectionBuildbotCoresNameDate = new ObservableCollection<string>(Queue.ListBuildbotCoresNameDate);
+
 
             // Add to List View
             listViewUpdatedCores.ItemsSource = Queue.CollectionUpdatedCoresName;

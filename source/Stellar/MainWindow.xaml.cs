@@ -662,25 +662,10 @@ namespace Stellar
                 // If Update List greater than 0, Popup Checklist
                 if (Queue.ListUpdatedCoresName.Count != 0)
                 {
-                    // Trim List if new
-                    Queue.ListUpdatedCoresName.TrimExcess();
-
-                    // Add Updated Cores List to List Box (pass to constructor)
-                    // (old winforms way was just to add myListBox.DataSource = myList. Without ObservableCollection)
-                    Queue.CollectionUpdatedCoresName = new ObservableCollection<string>(Queue.ListUpdatedCoresName);
-
-                    // Add PC Cores Name+Date to List Box (pass to constructor)
-                    Queue.CollectionPcCoresNameDate = new ObservableCollection<string>(Queue.ListPcCoresNameDate);
-
-                    // Add Buildbot Cores Name+Date to List Box (pass to constructor)
-                    Queue.CollectionBuildbotCoresNameDate = new ObservableCollection<string>(Queue.ListBuildbotCoresNameDate);
-
-
                     // Open Checklist Window
                     checklist = new Checklist();
                     checklist.Owner = Window.GetWindow(this);
                     checklist.ShowDialog();
-
 
                     // -------------------------
                     // Clear Name+Date Lists to prevent doubling up on next pass

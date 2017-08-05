@@ -147,19 +147,35 @@ namespace Stellar
         // -----------------------------------------------
         public static void CoresUpToDateCheck(MainWindow mainwindow)
         {
-            // If All Cores up to date
-            // If the Update List is empty, but PC Cores have been found and scanned
-            if (ListUpdatedCoresName.Count == 0 && ListPcCoresName.Count != 0)
+            // -------------------------
+            // Cores - Already Up to Date
+            // -------------------------
+            // Update List is empty, but PC Cores have been found and scanned
+            if (ListUpdatedCoresName.Count == 0 
+                && ListPcCoresName.Count != 0 
+                && (string)mainwindow.comboBoxDownload.SelectedItem != "New Cores")
             {
-                if ((string)mainwindow.comboBoxDownload.SelectedItem == "New Cores")
-                {
-                    System.Windows.MessageBox.Show("No New Cores available.");
-                }
-                else
-                {
-                    System.Windows.MessageBox.Show("Cores already lastest version.");
-                }
+                System.Windows.MessageBox.Show("Cores already lastest version.");
+
+                // Prevent Updated Cores from doubling up on next check
+                MainWindow.ClearAll();
+                MainWindow.ClearNameDates();
             }
+
+            // -------------------------
+            // New Cores - Not Found
+            // -------------------------
+            // Updat List is Empty
+            if ((string)mainwindow.comboBoxDownload.SelectedItem == "New Cores" 
+                && ListUpdatedCoresName.Count == 0)
+            {
+                System.Windows.MessageBox.Show("No New Cores available.");
+
+                // Prevent Updated Cores from doubling up on next check
+                MainWindow.ClearAll();
+                MainWindow.ClearNameDates();
+            }
+
         }
 
     }

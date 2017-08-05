@@ -31,22 +31,29 @@ namespace Stellar
             // Write Log Append
             if (Configure.logEnable == true) // Only if Log is Enabled through Config Checkbox
             {
-                using (FileStream fs = new FileStream(/*pass data*/Configure.logPath + "stellar.log", FileMode.Append, FileAccess.Write))
-                using (StreamWriter sw = new StreamWriter(fs))
+                // Check for Save Error
+                try
                 {
-                    sw.WriteLine(DateTime.Now);
-                    sw.WriteLine("--------------------------------------\r\n");
-
-                    // Append List
-                    for (int x = 0; x < Queue.ListUpdatedCoresName.Count; x++)
+                    using (FileStream fs = new FileStream(Configure.logPath + "stellar.log", FileMode.Append, FileAccess.Write))
+                    using (StreamWriter sw = new StreamWriter(fs))
                     {
-                        sw.WriteLine(Queue.ListUpdatedCoresName[x]);
+                        sw.WriteLine(DateTime.Now);
+                        sw.WriteLine("--------------------------------------\r\n");
+
+                        // Append List
+                        for (int x = 0; x < Queue.ListUpdatedCoresName.Count; x++)
+                        {
+                            sw.WriteLine(Queue.ListUpdatedCoresName[x]);
+                        }
+
+                        sw.WriteLine("\r\n");
+
+                        sw.Close();
                     }
-
-                    sw.WriteLine("\r\n");
-
-                    // Close Log
-                    sw.Close();
+                }
+                catch
+                {
+                    System.Windows.MessageBox.Show("Error Saving Output Log to " + "\"" + Configure.logPath + "\"" + ". May require Administrator Privileges.");
                 }
             }
         }
