@@ -28,6 +28,16 @@ Program needs [7-zip](http://www.7-zip.org/download.html) installed in order to 
 - If RetroArch is installed in Program Files folder, you may need to `Run As Administrator`.
 <br>
 
+### Menu Options
+- `New Install` - Installs RetroArch, Redistributables, & Cores. Replaces Configs with default.
+- `Upgrade` - Upgrades RetroArch to the latest version, including Redistributables and Configs.
+- `RetroArch` - Updates RetroArch to the latest version, excluding Redistributables and Configs.
+- `RA + Cores` - Updates RetroArch and currently installed Cores.
+- `Cores` - Updates currently installed Cores.
+- `New Cores` - Installs Cores that are newly releseased or missing from your current install.
+- `Redist` - Installs Redistributables. Helpful if RetroArch won't start after update.
+<br>
+
 ### New Install
 To install RetroArch and Cores for first time use (Large download):
 
@@ -57,7 +67,7 @@ Temp zip files are stored in `%appdata%` and deleted when complete.
 <br>
 
 ### Troubleshooting
-- If the program starts with a white background, go to `Configur`e → `Clear Saved`, restart program.  
+- If the program starts with a white background, go to `Configure` → `Clear Saved`, restart program.  
 Or go to `C:\Users\[Your Name]\AppData\Local\Stellar` and delete the old configs.
 - If you receive "Error: Cannot connect to Server", try a few times, it may have failed to download the cores list.
 - If certain cores are throwing the updater out of sync, delete them and use "New Cores" option to download a new version.
