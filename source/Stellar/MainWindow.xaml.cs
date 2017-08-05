@@ -654,7 +654,7 @@ namespace Stellar
 
                 // Call Cores Up To Date Method
                 // If All Cores up to date, display message
-                Queue.CoresUpToDateCheck(this);
+                Queue.CoresUpToDateCheck(this); //Note there are Clears() in this method
 
                 // -------------------------
                 // Window Checklist Popup
@@ -750,7 +750,7 @@ namespace Stellar
             // -----------------------------------------------
             // If RetroArch or Cores Update
             // -----------------------------------------------
-            // If Update Download Combobox Cores or RA+Cores selected
+            // RA+Cores or Cores Selected
             if ((string)comboBoxDownload.SelectedItem == "New Install"
                 || (string)comboBoxDownload.SelectedItem == "RA+Cores" 
                 || (string)comboBoxDownload.SelectedItem == "Cores" 
@@ -780,7 +780,7 @@ namespace Stellar
                 // Call Cores Up To Date Method
                 // If All Cores up to date, display message
                 //
-                Queue.CoresUpToDateCheck(this);
+                Queue.CoresUpToDateCheck(this); //Note there are Clears() in this method
 
 
                 // -------------------------

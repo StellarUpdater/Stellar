@@ -410,21 +410,31 @@ namespace Stellar
 
 
             // -------------------------
-            // If Update Complete, and not downloading Cores, Clear All
+            // If Update Complete
             // -------------------------
             // Cross Thread
             mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
             {
+                // If Downloading RetroArch and Not Cores, Clear All
+                //
                 if ((string)mainwindow.comboBoxDownload.SelectedItem == "RetroArch"
                 || (string)mainwindow.comboBoxDownload.SelectedItem == "Upgrade"
                 || (string)mainwindow.comboBoxDownload.SelectedItem == "Redist")
                 {
                     // Clear
                     MainWindow.ClearAll();
-
+                    
                     // Progress Info
                     mainwindow.labelProgressInfo.Content = "RetroArch Complete";
 
+                    waiter = new ManualResetEvent(false);
+                }
+                else if ((string)mainwindow.comboBoxDownload.SelectedItem == "RA+Cores")
+                {
+                    // Ignore Clear for Cores
+
+                    // Progress Info
+                    mainwindow.labelProgressInfo.Content = "RetroArch Complete";
 
                     waiter = new ManualResetEvent(false);
                 }

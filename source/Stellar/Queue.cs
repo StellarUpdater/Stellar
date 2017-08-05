@@ -158,8 +158,11 @@ namespace Stellar
                 System.Windows.MessageBox.Show("Cores already lastest version.");
 
                 // Prevent Updated Cores from doubling up on next check
-                MainWindow.ClearAll();
-                MainWindow.ClearNameDates();
+                if((string)mainwindow.comboBoxDownload.SelectedItem != "RA+Cores") //ignore RA+Cores
+                {
+                    MainWindow.ClearAll();
+                    MainWindow.ClearNameDates();
+                }
             }
 
             // -------------------------
