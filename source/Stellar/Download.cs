@@ -370,21 +370,21 @@ namespace Stellar
                 // Convert Local Time to Server Time
                 // This doesn't work in a Method
                 DateTime utcTime = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
-                TimeZoneInfo tzi = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
-                DateTime libretroServerTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, tzi);
+                //TimeZoneInfo tzi = TimeZoneInfo.FindSystemTimeZoneById("Universal Time Coordinated");
+                //DateTime libretroServerTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, tzi);
 
                 if (File.Exists(Paths.retroarchPath + "retroarch.exe"))
                 {
                     // Set the File Date Time Stamp - Very Important! Let's file sync compare for next update.
-                    File.SetCreationTime(Paths.retroarchPath + "retroarch.exe", libretroServerTime); //Use Server Timezone, (used to be DateTime.Now)
-                    File.SetLastWriteTime(Paths.retroarchPath + "retroarch.exe", libretroServerTime);
+                    File.SetCreationTime(Paths.retroarchPath + "retroarch.exe", utcTime); //Use Server Timezone, (used to be DateTime.Now)
+                    File.SetLastWriteTime(Paths.retroarchPath + "retroarch.exe", utcTime);
                 }
 
                 if (File.Exists(Paths.retroarchPath + "retroarch_debug.exe"))
                 {
                     // Set the File Date Time Stamp - Very Important! Let's file sync compare for next update.
-                    File.SetCreationTime(Paths.retroarchPath + "retroarch_debug.exe", libretroServerTime);  //(used to be DateTime.Now)
-                    File.SetLastWriteTime(Paths.retroarchPath + "retroarch_debug.exe", libretroServerTime);
+                    File.SetCreationTime(Paths.retroarchPath + "retroarch_debug.exe", utcTime);  //(used to be DateTime.Now)
+                    File.SetLastWriteTime(Paths.retroarchPath + "retroarch_debug.exe", utcTime);
                 }
             }
 
@@ -578,14 +578,14 @@ namespace Stellar
                     // Convert Local Time to Server Time
                     // This doesn't work in a Method
                     DateTime utcTime = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
-                    TimeZoneInfo tzi = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
-                    DateTime libretroServerTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, tzi); // .AddHours(12) Needs to be 6-12 hours ahead to be more recent than server? 24 Hour AM/PM Problem?
+                    //TimeZoneInfo tzi = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+                    //DateTime libretroServerTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, tzi); // .AddHours(12) Needs to be 6-12 hours ahead to be more recent than server? 24 Hour AM/PM Problem?
 
                     // Set the File Date Time Stamp - Very Important! Let's file sync compare for next update.
                     if (File.Exists(Paths.coresPath + Queue.ListUpdatedCoresName[i]))
                     {
-                        File.SetCreationTime(Paths.coresPath + Queue.ListUpdatedCoresName[i], libretroServerTime); // Created Date Time = Now, (used to be DateTime.Now)
-                        File.SetLastWriteTime(Paths.coresPath + Queue.ListUpdatedCoresName[i], libretroServerTime); //maybe disable modified date?
+                        File.SetCreationTime(Paths.coresPath + Queue.ListUpdatedCoresName[i], utcTime); // Created Date Time = Now, (used to be DateTime.Now)
+                        File.SetLastWriteTime(Paths.coresPath + Queue.ListUpdatedCoresName[i], utcTime); //maybe disable modified date?
                     }
                 }
 
