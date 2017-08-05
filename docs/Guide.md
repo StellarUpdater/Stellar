@@ -1,26 +1,23 @@
-# RetroArch Nightly Updater for Windows
-
-## Guide
-
-![Stellar](https://raw.githubusercontent.com/StellarUpdater/Stellar/master/images/stellar.png)
+# Stellar Guide
+### RetroArch Nightly Updater for Windows
 
 ### Requirements
-Please update only once per day to conserve Libretro server bandwidth.
-Please install [7-zip](http://www.7-zip.org/download.html) to unzip the file. 
+Please update only once per day to conserve Libretro server bandwidth.  
+Please install [7-zip](http://www.7-zip.org/download.html) to unzip the file.  
 Stellar also uses it to unzip the Nightly 7z. Also supports WinRAR.
 
 - 7-Zip or WinRAR to extract 7z
 - Older Windows may need .NET Framework 4.5 installed.
 - Old versions of Windows 7 may need to be updated to SP1
 - `Run as Administrator` if accessing Program Files path (should be default).
-<br />
+&nbsp;
 
 ### How it works
 - It analyzes http://buildbot.libretro.com/nightly/windows/
 - Gets the latest 7z file
 - Extracts and overwrites exe's to your RetroArch folder
 - Updates latest cores
-<br />
+&nbsp;
 
 ### How to use
 - All you need is the `exe`. It's portable, no install.
@@ -29,7 +26,7 @@ Stellar also uses it to unzip the Nightly 7z. Also supports WinRAR.
 - The `Check` button will preview the file URL before downloading.
 - It should not overwrite your configs, but keep a backup before updating.
 - If RetroArch is installed in Program Files folder, you may need to `Run As Administrator`.
-<br />
+&nbsp;
 
 ### New Install
 To install RetroArch and Cores for first time use (Large download):
@@ -40,7 +37,7 @@ To install RetroArch and Cores for first time use (Large download):
 
 Don't use this option to Update or if you already have it installed. Please conserve Libretro bandwidth.
 If you don't need Nightly alpha builds, consider using the Stable version1 before installing.
-<br />
+&nbsp;
 
 ### Cores Update
 1. Select your RetroArch main folder
@@ -56,7 +53,7 @@ Temp zip files are stored in `%appdata%` and deleted when complete.
 - Click `Check` Button → Uncheck the Cores you don't want to update → Close Out → Click `Update`
 - It won't save the checkbox states (for now), you will need to exclude again each time you update.
 - Keep a backup of your important cores in case of accidentally overwriting
-<br />
+&nbsp;
 
 ### Troubleshooting
 - If the program starts with a white background, go to Configure → Clear Saved, restart program.
