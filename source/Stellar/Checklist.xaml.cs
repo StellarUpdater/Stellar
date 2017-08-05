@@ -86,7 +86,7 @@ namespace Stellar
         {
             // Clear Lists to prevent doubling up
             // Once Update List has been cleared, you can't get it back
-            MainWindow.ClearNameDates();
+            //MainWindow.ClearNameDates();
         }
 
         // -----------------------------------------------

@@ -135,7 +135,8 @@ namespace Stellar
 
             // If 64-bit OR 64 w32 Selected, change Download URL to x86_64
             //
-            else if ((string)mainwindow.comboBoxArchitecture.SelectedItem == "64-bit" || (string)mainwindow.comboBoxArchitecture.SelectedItem == "64 w32")
+            else if ((string)mainwindow.comboBoxArchitecture.SelectedItem == "64-bit" 
+                || (string)mainwindow.comboBoxArchitecture.SelectedItem == "64 w32")
             {
                 // Last Item in Nightlies List is available
                 if (!string.IsNullOrEmpty(nightly7z))
@@ -301,7 +302,7 @@ namespace Stellar
 
 
             // -------------------------
-            // Remove Unkown Cores
+            // Remove Unknown Cores
             // -------------------------
             // Unknown PC Core Name+Dates that don't match Buildbot Core Name+Date
             for (int i = 0; i < Queue.ListPcCoresName.Count; i++)
@@ -316,6 +317,21 @@ namespace Stellar
                     Queue.ListPcCoresUnknownNameDate.Add(Queue.ListPcCoresNameDate[i]);
                 }
             }
+
+
+            // -------------------------
+            // Fix Buildbot Core Dates List
+            // -------------------------
+            for (int i = 0; i < Queue.ListBuildbotCoresName.Count; i++)
+            {
+                // If PC Does not Contain Buidlbot Core Name
+                if (!Queue.ListPcCoresName.Contains(Queue.ListBuildbotCoresName[i]))
+                {
+                    // Remove Buildbot Date at Loop Number Index
+                    Queue.ListBuildbotCoresDate.RemoveAt(i);
+                }
+            }
+
 
             // Debug
             //var message = string.Join(Environment.NewLine, Queue.ListExcludedCoresNameDate);

@@ -176,23 +176,31 @@ namespace Stellar
         }
 
         // -----------------------------------------------
-        // Clear All
+        // Clear RetroArch Variables
         // -----------------------------------------------
-        public static void ClearAll()
+        public static void ClearRetroArchVars()
         {
-            // -------------------------
-            // Strings
-            // -------------------------
             Parse.parseUrl = string.Empty;
-            Parse.parseCoresUrl = string.Empty;
-            Parse.indexextendedUrl = string.Empty;
-            Paths.buildbotArchitecture = string.Empty;
             Parse.nightly7z = string.Empty;
             Download.extractArgs = string.Empty;
+        }
 
-            // -------------------------
-            // Lists
-            // -------------------------
+        // -----------------------------------------------
+        // Clear Cores Variables
+        // -----------------------------------------------
+        public static void ClearCoresVars()
+        {
+            Parse.parseCoresUrl = string.Empty;
+            Parse.indexextendedUrl = string.Empty;
+            Download.extractArgs = string.Empty;
+        }
+
+        // -----------------------------------------------
+        // Clear Lists
+        // -----------------------------------------------
+
+        public static void ClearLists()
+        {
             // RetroArch
             if (Queue.NightliesList != null)
             {
@@ -206,94 +214,12 @@ namespace Stellar
                 Queue.ListPcCoresName.Clear();
                 Queue.ListPcCoresName.TrimExcess();
             }
-
             // PC Core Date
             if (Queue.ListPcCoresDate != null)
             {
                 Queue.ListPcCoresDate.Clear();
                 Queue.ListPcCoresDate.TrimExcess();
             }
-
-            // PC Unknown Name+Date
-            if (Queue.ListPcCoresUnknownNameDate != null)
-            {
-                Queue.ListPcCoresUnknownNameDate.Clear();
-                Queue.ListPcCoresUnknownNameDate.TrimExcess();
-            }
-
-            // Buildbot Core Name
-            if (Queue.ListBuildbotCoresName != null)
-            {
-                Queue.ListBuildbotCoresName.Clear();
-                Queue.ListBuildbotCoresName.TrimExcess();
-            }
-
-            // Buildbot Core Date
-            if (Queue.ListBuildbotCoresDate != null)
-            {
-                Queue.ListBuildbotCoresDate.Clear();
-                Queue.ListBuildbotCoresDate.TrimExcess();
-            }
-
-            // Buildbot Core New Name
-            if (Queue.ListBuildbotCoresNewName != null)
-            {
-                Queue.ListBuildbotCoresNewName.Clear();
-                Queue.ListBuildbotCoresNewName.TrimExcess();
-            }
-
-            // Buildbot Core ID
-            if (Queue.ListBuildbotID != null)
-            {
-                Queue.ListBuildbotID.Clear();
-                Queue.ListBuildbotID.TrimExcess();
-            }
-
-            // Excluded Core Name
-            if (Queue.ListExcludedCoresName != null)
-            {
-                Queue.ListExcludedCoresName.Clear();
-                Queue.ListExcludedCoresName.TrimExcess();
-            }
-
-            // Excluded Core Name ObservableCollection
-            if (Queue.CollectionExcludedCoresName != null)
-            {
-                Queue.CollectionExcludedCoresName = null;
-            }
-
-            // Excluded Core Name+Date
-            if (Queue.ListExcludedCoresNameDate != null)
-            {
-                Queue.ListExcludedCoresNameDate.Clear();
-                Queue.ListExcludedCoresNameDate.TrimExcess();
-            }
-
-            // Updated Cores Name
-            if (Queue.ListUpdatedCoresName != null)
-            {
-                Queue.ListUpdatedCoresName.Clear();
-                Queue.ListUpdatedCoresName.TrimExcess();
-            }
-            
-            // Updated Cores Name Collection
-            if (Queue.CollectionUpdatedCoresName != null)
-            {
-                Queue.CollectionUpdatedCoresName = null;
-            }
-
-            // Do Not Clear
-            //
-            // ListRejectedCores
-            // ListPcCoresNameDate
-            // ListBuildbotCoresNameDate
-        }
-
-        // -----------------------------------------------
-        // Clear Name+Dates
-        // -----------------------------------------------
-        public static void ClearNameDates()
-        {
             // PC Cores Name+Date
             if (Queue.ListPcCoresNameDate != null)
             {
@@ -305,7 +231,12 @@ namespace Stellar
             {
                 Queue.CollectionPcCoresNameDate = null;
             }
-
+            // PC Unknown Name+Date
+            if (Queue.ListPcCoresUnknownNameDate != null)
+            {
+                Queue.ListPcCoresUnknownNameDate.Clear();
+                Queue.ListPcCoresUnknownNameDate.TrimExcess();
+            }
             // PC Cores Unknown Name+Date
             if (Queue.ListPcCoresUnknownNameDate != null)
             {
@@ -317,6 +248,19 @@ namespace Stellar
                 Queue.CollectionPcCoresUnknownNameDate = null;
             }
 
+
+            // Buildbot Core Name
+            if (Queue.ListBuildbotCoresName != null)
+            {
+                Queue.ListBuildbotCoresName.Clear();
+                Queue.ListBuildbotCoresName.TrimExcess();
+            }
+            // Buildbot Core Date
+            if (Queue.ListBuildbotCoresDate != null)
+            {
+                Queue.ListBuildbotCoresDate.Clear();
+                Queue.ListBuildbotCoresDate.TrimExcess();
+            }
             // Buildbot Cores Name+Date
             if (Queue.ListBuildbotCoresNameDate != null)
             {
@@ -328,13 +272,55 @@ namespace Stellar
             {
                 Queue.CollectionBuildbotCoresNameDate = null;
             }
+            // Buildbot Core New Name
+            if (Queue.ListBuildbotCoresNewName != null)
+            {
+                Queue.ListBuildbotCoresNewName.Clear();
+                Queue.ListBuildbotCoresNewName.TrimExcess();
+            }
+            // Buildbot Core ID
+            if (Queue.ListBuildbotID != null)
+            {
+                Queue.ListBuildbotID.Clear();
+                Queue.ListBuildbotID.TrimExcess();
+            }
 
+
+            // Excluded Core Name
+            if (Queue.ListExcludedCoresName != null)
+            {
+                Queue.ListExcludedCoresName.Clear();
+                Queue.ListExcludedCoresName.TrimExcess();
+            }
+            // Excluded Core Name ObservableCollection
+            if (Queue.CollectionExcludedCoresName != null)
+            {
+                Queue.CollectionExcludedCoresName = null;
+            }
             // Excluded Core Name+Date
             if (Queue.ListExcludedCoresNameDate != null)
             {
                 Queue.ListExcludedCoresNameDate.Clear();
                 Queue.ListExcludedCoresNameDate.TrimExcess();
             }
+
+
+            // Updated Cores Name
+            if (Queue.ListUpdatedCoresName != null)
+            {
+                Queue.ListUpdatedCoresName.Clear();
+                Queue.ListUpdatedCoresName.TrimExcess();
+            }
+            // Updated Cores Name Collection
+            if (Queue.CollectionUpdatedCoresName != null)
+            {
+                Queue.CollectionUpdatedCoresName = null;
+            }
+
+
+            // Do Not Clear
+            //
+            // ListRejectedCores
         }
 
 
@@ -374,8 +360,6 @@ namespace Stellar
 
 
         
-
-
 
         // ----------------------------------------------------------------------------------------------
         // CONTROLS
@@ -439,10 +423,6 @@ namespace Stellar
         // -----------------------------------------------
         private void buttonBuildBotDir_Click(object sender, RoutedEventArgs e)
         {
-            // Call SetArchitecture Method
-            // If Dropdown Combobox is 32-bit, parseURL is x86 URL. If 64-bit, x86_64 URL.
-            Paths.SetArchitecture(this);
-
             // Open the URL
             Process.Start(textBoxDownload.Text);
         }
@@ -469,14 +449,6 @@ namespace Stellar
         // -----------------------------------------------
         private void comboBoxArchitecture_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Clear All for next pass
-            ClearAll();
-
-            // Call SetArchitecture Method
-            Paths.SetArchitecture(this);
-
-            Paths.SetUrls(this);
-
             try
             {
                 // Save Selected Arhitecture
@@ -488,6 +460,14 @@ namespace Stellar
             {
 
             }
+
+            // Set Architecture to show in URL Textbox
+            Paths.SetArchitecture(this);
+            // Show URL in Textbox
+            Paths.SetUrls(this);
+
+            // Clear for next pass
+            ClearLists();
         }
 
         // -----------------------------------------------
@@ -527,7 +507,7 @@ namespace Stellar
 
                 // Upgrade
                 //
-                if ((string)comboBoxDownload.SelectedItem == "Upgrade")
+                else if ((string)comboBoxDownload.SelectedItem == "Upgrade")
                 {
                     // Change Update Button Text
                     buttonUpdateTextBlock.Text = "Upgrade";
@@ -543,7 +523,7 @@ namespace Stellar
 
                 // New Cores
                 //
-                if ((string)comboBoxDownload.SelectedItem == "New Cores")
+                else if ((string)comboBoxDownload.SelectedItem == "New Cores")
                 {
                     // Change Update Button Text to "Upgrade"
                     buttonUpdateTextBlock.Text = "Download";
@@ -564,8 +544,8 @@ namespace Stellar
             // Call Set Urls Method
             Paths.SetUrls(this);
 
-            // Clear All if checked/unchecked for next pass
-            ClearAll();
+            // Clear if checked/unchecked for next pass
+            ClearLists();
         }
 
         // -----------------------------------------------
@@ -587,16 +567,15 @@ namespace Stellar
         // -----------------------------------------------
         private void buttonCheck_Click(object sender, RoutedEventArgs e)
         {
-            // Clear All to prevent Lists doubling up
-            ClearAll();
-
             // Progress Info
             labelProgressInfo.Content = "Checking...";
 
             // Call SetArchitecture Method
             Paths.SetArchitecture(this);
 
-            // If Downloading RetroArch Standalone
+            // -------------------------
+            // RetroArch Part
+            // -------------------------
             if ((string)comboBoxDownload.SelectedItem == "New Install"
                 || (string)comboBoxDownload.SelectedItem == "Upgrade" 
                 || (string)comboBoxDownload.SelectedItem == "RA+Cores" 
@@ -617,14 +596,12 @@ namespace Stellar
                 }
             }
 
-            // Clear the string to allow Checking again
-            //Parse.nightly7z = string.Empty;
-
             // Progress Info
             labelProgressInfo.Content = "";
 
+
             // -------------------------
-            // CORES
+            // Cores Part
             // -------------------------
             // If Download Combobox Cores or RA+Cores selected
             if ((string)comboBoxDownload.SelectedItem == "RA+Cores" 
@@ -637,20 +614,8 @@ namespace Stellar
                 // Call Methods - Build Cores Lists
                 Parse.ScanPcCoresDir(this);
 
-                // -------------------------
-                // Core Check
-                // -------------------------
-                // Call New Cores Method
-                if ((string)comboBoxDownload.SelectedItem == "New Cores")
-                {
-                    Queue.NewCores(this);
-                }
-                // Call Updated Cores Method
-                else
-                {
-                    Queue.UpdatedCores(this);
-                }
-
+                // Create Update List
+                Queue.UpdatedCores(this);
 
                 // Call Cores Up To Date Method
                 // If All Cores up to date, display message
@@ -666,23 +631,21 @@ namespace Stellar
                     checklist = new Checklist();
                     checklist.Owner = Window.GetWindow(this);
                     checklist.ShowDialog();
-
-                    // -------------------------
-                    // Clear Name+Date Lists to prevent doubling up on next pass
-                    // -------------------------
-                    ClearNameDates();
                 }
             }
 
             // Clear All again to prevent doubling up on Update button
-            //
-            ClearAll();
+            //ClearAll();
+            ClearRetroArchVars();
+            ClearCoresVars();
+            ClearLists();
         }
 
 
         // -----------------------------------------------
-        // Update Button - Launches Download and 7-Zip Extraction
+        // Update Button
         // -----------------------------------------------
+        // Launches Download and 7-Zip Extraction
         private void buttonUpdate_Click(object sender, RoutedEventArgs e)
         {
             // Add backslash to Location Textbox path if missing
@@ -748,7 +711,7 @@ namespace Stellar
 
 
             // -----------------------------------------------
-            // If RetroArch or Cores Update
+            // If RetroArch+Cores or Cores Only Update
             // -----------------------------------------------
             // RA+Cores or Cores Selected
             if ((string)comboBoxDownload.SelectedItem == "New Install"
@@ -762,31 +725,12 @@ namespace Stellar
                 // Call Methods - Build Cores Lists
                 Parse.ScanPcCoresDir(this);
 
-                // -------------------------
-                // Core Check
-                // -------------------------
-                // Call New Cores Method
-                if ((string)comboBoxDownload.SelectedItem == "New Cores" || (string)comboBoxDownload.SelectedItem == "New Install")
-                {
-                    Queue.NewCores(this);
-                }
-                // Call Updated Cores Method
-                else
-                {
-                    Queue.UpdatedCores(this);
-                }
-
+                // Create Update List
+                Queue.UpdatedCores(this);
 
                 // Call Cores Up To Date Method
                 // If All Cores up to date, display message
-                //
                 Queue.CoresUpToDateCheck(this); //Note there are Clears() in this method
-
-
-                // -------------------------
-                // Clear Name+Date Lists to prevent doubling up on next pass
-                // -------------------------
-                ClearNameDates();
             }
 
 
@@ -796,7 +740,6 @@ namespace Stellar
             // -----------------------------------------------
             if (ready == 1)
             {
-                // Start Download
                 Download.StartDownload(this);
             }
             else

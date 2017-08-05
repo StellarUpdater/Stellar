@@ -96,50 +96,57 @@ namespace Stellar
         // -----------------------------------------------
         public static void UpdatedCores(MainWindow mainwindow)
         {
-            // For each Buildbot Date that is Greater than PC Modified Date, add a Buildbot Name to the Update List
-
-            // Re-create ListbuilbotCoresName by comparing it to ListPcCoresName and keeping only Matches
-            ListBuildbotCoresName = ListPcCoresName.Intersect(ListBuildbotCoresName).ToList();
-
-            // List Compare - Use the newly created ListbuilbotCoresName to draw Names from
-            for (int i = 0; i < ListBuildbotCoresName.Count; i++)
+            // -------------------------
+            // New / Missing Cores
+            // -------------------------
+            if ((string)mainwindow.comboBoxDownload.SelectedItem == "New Cores" 
+                || (string)mainwindow.comboBoxDownload.SelectedItem == "New Install")
             {
-                // If PC Core Name List Contains the Buildbot Core Name [i]
-                if (ListPcCoresName.Contains(ListBuildbotCoresName[i]))
+                // Make a List of All Buildbot Cores
+                // Make a List of All PC Cores
+                // Subtract PC List from Buildbot List
+                ListUpdatedCoresName = ListBuildbotCoresName.Except(ListPcCoresName).ToList();
+            }
+
+            // -------------------------
+            // Update Cores
+            // -------------------------
+            else
+            {
+                // For each Buildbot Date that is Greater than PC Modified Date, add a Buildbot Name to the Update List
+
+                // Re-create ListbuilbotCoresName by comparing it to ListPcCoresName and keeping only Matches
+                ListBuildbotCoresName = ListPcCoresName.Intersect(ListBuildbotCoresName).ToList();
+
+                // List Compare - Use the newly created ListbuilbotCoresName to draw Names from
+                for (int i = 0; i < ListBuildbotCoresName.Count; i++)
                 {
-                    // If Buildbot Core Date Greater Than > PC Core Modified Date
-                    // Add Buildbot Core Name to Update List
-                    if (DateTime.ParseExact(ListBuildbotCoresDate[i], "yyyy-MM-dd", CultureInfo.InvariantCulture) > DateTime.ParseExact(ListPcCoresDate[i], "yyyy-MM-dd", CultureInfo.InvariantCulture))
+                    // If PC Core Name List Contains the Buildbot Core Name [i]
+                    if (ListPcCoresName.Contains(ListBuildbotCoresName[i]))
                     {
-                        ListUpdatedCoresName.Add(ListBuildbotCoresName[i]);
+                        // If Buildbot Core Date Greater Than > PC Core Modified Date
+                        // Add Buildbot Core Name to Update List
+                        if (DateTime.ParseExact(ListBuildbotCoresDate[i], "yyyy-MM-dd", CultureInfo.InvariantCulture) > DateTime.ParseExact(ListPcCoresDate[i], "yyyy-MM-dd", CultureInfo.InvariantCulture))
+                        {
+                            ListUpdatedCoresName.Add(ListBuildbotCoresName[i]);
+                        }
+                        // Less Than, Add Buildbot Core Name to Exclusion List
+                        else
+                        {
+                            ListExcludedCoresName.Add(ListBuildbotCoresName[i]);
+                        }
                     }
-                    // Less Than, Add Buildbot Core Name to Exclusion List
                     else
                     {
-                        ListExcludedCoresName.Add(ListBuildbotCoresName[i]);
+                        // Remove [i] Item from Buildbot Name List (Prevent Index out of range)
+                        ListBuildbotCoresName.Remove(ListBuildbotCoresName[i]);
                     }
-                }
-                else
-                {
-                    // Remove [i] Item from Buildbot Name List (Prevent Index out of range)
-                    ListBuildbotCoresName.Remove(ListBuildbotCoresName[i]);
-                }
 
+                }
             }
 
         }
 
-
-        // -----------------------------------------------
-        // Create New/Missing Cores List
-        // -----------------------------------------------
-        public static void NewCores(MainWindow mainwindow)
-        {
-            // Make a List of All Buildbot Cores
-            // Make a List of All PC Cores
-            // Subtract PC List from Buildbot List
-            ListUpdatedCoresName = ListBuildbotCoresName.Except(ListPcCoresName).ToList();
-        }
 
 
         // -----------------------------------------------
@@ -160,8 +167,10 @@ namespace Stellar
                 // Prevent Updated Cores from doubling up on next check
                 if((string)mainwindow.comboBoxDownload.SelectedItem != "RA+Cores") //ignore RA+Cores
                 {
-                    MainWindow.ClearAll();
-                    MainWindow.ClearNameDates();
+                    //MainWindow.ClearAll();
+                    //MainWindow.ClearNameDates();
+                    MainWindow.ClearCoresVars();
+                    MainWindow.ClearLists();
                 }
             }
 
@@ -175,8 +184,10 @@ namespace Stellar
                 System.Windows.MessageBox.Show("No New Cores available.");
 
                 // Prevent Updated Cores from doubling up on next check
-                MainWindow.ClearAll();
-                MainWindow.ClearNameDates();
+                //MainWindow.ClearAll();
+                //MainWindow.ClearNameDates();
+                MainWindow.ClearCoresVars();
+                MainWindow.ClearLists();
             }
 
         }

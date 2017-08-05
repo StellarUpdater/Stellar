@@ -106,12 +106,8 @@ namespace Stellar
                 //
                 Thread worker = new Thread(() =>
                 {
-                    // start a new waiter for next pass (clicking update again)
-                    waiter = new ManualResetEvent(false);
-
                     RetroArchDownload(mainwindow);
-
-                }); //end thread
+                });
 
                 // Start Download Thread
                 //
@@ -128,16 +124,10 @@ namespace Stellar
                 //
                 Thread worker = new Thread(() =>
                 {
-                    // start a new waiter for next pass (clicking update again)
-                    waiter = new ManualResetEvent(false);
-
                     RetroArchDownload(mainwindow);
 
-                    waiter = new ManualResetEvent(false);
-
                     CoresDownload(mainwindow);
-
-                }); //end thread
+                });
 
                 // Start Download Thread
                 //
@@ -153,12 +143,8 @@ namespace Stellar
                 // Start New Thread
                 Thread worker = new Thread(() =>
                 {
-                    // start a new waiter for next pass (clicking update again)
-                    waiter = new ManualResetEvent(false);
-
                     CoresDownload(mainwindow);
-
-                }); //end thread
+                });
 
                 // Start Download Thread
                 //
@@ -210,11 +196,6 @@ namespace Stellar
                 execExtract.StartInfo.RedirectStandardOutput = true; //set to false if using ShellExecute
                 execExtract.StartInfo.FileName = Archiver.archiver; //archiver string
                 // Extract -o and Overwrite -y Selected Files -r
-
-                //object comboBoxDownloadItem = mainwindow.comboBoxDownload.Dispatcher.Invoke((() =>
-                //{
-                //    return mainwindow.comboBoxDownload.SelectedItem;
-                //}));
 
                 // -------------------------
                 // 7-Zip
@@ -410,35 +391,14 @@ namespace Stellar
 
 
             // -------------------------
-            // If Update Complete
+            // RetroArch Download Complete
             // -------------------------
             // Cross Thread
             mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
             {
-                // If Downloading RetroArch and Not Cores, Clear All
-                //
-                if ((string)mainwindow.comboBoxDownload.SelectedItem == "RetroArch"
-                || (string)mainwindow.comboBoxDownload.SelectedItem == "Upgrade"
-                || (string)mainwindow.comboBoxDownload.SelectedItem == "Redist")
-                {
-                    // Clear
-                    MainWindow.ClearAll();
-                    
-                    // Progress Info
-                    mainwindow.labelProgressInfo.Content = "RetroArch Complete";
-
-                    waiter = new ManualResetEvent(false);
-                }
-                else if ((string)mainwindow.comboBoxDownload.SelectedItem == "RA+Cores")
-                {
-                    // Ignore Clear for Cores
-
-                    // Progress Info
-                    mainwindow.labelProgressInfo.Content = "RetroArch Complete";
-
-                    waiter = new ManualResetEvent(false);
-                }
-            });
+                mainwindow.labelProgressInfo.Content = "RetroArch Complete";
+                MainWindow.ClearRetroArchVars();
+            }); 
         }
 
 
@@ -448,6 +408,8 @@ namespace Stellar
         // -------------------------
         public static void CoresDownload(MainWindow mainwindow)
         {
+            waiter = new ManualResetEvent(false);
+
             // -------------------------
             // New Install
             // -------------------------
@@ -629,7 +591,14 @@ namespace Stellar
 
                     // Clear list to prevent doubling up
                     //
-                    MainWindow.ClearAll();
+                    MainWindow.ClearRetroArchVars();
+                    MainWindow.ClearCoresVars();
+                    MainWindow.ClearLists();
+
+                    // Clear Checklist Checkbox Rejected Cores
+                    //
+                    Queue.ListRejectedCores.Clear();
+                    Queue.ListRejectedCores.TrimExcess();
                 }
 
             } // end for loop

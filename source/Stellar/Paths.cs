@@ -30,12 +30,6 @@ namespace Stellar
         public static string retroarchPath; // Location of User's RetroArch Folder
         public static string coresPath; // Location of User's cores folder
 
-        // System Program Paths
-        // not yet used
-        //public static string programsPath;
-        //public static string program_x86 = "C:\\Program Files (x86)\\";
-        //public static string program_x86_64 = "C:\\Program Files\\";
-
         // Buildbot
         // string buildbotCoresPage = string.Empty; //Parse.parseUrl + "latest/"
         public static string buildbotArchitecture; //x86 or x86_64\
@@ -56,8 +50,7 @@ namespace Stellar
                 Parse.parseUrl = Parse.libretro_x86;
                 Parse.parseCoresUrl = Parse.libretro_x86 + "latest/";
                 Parse.indexextendedUrl = Parse.libretro_x86 + "latest/.index-extended";
-                // Set Programs Path
-                //programsPath = program_x86; //not yet used
+
                 // Buildbot Architecture
                 buildbotArchitecture = "x86";
                 buildbotArchitectureCores = "x86";
@@ -72,8 +65,7 @@ namespace Stellar
                 Parse.parseUrl = Parse.libretro_x86_64;
                 Parse.parseCoresUrl = Parse.libretro_x86_64 + "latest/";
                 Parse.indexextendedUrl = Parse.libretro_x86_64 + "latest/.index-extended";
-                // Set Programs Path
-                //programsPath = program_x86_64; //not yet used
+
                 // Buildbot Architecture
                 buildbotArchitecture = "x86_64";
                 buildbotArchitectureCores = "x86_64";
@@ -88,8 +80,7 @@ namespace Stellar
                 Parse.parseUrl = Parse.libretro_x86_64; //64-bit URL, w32 is cores-only
                 Parse.parseCoresUrl = Parse.libretro_x86_64_w32 + "latest/";
                 Parse.indexextendedUrl = Parse.libretro_x86_64_w32 + "latest/.index-extended";
-                // Set Programs Path
-                //programsPath = program_x86_64; //not yet used
+
                 // Buildbot Architecture
                 buildbotArchitecture = "x86_64"; //64-bit URL, w32 is cores-only
                 buildbotArchitectureCores = "x86_64_w32";

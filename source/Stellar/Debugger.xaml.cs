@@ -49,9 +49,12 @@ namespace Stellar
                 // Extra Debugger Clears
 
                 // Clear All to prevent Lists doubling up
-                MainWindow.ClearAll();
+                //MainWindow.ClearAll();
+                //MainWindow.ClearNameDates();
+                MainWindow.ClearRetroArchVars();
+                MainWindow.ClearCoresVars();
+                MainWindow.ClearLists();
 
-                MainWindow.ClearNameDates();
 
                 // Lists
 
@@ -265,9 +268,13 @@ namespace Stellar
                 }
 
                 // Clear All to prevent Lists doubling up
-                MainWindow.ClearAll();
+                //MainWindow.ClearAll();
+                //MainWindow.ClearNameDates();
 
-                MainWindow.ClearNameDates();
+                // Clear as to not interfere with Check/Update after closing out of Debug
+                MainWindow.ClearRetroArchVars();
+                MainWindow.ClearCoresVars();
+                MainWindow.ClearLists();
             }
 
             // -------------------------
