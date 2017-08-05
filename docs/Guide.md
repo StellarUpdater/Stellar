@@ -1,15 +1,16 @@
 # Stellar Guide
 ### RetroArch Nightly Updater for Windows
+---
 
 ### Requirements
 Please update only once per day to conserve Libretro server bandwidth.  
-Please install [7-zip](http://www.7-zip.org/download.html) to unzip the file.  
-Stellar also uses it to unzip the Nightly 7z. Also supports WinRAR.
+Program needs [7-zip](http://www.7-zip.org/download.html) installed in order to unzip the cores.
 
 - 7-Zip or WinRAR to extract 7z
 - Older Windows may need .NET Framework 4.5 installed.
 - Old versions of Windows 7 may need to be updated to SP1
 - `Run as Administrator` if accessing Program Files path (should be default).
+&nbsp;
 &nbsp;
 
 ### How it works
@@ -27,6 +28,7 @@ Stellar also uses it to unzip the Nightly 7z. Also supports WinRAR.
 - It should not overwrite your configs, but keep a backup before updating.
 - If RetroArch is installed in Program Files folder, you may need to `Run As Administrator`.
 &nbsp;
+&nbsp;
 
 ### New Install
 To install RetroArch and Cores for first time use (Large download):
@@ -37,6 +39,7 @@ To install RetroArch and Cores for first time use (Large download):
 
 Don't use this option to Update or if you already have it installed. Please conserve Libretro bandwidth.
 If you don't need Nightly alpha builds, consider using the Stable version1 before installing.
+&nbsp;
 &nbsp;
 
 ### Cores Update
@@ -54,9 +57,10 @@ Temp zip files are stored in `%appdata%` and deleted when complete.
 - It won't save the checkbox states (for now), you will need to exclude again each time you update.
 - Keep a backup of your important cores in case of accidentally overwriting
 &nbsp;
+&nbsp;
 
 ### Troubleshooting
-- If the program starts with a white background, go to Configure → Clear Saved, restart program.
+- If the program starts with a white background, go to Configure → Clear Saved, restart program.  
 Or go to C:\Users\[Your Name]\AppData\Local\Stellar and delete the old configs.
 - If you receive "Error: Cannot connect to Server", try a few times, it may have failed to download the cores list.
 - If certain cores are throwing the updater out of sync, delete them and use "New Cores" option to download a new version.
