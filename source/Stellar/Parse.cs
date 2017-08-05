@@ -272,7 +272,9 @@ namespace Stellar
             }
 
             // Popup Error Message if PC Cores Name List has no items 0
-            if (Queue.ListPcCoresName.Count == 0 && (string)mainwindow.comboBoxDownload.SelectedItem != "New Cores") // Ignore for New Cores
+            if (Queue.ListPcCoresName.Count == 0
+                && (string)mainwindow.comboBoxDownload.SelectedItem != "New Install" // Ignore
+                && (string)mainwindow.comboBoxDownload.SelectedItem != "New Cores") // Ignore
             {
                 System.Windows.MessageBox.Show("Cores not found. \n\nPlease select your RetroArch main folder.");
                 MainWindow.ready = 0;

@@ -180,7 +180,7 @@ namespace Stellar
             waiter = new ManualResetEvent(false); //start a new waiter for next pass (clicking update again)
 
             Uri downloadUrl = new Uri(Parse.nightlyUrl); // Parse.nightlyUrl = x84/x86_64 + Parse.nightly7z
-            //Uri downloadUrl = new Uri("http://127.0.0.1:8888/2016-08-19_RetroArch.7z"); // TESTING Virtual Server URL
+            //Uri downloadUrl = new Uri("http://127.0.0.1:8888/RetroArch.7z"); // TESTING Virtual Server URL
             //Async
             wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wc_DownloadProgressChanged);
             wc.DownloadFileCompleted += new AsyncCompletedEventHandler(wc_DownloadFileCompleted);
@@ -202,7 +202,6 @@ namespace Stellar
             {
                 // Allow 0.1 seconds before Extracting Files
                 Thread.Sleep(100);
-
 
                 //exec7zip.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden; //use with ShellExecute
                 execExtract.StartInfo.UseShellExecute = false;
@@ -233,12 +232,11 @@ namespace Stellar
                             "\"" + Paths.tempPath + Parse.nightly7z + "\"",
                             "-o\"" + Paths.retroarchPath + "\"",
                             "*",
-                            "&& cd" + "\"" + Paths.retroarchPath + "\"", //change directory
-                            "&& mkdir cores" //create cores directory
                         };
 
                         // Join List with Spaces
                         execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
+
                     }
                     // -------------------------
                     // Upgrade
@@ -390,8 +388,9 @@ namespace Stellar
                 }
             }
 
+            // -------------------------
             // Delete Temporary Nightly 7z file
-            //
+            // -------------------------
             using (Process deleteTemp = new Process())
             {
                 // Allow 0.1 seconds before Deleting Temporary Files
@@ -409,8 +408,10 @@ namespace Stellar
                 deleteTemp.Close();
             }
 
+
+            // -------------------------
             // If Update Complete, and not downloading Cores, Clear All
-            //
+            // -------------------------
             // Cross Thread
             mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
             {

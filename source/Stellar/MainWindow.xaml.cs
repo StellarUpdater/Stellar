@@ -596,7 +596,7 @@ namespace Stellar
             // Call SetArchitecture Method
             Paths.SetArchitecture(this);
 
-            // If Downloading RetroArch and NOT Cores
+            // If Downloading RetroArch Standalone
             if ((string)comboBoxDownload.SelectedItem == "New Install"
                 || (string)comboBoxDownload.SelectedItem == "Upgrade" 
                 || (string)comboBoxDownload.SelectedItem == "RA+Cores" 
@@ -738,6 +738,22 @@ namespace Stellar
             // -----------------------------------------------
             if ((string)comboBoxDownload.SelectedItem == "New Install")
             {
+                // -------------------------
+                // Create Cores Folder
+                // -------------------------
+                using (Process execMakeCoresDir = new Process())
+                {
+                    execMakeCoresDir.StartInfo.UseShellExecute = false;
+                    execMakeCoresDir.StartInfo.Verb = "runas"; //use with ShellExecute for admin
+                    execMakeCoresDir.StartInfo.CreateNoWindow = true;
+                    execMakeCoresDir.StartInfo.RedirectStandardOutput = true; //set to false if using ShellExecute
+                    execMakeCoresDir.StartInfo.FileName = "cmd.exe";
+                    execMakeCoresDir.StartInfo.Arguments = "/c cd " + "\"" + Paths.retroarchPath + "\"" + " && mkdir cores";
+                    execMakeCoresDir.Start();
+                    execMakeCoresDir.WaitForExit();
+                    execMakeCoresDir.Close();
+                }
+
                 // Set Cores Folder (Dont Scan PC)
                 Paths.coresPath = Paths.retroarchPath + "cores\\";
                 // Call Parse Builtbot Page Method
@@ -750,7 +766,8 @@ namespace Stellar
             // If RetroArch or Cores Update
             // -----------------------------------------------
             // If Update Download Combobox Cores or RA+Cores selected
-            if ((string)comboBoxDownload.SelectedItem == "RA+Cores" 
+            if ((string)comboBoxDownload.SelectedItem == "New Install"
+                || (string)comboBoxDownload.SelectedItem == "RA+Cores" 
                 || (string)comboBoxDownload.SelectedItem == "Cores" 
                 || (string)comboBoxDownload.SelectedItem == "New Cores")
             {
@@ -764,7 +781,7 @@ namespace Stellar
                 // Core Check
                 // -------------------------
                 // Call New Cores Method
-                if ((string)comboBoxDownload.SelectedItem == "New Cores")
+                if ((string)comboBoxDownload.SelectedItem == "New Cores" || (string)comboBoxDownload.SelectedItem == "New Install")
                 {
                     Queue.NewCores(this);
                 }
