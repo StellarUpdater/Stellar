@@ -322,15 +322,40 @@ namespace Stellar
             // -------------------------
             // Fix Buildbot Core Dates List
             // -------------------------
-            for (int i = 0; i < Queue.ListBuildbotCoresName.Count; i++)
+            // Count Items in PC Cores Name List
+            try
             {
-                // If PC Does not Contain Buidlbot Core Name
-                if (!Queue.ListPcCoresName.Contains(Queue.ListBuildbotCoresName[i]))
+                int pcNameCount = (from x in Queue.ListPcCoresDate select x).Count();
+
+                // Loop through Buildbot List removing Unknown Core Dates
+                for (int i = 0; i < Queue.ListBuildbotCoresName.Count; i++)
                 {
-                    // Remove Buildbot Date at Loop Number Index
-                    Queue.ListBuildbotCoresDate.RemoveAt(i);
+                    // Count Items in Buildbot Cores Dates List
+                    int buildbotDateCount = (from x in Queue.ListBuildbotCoresDate select x).Count();
+
+                    // If PC Does not Contain Buidlbot Core Name
+                    if (!Queue.ListPcCoresName.Contains(Queue.ListBuildbotCoresName[i]))
+                    {
+                        // Check if Index is Out of Range
+                        if (i != 0
+                            && pcNameCount != 0
+                            && buildbotDateCount != 0)
+                        {
+                            //System.Windows.MessageBox.Show(Convert.ToString(i));
+
+                            // Remove Buildbot Date at Loop Number Index
+                            Queue.ListBuildbotCoresDate.RemoveAt(i);
+                        }
+
+                    }
                 }
             }
+            catch
+            {
+
+            }
+
+            
 
 
             // Debug
