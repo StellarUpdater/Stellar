@@ -28,7 +28,6 @@ namespace Stellar
         //private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         //{
         //    // Clear All to prevent Lists doubling up
-        //    MainWindow.ClearAll();
         //}
 
 
@@ -49,8 +48,6 @@ namespace Stellar
                 // Extra Debugger Clears
 
                 // Clear All to prevent Lists doubling up
-                //MainWindow.ClearAll();
-                //MainWindow.ClearNameDates();
                 MainWindow.ClearRetroArchVars();
                 MainWindow.ClearCoresVars();
                 MainWindow.ClearLists();
@@ -266,10 +263,6 @@ namespace Stellar
                     count = (from x in Queue.ListUpdatedCoresName select x).Count();
                     labelUpdateCount.Content = count.ToString();
                 }
-
-                // Clear All to prevent Lists doubling up
-                //MainWindow.ClearAll();
-                //MainWindow.ClearNameDates();
 
                 // Clear as to not interfere with Check/Update after closing out of Debug
                 MainWindow.ClearRetroArchVars();

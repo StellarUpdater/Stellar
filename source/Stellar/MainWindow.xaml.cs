@@ -1,6 +1,5 @@
 ﻿using Stellar.Properties;
 using System;
-using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
@@ -208,6 +207,13 @@ namespace Stellar
                 Queue.NightliesList.TrimExcess();
             }
 
+            // Larget List Compre
+            Queue.largestList = null;
+
+            // PC & Buildbot Core Sublists
+            Queue.pcArr = null;
+            Queue.bbArr = null;
+
             // PC Core Name
             if (Queue.ListPcCoresName != null)
             {
@@ -279,11 +285,11 @@ namespace Stellar
                 Queue.ListBuildbotCoresNewName.TrimExcess();
             }
             // Buildbot Core ID
-            if (Queue.ListBuildbotID != null)
-            {
-                Queue.ListBuildbotID.Clear();
-                Queue.ListBuildbotID.TrimExcess();
-            }
+            //if (Queue.ListBuildbotID != null)
+            //{
+            //    Queue.ListBuildbotID.Clear();
+            //    Queue.ListBuildbotID.TrimExcess();
+            //}
 
 
             // Excluded Core Name
@@ -635,7 +641,6 @@ namespace Stellar
             }
 
             // Clear All again to prevent doubling up on Update button
-            //ClearAll();
             ClearRetroArchVars();
             ClearCoresVars();
             ClearLists();

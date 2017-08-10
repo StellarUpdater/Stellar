@@ -420,6 +420,7 @@ namespace Stellar
                 if ((string)mainwindow.comboBoxDownload.SelectedItem == "New Install")
                 {
                     Queue.ListUpdatedCoresName = Queue.ListBuildbotCoresName;
+                    Queue.ListUpdatedCoresName.TrimExcess();
                 }
             });
 
@@ -429,6 +430,7 @@ namespace Stellar
             // -------------------------
             // Remove Rejected Cores from the Update List
             Queue.ListUpdatedCoresName = Queue.ListUpdatedCoresName.Except(Queue.ListRejectedCores).ToList();
+            Queue.ListUpdatedCoresName.TrimExcess();
 
             // -------------------------
             // Download

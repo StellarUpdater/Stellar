@@ -27,7 +27,7 @@
         xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
         xmlns:my="clr-namespace:Stellar"
         x:Class="Stellar.MainWindow"
-        Title="Stellar ~ RetroArch Nightly Updater (0.8.4-beta)" 
+        Title="Stellar ~ RetroArch Nightly Updater (0.8.5-beta)" 
         Height="225" Width="500"
         ResizeMode="CanMinimize" 
         Icon="logo.ico"

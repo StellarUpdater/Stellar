@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Windows;
 
 /* ----------------------------------------------------------------------
     Stellar ~ RetroArch Nightly Updater by wyzrd
@@ -60,7 +61,7 @@ namespace Stellar
             {
                 // Parse the HTML Page from parseUrl
                 page = Download.wc.DownloadString(parseUrl); // HTML Page
-                element = "<td class='fb-n'><a href='/nightly/windows/" + Paths.buildbotArchitecture + "/(.*?)'>"; // HTML Table containing Dated 7z, (.*?) is the text to keep
+                element = "<a href='/nightly/windows/" + Paths.buildbotArchitecture + "/(.*?)'>"; // HTML Table containing Dated 7z, (.*?) is the text to keep
 
                 // Add each 7z Date/Time to the Nightlies List
                 foreach (Match match in Regex.Matches(page, element))
@@ -68,15 +69,18 @@ namespace Stellar
 
                 // Remove from the List all 7z files that do not contain _RetroArch.7z (filters out unwanted)
                 Queue.NightliesList.RemoveAll(u => !u.Contains("_RetroArch.7z"));
+                Queue.NightliesList.TrimExcess();
+
                 // Sort the Nighlies List, lastest 7z is first
                 Queue.NightliesList.Sort(); //do not disable this sort
 
+
                 // Get First Element of Nightlies List 
-                nightly7z = Queue.NightliesList[Queue.NightliesList.Count - 1];
+                nightly7z = Queue.NightliesList.First();
             }
             catch
             {
-                System.Windows.MessageBox.Show("Error: Cannot connect to Server.");
+                MessageBox.Show("Error: Problem creating RetroArch list from HTML.");
             }
 
             // -------------------------
@@ -116,18 +120,6 @@ namespace Stellar
             //
             if ((string)mainwindow.comboBoxArchitecture.SelectedItem == "32-bit")
             {
-                // Last Item in Nightlies List is available
-                if (!string.IsNullOrEmpty(nightly7z))
-                {
-
-                }
-                // Last Item in Nightlies List cannot be found
-                else
-                {
-                    // Clear Download Textbox
-                    mainwindow.textBoxDownload.Text = "";
-                }
-
                 // Create URL string for Uri
                 nightlyUrl = libretro_x86 + nightly7z;
 
@@ -135,21 +127,8 @@ namespace Stellar
 
             // If 64-bit OR 64 w32 Selected, change Download URL to x86_64
             //
-            else if ((string)mainwindow.comboBoxArchitecture.SelectedItem == "64-bit" 
-                || (string)mainwindow.comboBoxArchitecture.SelectedItem == "64 w32")
+            else if ((string)mainwindow.comboBoxArchitecture.SelectedItem == "64-bit")
             {
-                // Last Item in Nightlies List is available
-                if (!string.IsNullOrEmpty(nightly7z))
-                {
-
-                }
-                // Last Item in Nightlies List cannot be found
-                else
-                {
-                    // Clear Download Textbox
-                    mainwindow.textBoxDownload.Text = "";
-                }
-
                 // Create URL string for Uri
                 nightlyUrl = libretro_x86_64 + nightly7z;
             }
@@ -174,12 +153,12 @@ namespace Stellar
                 // index-extended cores text file
                 string buildbotCoresIndex = Download.wc.DownloadString(indexextendedUrl);
                 // Trim ending linebreak
-                buildbotCoresIndex = buildbotCoresIndex.TrimEnd( '\n' );
+                buildbotCoresIndex = buildbotCoresIndex.TrimEnd('\n');
 
                 // Check if index-extended failed or is empty
                 if (string.IsNullOrEmpty(buildbotCoresIndex))
                 {
-                    System.Windows.MessageBox.Show("Error: Cores list is empty or failed to donwload index-extended.");
+                    MessageBox.Show("Error: Cores list is empty or failed to donwload index-extended.");
                 }
 
                 // -------------------------
@@ -200,8 +179,8 @@ namespace Stellar
                     Queue.ListBuildbotCoresDate.Add(arr[0]);
                     Queue.ListBuildbotCoresDate.TrimExcess();
 
-                    Queue.ListBuildbotID.Add(arr[1]);
-                    Queue.ListBuildbotID.TrimExcess();
+                    //Queue.ListBuildbotID.Add(arr[1]);
+                    //Queue.ListBuildbotID.TrimExcess();
 
                     Queue.ListBuildbotCoresName.Add(arr[2]);
                     Queue.ListBuildbotCoresName.TrimExcess();
@@ -212,6 +191,7 @@ namespace Stellar
                 // -------------------------
                 // Remove from the List all that do not contain .dll.zip (filters out unwanted)
                 Queue.ListBuildbotCoresName.RemoveAll(u => !u.Contains(".dll.zip"));
+                Queue.ListBuildbotCoresName.TrimExcess();
 
                 // Remove .zip from all in List
                 for (int i = 0; i < Queue.ListBuildbotCoresName.Count; i++)
@@ -223,21 +203,21 @@ namespace Stellar
                 // -------------------------
                 // Combine
                 // -------------------------
-                // Buildbot Cores Name + Date List
-                // Populate empty NameDate List to be modified for Join (Important!)
-                for (int i = 0; i < Queue.ListBuildbotCoresName.Count; i++)
-                {
-                    Queue.ListBuildbotCoresNameDate.Add(Queue.ListBuildbotCoresName[i]);
-                }
                 // Join Lists Name & Date
                 for (int i = 0; i < Queue.ListBuildbotCoresName.Count; i++)
                 {
-                    Queue.ListBuildbotCoresNameDate[i] = Queue.ListBuildbotCoresName[i] + " " + Queue.ListBuildbotCoresDate[i];
+                    Queue.ListBuildbotCoresNameDate.Add(Queue.ListBuildbotCoresName[i] + " " + Queue.ListBuildbotCoresDate[i]);
                 }
+
+                // -------------------------
+                // Sort Correction
+                // -------------------------
+                Queue.ListBuildbotCoresNameDate.Sort();
+                Queue.ListBuildbotCoresNameDate.TrimExcess();
             }
             catch
             {
-                System.Windows.MessageBox.Show("Error: Cannot connect to Server.");
+                MessageBox.Show("Error: Cannot connect to Server.");
             }
         }
 
@@ -246,10 +226,12 @@ namespace Stellar
         // -----------------------------------------------
         // Scan PC Cores Directory
         // -----------------------------------------------
+        // Creates the PC Name+Date List
         public static void ScanPcCoresDir(MainWindow mainwindow)
         {
             // Cores Folder
-            Paths.coresPath = Paths.retroarchPath + "cores\\"; //end with backslash RetroArch\cores\
+            // end with backslash RetroArch\cores\
+            Paths.coresPath = Paths.retroarchPath + "cores\\"; 
 
             try // program will crash if files not found
             {
@@ -270,6 +252,7 @@ namespace Stellar
             catch
             {
                 MainWindow.ready = 0;
+                MessageBox.Show("Error: Problem scanning PC Cores Name & Dates.");
             }
 
             // Popup Error Message if PC Cores Name List has no items 0
@@ -277,10 +260,9 @@ namespace Stellar
                 && (string)mainwindow.comboBoxDownload.SelectedItem != "New Install" // Ignore
                 && (string)mainwindow.comboBoxDownload.SelectedItem != "New Cores") // Ignore
             {
-                System.Windows.MessageBox.Show("Cores not found. \n\nPlease select your RetroArch main folder.");
+                MessageBox.Show("Cores not found. \n\nPlease select your RetroArch main folder.");
                 MainWindow.ready = 0;
             }
-
 
             // -------------------------
             // PC Cores Join Name + Date List
@@ -291,109 +273,12 @@ namespace Stellar
                 Queue.ListPcCoresNameDate.Add(Queue.ListPcCoresName[i] + " " + Queue.ListPcCoresDate[i]);
             }
 
-
             // -------------------------
             // Sort Correction
             // -------------------------
-            // Recreate Lists as Sorted
             Queue.ListPcCoresNameDate.Sort();
-            // Trim
             Queue.ListPcCoresNameDate.TrimExcess();
-
-
-            // -------------------------
-            // Remove Unknown Cores
-            // -------------------------
-            // Unknown PC Core Name+Dates that don't match Buildbot Core Name+Date
-            for (int i = 0; i < Queue.ListPcCoresName.Count; i++)
-            {
-                // If Buildbot Does Not Contain Core
-                if (!Queue.ListBuildbotCoresName.Contains(Queue.ListPcCoresName[i]))
-                {
-                    // Add PC Core Name to Exclusion List
-                    Queue.ListExcludedCoresNameDate.Add(Queue.ListPcCoresNameDate[i]);
-
-                    // Add PC Core Name to Unknown List (Debugger)
-                    Queue.ListPcCoresUnknownNameDate.Add(Queue.ListPcCoresNameDate[i]);
-                }
-            }
-
-
-            // -------------------------
-            // Fix Buildbot Core Dates List
-            // -------------------------
-            // Count Items in PC Cores Name List
-            try
-            {
-                int pcNameCount = (from x in Queue.ListPcCoresDate select x).Count();
-
-                // Loop through Buildbot List removing Unknown Core Dates
-                for (int i = 0; i < Queue.ListBuildbotCoresName.Count; i++)
-                {
-                    // Count Items in Buildbot Cores Dates List
-                    int buildbotDateCount = (from x in Queue.ListBuildbotCoresDate select x).Count();
-
-                    // If PC Does not Contain Buidlbot Core Name
-                    if (!Queue.ListPcCoresName.Contains(Queue.ListBuildbotCoresName[i]))
-                    {
-                        // Check if Index is Out of Range
-                        if (i != 0
-                            && pcNameCount != 0
-                            && buildbotDateCount != 0)
-                        {
-                            //System.Windows.MessageBox.Show(Convert.ToString(i));
-
-                            // Remove Buildbot Date at Loop Number Index
-                            Queue.ListBuildbotCoresDate.RemoveAt(i);
-                        }
-
-                    }
-                }
-            }
-            catch
-            {
-
-            }
-
-            
-
-
-            // Debug
-            //var message = string.Join(Environment.NewLine, Queue.ListExcludedCoresNameDate);
-            //System.Windows.MessageBox.Show(message);
-
-            // Recreate the PC Cores Name+Date List, Exclude Unknown Cores
-            Queue.ListPcCoresNameDate = Queue.ListPcCoresNameDate.Except(Queue.ListExcludedCoresNameDate).ToList();
-
-
-            // -------------------------
-            // Recreate SubLists - Error, creating interference, overwriting
-            // -------------------------
-            // Now uses the Sorted List
-
-            // Clear
-            if (Queue.ListPcCoresName != null)
-            {
-                Queue.ListPcCoresName.Clear();
-                Queue.ListPcCoresName.TrimExcess();
-            }
-            if (Queue.ListPcCoresDate != null)
-            {
-                Queue.ListPcCoresDate.Clear();
-                Queue.ListPcCoresDate.TrimExcess();
-            }
-
-            foreach (string line in Queue.ListPcCoresNameDate)
-            {
-                string[] arr = line.Split(' ');
-                Queue.ListPcCoresName.Add(arr[0]);
-                Queue.ListPcCoresName.TrimExcess();
-
-                Queue.ListPcCoresDate.Add(arr[1]);
-                Queue.ListPcCoresDate.TrimExcess();
-            }
         }
-
 
     }
 }
