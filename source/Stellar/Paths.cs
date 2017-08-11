@@ -73,21 +73,6 @@ namespace Stellar
                 buildbotArchitecture = "x86_64";
                 buildbotArchitectureCores = "x86_64";
             }
-
-            // -------------------------
-            // If win32 Selected, change Download Architecture to x86_64_w32
-            // -------------------------
-            else if ((string)mainwindow.comboBoxArchitecture.SelectedItem == "64 w32")
-            {
-                // Set Parse URL
-                Parse.parseUrl = Parse.libretro_x86_64; //64-bit URL, w32 is cores-only
-                Parse.parseCoresUrl = Parse.libretro_x86_64_w32 + "latest/";
-                Parse.indexextendedUrl = Parse.libretro_x86_64_w32 + "latest/.index-extended";
-
-                // Buildbot Architecture
-                buildbotArchitecture = "x86_64"; //64-bit URL, w32 is cores-only
-                buildbotArchitectureCores = "x86_64_w32";
-            }
         }
 
 
@@ -107,14 +92,16 @@ namespace Stellar
 
             // If RA+Cores or Cores Selected, Textbox will display URL
             //
-            else if ((string)mainwindow.comboBoxDownload.SelectedItem == "RA+Cores" || (string)mainwindow.comboBoxDownload.SelectedItem == "RetroArch")
+            else if ((string)mainwindow.comboBoxDownload.SelectedItem == "RA+Cores" 
+                || (string)mainwindow.comboBoxDownload.SelectedItem == "RetroArch")
             {
                 mainwindow.textBoxDownload.Text = Parse.parseUrl;
             }
 
             // If Cores Selected, Textbox will display URL
             //
-            else if ((string)mainwindow.comboBoxDownload.SelectedItem == "Cores" || (string)mainwindow.comboBoxDownload.SelectedItem == "New Cores")
+            else if ((string)mainwindow.comboBoxDownload.SelectedItem == "Cores" 
+                || (string)mainwindow.comboBoxDownload.SelectedItem == "New Cores")
             {
                 mainwindow.textBoxDownload.Text = Parse.parseCoresUrl;
             }

@@ -34,8 +34,13 @@ namespace Stellar
 
         //public static string stellar7z; // Self-Update 7z Filename
         public static string stellarLatestVersion; // Self-Update File Version
-        public static int? latestVer = null;
-        public static int? currentVer = null;
+        //public static int? latestVer = null;
+        //public static int? currentVer = null;
+        public static Version latestVer;
+        public static Version currentVer;
+
+        public static string stellar7z; // Self-Update File
+        public static string stellarUrl; // Self-Update Url
 
         public static string nightly7z; // The Parsed Dated 7z Nightly Filename
         public static string nightlyUrl; // Download URL + Dated 7z Filename
@@ -54,18 +59,25 @@ namespace Stellar
         // -----------------------------------------------
         public static void ParseGitHubReleases(MainWindow mainwindow)
         {
+            // Need to Update Version Number at 3 places, Format 0.0.0.0
+            // MainWindow.stellarCurrentVersion
+            // GitHub ./version file
+            // GitHub Release tag
+
             // -------------------------
             // Update Selected
             // -------------------------
             try
             {
                 // Parse the HTML Page from parseUrl
-                page = Download.wc.DownloadString(parseGitHubUrl); // HTML Page
-                element = "<a href=\"/StellarUpdater/Stellar/releases/download/(.*?)/Stellar.7z\" rel=\"nofollow\">"; // HTML Tag containing Stellar Version, (.*?) is the text to keep
+                stellarLatestVersion = Download.wc.DownloadString("https://raw.githubusercontent.com/StellarUpdater/Stellar/master/.version");
+                //page = Download.wc.DownloadString(parseGitHubUrl); // HTML Page
+                //element = "<a href=\"/StellarUpdater/Stellar/releases/download/(.*?)/Stellar.7z\" rel=\"nofollow\">"; // HTML Tag containing Stellar Version, (.*?) is the text to keep
+
 
                 // Add each zip Date/Time to the Nightlies List
-                foreach (Match match in Regex.Matches(page, element))
-                    Queue.ListGitHub.Add(match.Groups[1].Value);
+                //foreach (Match match in Regex.Matches(page, element))
+                //    Queue.ListGitHub.Add(match.Groups[1].Value);
 
                 // Remove extra characters from version number
                 //for (int i = 0; i < Queue.ListGitHub.Count; i++)
@@ -74,48 +86,27 @@ namespace Stellar
                 //}
 
                 // Sort the Nighlies List, lastest 7z is first
-                Queue.ListGitHub.Sort(); //do not disable this sort
+                //Queue.ListGitHub.Sort(); //do not disable this sort
 
-                // Get Lastest Element of File List
-                stellarLatestVersion = Queue.ListGitHub.Last();
+                // Get Latest Element of File List
+                //stellarLatestVersion = Queue.ListGitHub.Last();
 
 
                 // Remove extra characters from version number
-                latestVer = Convert.ToInt32( Regex.Replace(stellarLatestVersion, @"[^\d]", "") );
-                currentVer = Convert.ToInt32( Regex.Replace(MainWindow.stellarCurrentVersion, @"[^\d]", "") );
+                //latestVer = Convert.ToInt32( Regex.Replace(stellarLatestVersion, @"[^\d]", "") );
+                //currentVer = Convert.ToInt32( Regex.Replace(MainWindow.stellarCurrentVersion, @"[^\d]", "") );
+
+                latestVer = new Version(Parse.stellarLatestVersion);
+                currentVer = new Version(MainWindow.stellarCurrentVersion);
 
                 // Debug
                 //MessageBox.Show(Convert.ToString(latestVer));
                 //MessageBox.Show(Convert.ToString(currentVer));
-
-                // Check if Stellar is the Latest Version
-                // Moved to MainWindow Check & Update Buttons
-                //if (latestVer > currentVer)
-                //{
-                //    if (MessageBox.Show("Confirm Update?", "Update Available", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
-                //    {
-                //        // proceed
-                //    }
-                //    else
-                //    {
-                //        MainWindow.ready = 0;
-                //    }
-                //}
-                //else if (latestVer < currentVer)
-                //{
-                //    MessageBox.Show("Already Latest Version");
-                //    MainWindow.ready = 0;
-                //}
-                //else // null
-                //{
-                //    MessageBox.Show("Could Not Find Download");
-                //    MainWindow.ready = 0;
-                //}
             }
             catch
             {
                 MainWindow.ready = 0;
-                MessageBox.Show("Error: Problem Parsing GitHub HTML.");
+                MessageBox.Show("Error: Problem Parsing GitHub Version.");
             }
 
             // -------------------------
@@ -123,7 +114,9 @@ namespace Stellar
             // -------------------------
             if ((string)mainwindow.comboBoxDownload.SelectedItem == "Stellar")
             {
-                nightlyUrl = "https://github.com/StellarUpdater/Stellar/releases/download/" + stellarLatestVersion + "/Stellar.7z";
+                stellar7z = "Stellar.7z";
+                stellarUrl = "https://github.com/StellarUpdater/Stellar/releases/download/" + stellarLatestVersion + "/" + stellar7z;
+                // .../0.8.5.3-beta/Stellar.7z
             }
         }
 
@@ -161,10 +154,6 @@ namespace Stellar
 
                 // Get Lastest Element of Nightlies List 
                 nightly7z = Queue.NightliesList.Last();
-
-                // Debug
-                //MessageBox.Show(nightly7z);
-
             }
             catch
             {

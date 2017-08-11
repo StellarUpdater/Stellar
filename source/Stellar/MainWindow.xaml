@@ -84,13 +84,14 @@
         </LinearGradientBrush>
         <SolidColorBrush x:Key="ComboBox.Pressed.Editable.Button.Border" Color="#FF569DE5"/>
         <SolidColorBrush x:Key="ComboBox.Disabled.Glyph" Color="#FFBFBFBF"/>
-        <SolidColorBrush x:Key="ComboBox.Disabled.Background" Color="#FFF0F0F0"/>
+        <SolidColorBrush x:Key="ComboBox.Disabled.Background" Color="#FF000000"/>
         <SolidColorBrush x:Key="ComboBox.Disabled.Border" Color="#FFD9D9D9"/>
         <SolidColorBrush x:Key="ComboBox.Disabled.Editable.Background" Color="#FFFFFFFF"/>
         <SolidColorBrush x:Key="ComboBox.Disabled.Editable.Border" Color="#FFBFBFBF"/>
         <SolidColorBrush x:Key="ComboBox.Disabled.Editable.Button.Background" Color="Transparent"/>
         <SolidColorBrush x:Key="ComboBox.Disabled.Editable.Button.Border" Color="Transparent"/>
         <SolidColorBrush x:Key="ComboBox.Static.Glyph" Color="#FFFFFFFF"/>
+        
         <Style x:Key="ComboBoxToggleButton" TargetType="{x:Type ToggleButton}">
             <Setter Property="OverridesDefaultStyle" Value="true"/>
             <Setter Property="IsTabStop" Value="false"/>
@@ -180,11 +181,15 @@
                                 <Setter Property="Background" TargetName="splitBorder" Value="{StaticResource ComboBox.Disabled.Editable.Button.Background}"/>
                                 <Setter Property="BorderBrush" TargetName="splitBorder" Value="{StaticResource ComboBox.Disabled.Editable.Button.Border}"/>
                             </MultiDataTrigger>
+                            <Trigger Property="IsEnabled" Value="true">
+                                <Setter Property="TextElement.Foreground" Value="#FFFFFFFF"/>
+                            </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
+        
         <ControlTemplate x:Key="ComboBoxTemplate" TargetType="{x:Type ComboBox}">
             <Grid x:Name="templateRoot" SnapsToDevicePixels="true">
                 <Grid.ColumnDefinitions>
@@ -227,8 +232,17 @@
                     <Setter Property="Canvas.Top" TargetName="opaqueRect" Value="{Binding VerticalOffset, ElementName=DropDownScrollViewer}"/>
                     <Setter Property="Canvas.Left" TargetName="opaqueRect" Value="{Binding HorizontalOffset, ElementName=DropDownScrollViewer}"/>
                 </Trigger>
+                <!-- Enabled Foreground Text -->
+                <Trigger Property="IsEnabled" Value="true">
+                    <Setter Property="Foreground" Value="#FFFFFFFF"/>
+                </Trigger>
+                <!-- Disabled Foreground Text -->
+                <Trigger Property="IsEnabled" Value="false">
+                    <Setter Property="Foreground" Value="#FF000000"/>
+                </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
+        
         <SolidColorBrush x:Key="TextBox.Static.Background" Color="#FFFFFFFF"/>
         <Style x:Key="ComboBoxEditableTextBox" TargetType="{x:Type TextBox}">
             <Setter Property="OverridesDefaultStyle" Value="true"/>
@@ -246,6 +260,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        
         <ControlTemplate x:Key="ComboBoxEditableTemplate" TargetType="{x:Type ComboBox}">
             <Grid x:Name="templateRoot" SnapsToDevicePixels="true">
                 <Grid.ColumnDefinitions>
@@ -814,7 +829,7 @@
             <System:String>Cores</System:String>
             <System:String>New Cores</System:String>
             <System:String>Redist</System:String>
-            <!-- <System:String>Stellar</System:String> -->
+            <System:String>Stellar</System:String>
         </ComboBox>
 
         <!-- Architecture ComboBox -->  
@@ -828,8 +843,7 @@
                   Background="Black"
                   BorderBrush="White"
                   SelectionChanged="comboBoxArchitecture_SelectionChanged" 
-                  ToolTip="Architecture Type"
-                  Foreground="White">
+                  ToolTip="Architecture Type">
             <System:String>32-bit</System:String>
             <System:String>64-bit</System:String>
             <!--<System:String>64 w32</System:String>-->

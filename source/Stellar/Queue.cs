@@ -32,11 +32,11 @@ namespace Stellar
         // GitHub Self-Update
         public static List<string> ListGitHub = new List<string>();
 
-
         // RetroArch Nightly
         // Create Nightlies 7z List to be populated by Parse
         public static List<string> NightliesList = new List<string>();
 
+        // List Count Comparison
         public static int? largestList = null;
 
         // -----------------------------------------------
@@ -51,10 +51,11 @@ namespace Stellar
         // Name+Date
         public static List<string> ListPcCoresNameDate = new List<string>();
         public static ObservableCollection<string> CollectionPcCoresNameDate; 
-        // Unknown Name+Date
-        public static List<string> ListPcCoresUnknownNameDate = new List<string>();
+        // Unknown Name
+        public static List<string> ListPcCoresUnknownName = new List<string>();
         public static ObservableCollection<string> CollectionPcCoresUnknownNameDate;
 
+        // Array for Name/Date Sublists
         public static string[] pcArr = null;
 
         // -----------------------------------------------
@@ -75,6 +76,7 @@ namespace Stellar
         public static List<string> ListBuildbotCoresNewName = new List<string>();
         public static ObservableCollection<string> CollectionBuildbotCoresNewName;
 
+        // Array for Name/Date Sublists
         public static string[] bbArr = null;
 
         // -----------------------------------------------
@@ -142,9 +144,9 @@ namespace Stellar
 
                         // PC Unknown Name
                         // Check if List already contains Core
-                        if (!ListPcCoresUnknownNameDate.Contains(pcArr[0]))
+                        if (!ListPcCoresUnknownName.Contains(pcArr[0]))
                         {
-                            Queue.ListPcCoresUnknownNameDate.Add(pcArr[0]);
+                            Queue.ListPcCoresUnknownName.Add(pcArr[0]);
                         }
                     }
                 }
@@ -343,7 +345,7 @@ namespace Stellar
                             else
                             {
                                 // PC Unknown Name
-                                ListPcCoresUnknownNameDate.Add(pcArr[0]);
+                                ListPcCoresUnknownName.Add(pcArr[0]);
                                 // Buildbot Excluded Name
                                 ListExcludedCoresName.Add(pcArr[0]);
                             }
@@ -361,8 +363,8 @@ namespace Stellar
                 // -------------------------
                 Queue.ListExcludedCoresName.Sort();
                 Queue.ListExcludedCoresName.TrimExcess();
-                Queue.ListPcCoresUnknownNameDate.Sort();
-                Queue.ListPcCoresUnknownNameDate.TrimExcess();
+                Queue.ListPcCoresUnknownName.Sort();
+                Queue.ListPcCoresUnknownName.TrimExcess();
 
                 // -------------------------
                 // Create Update List

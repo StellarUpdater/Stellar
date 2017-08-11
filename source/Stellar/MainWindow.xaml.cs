@@ -60,7 +60,7 @@ namespace Stellar
         {
             InitializeComponent();
 
-            stellarCurrentVersion = "0.8.5";
+            stellarCurrentVersion = "0.8.5.3";
             TitleVersion = "Stellar ~ RetroArch Nightly Updater (" + stellarCurrentVersion + "-beta)";
             DataContext = this;
 
@@ -195,6 +195,8 @@ namespace Stellar
             Parse.nightly7z = string.Empty;
             Download.extractArgs = string.Empty;
 
+            Parse.stellar7z = string.Empty;
+            Parse.stellarUrl = string.Empty;
             Parse.stellarLatestVersion = string.Empty;
             Parse.latestVer = null;
             Parse.currentVer = null;
@@ -254,15 +256,15 @@ namespace Stellar
                 Queue.CollectionPcCoresNameDate = null;
             }
             // PC Unknown Name+Date
-            if (Queue.ListPcCoresUnknownNameDate != null)
+            if (Queue.ListPcCoresUnknownName != null)
             {
-                Queue.ListPcCoresUnknownNameDate.Clear();
-                Queue.ListPcCoresUnknownNameDate.TrimExcess();
+                Queue.ListPcCoresUnknownName.Clear();
+                Queue.ListPcCoresUnknownName.TrimExcess();
             }
             // PC Cores Unknown Name+Date
-            if (Queue.ListPcCoresUnknownNameDate != null)
+            if (Queue.ListPcCoresUnknownName != null)
             {
-                Queue.ListPcCoresUnknownNameDate.Clear();
+                Queue.ListPcCoresUnknownName.Clear();
             }
             // PC Cores Unknown Name+Date Collection
             if (Queue.CollectionPcCoresUnknownNameDate != null)
@@ -500,13 +502,21 @@ namespace Stellar
             // Reset Update Button Text to "Update"
             buttonUpdateTextBlock.Text = "Update";
 
-            // Get the currently selected item
-            //comboBoxDownloadItem = comboBoxDownload.SelectedItem.ToString();
-
             // Save Download Combobox Settings for next launch
             Settings.Default["download"] = comboBoxDownload.SelectedItem;
             Settings.Default.Save();
             Settings.Default.Reload();
+
+
+            // Stellar Self-Update Selected, Disable Architecture ComboBox
+            if ((string)comboBoxDownload.SelectedItem == "Stellar")
+            {
+                comboBoxArchitecture.IsEnabled = false;
+            }
+            else
+            {
+                comboBoxArchitecture.IsEnabled = true;
+            }
 
             // Cross Thread
             Dispatcher.BeginInvoke((MethodInvoker)delegate
@@ -550,9 +560,6 @@ namespace Stellar
                     // Change Update Button Text to "Upgrade"
                     buttonUpdateTextBlock.Text = "Download";
 
-                    // Message
-                    //System.Windows.MessageBox.Show("Press the Check Button to see if New or Missing Cores are available.");
-
                     // Save Download Combobox Settings back to RA+Cores instead of New Cores for next launch
                     Settings.Default["download"] = "RA+Cores";
                     Settings.Default.Save();
@@ -595,16 +602,12 @@ namespace Stellar
             // Call SetArchitecture Method
             Paths.SetArchitecture(this);
 
+
             // -------------------------
             // Stellar Self-Update
             // -------------------------
             if ((string)comboBoxDownload.SelectedItem == "Stellar")
             {
-                //Parse.libretro_x86 = string.Empty;
-                //Parse.libretro_x86_64 = string.Empty;
-                //Parse.parseCoresUrl = string.Empty;
-                //Parse.indexextendedUrl = string.Empty;
-
                 // Parse GitHub Page HTML
                 Parse.ParseGitHubReleases(this);
 
@@ -614,7 +617,7 @@ namespace Stellar
                 {
                     System.Windows.MessageBox.Show("Update Available");
                 }
-                else if (Parse.latestVer < Parse.currentVer)
+                else if (Parse.latestVer <= Parse.currentVer)
                 {
                     System.Windows.MessageBox.Show("Already Latest Version");
                 }
@@ -623,6 +626,7 @@ namespace Stellar
                     System.Windows.MessageBox.Show("Could Not Find Download");
                 }
             }
+
 
             // -------------------------
             // RetroArch Part
@@ -752,7 +756,7 @@ namespace Stellar
                     //    MainWindow.ready = 0;
                     //}
                 }
-                else if (Parse.latestVer < Parse.currentVer)
+                else if (Parse.latestVer <= Parse.currentVer)
                 {
                     MainWindow.ready = 0;
                     System.Windows.MessageBox.Show("Already Latest Version");

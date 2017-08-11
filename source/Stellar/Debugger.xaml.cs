@@ -181,7 +181,7 @@ namespace Stellar
                     // PC Name+Date
                     Queue.CollectionPcCoresNameDate = new ObservableCollection<string>(Queue.ListPcCoresNameDate);
                     // PC Unknown Name+Date
-                    Queue.CollectionPcCoresUnknownNameDate = new ObservableCollection<string>(Queue.ListPcCoresUnknownNameDate);
+                    Queue.CollectionPcCoresUnknownNameDate = new ObservableCollection<string>(Queue.ListPcCoresUnknownName);
 
                     // Buildbot Name
                     Queue.CollectionBuildbotCoresName = new ObservableCollection<string>(Queue.ListBuildbotCoresName);
@@ -240,7 +240,7 @@ namespace Stellar
                     count = (from x in Queue.ListPcCoresNameDate select x).Count();
                     labelPcNameDateCount.Content = count.ToString();
                     // PC Unknown Name+Date
-                    count = (from x in Queue.ListPcCoresUnknownNameDate select x).Count();
+                    count = (from x in Queue.ListPcCoresUnknownName select x).Count();
                     labelPcUnknownCount.Content = count.ToString();
 
                     //// Buildbot Name
