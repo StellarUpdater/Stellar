@@ -151,6 +151,178 @@ namespace Stellar
                 worker.Start();
             }
 
+            // -------------------------
+            // Stellar Self-Update
+            // -------------------------
+            else if ((string)mainwindow.comboBoxDownload.SelectedItem == "Stellar")
+            {
+                // Start New Thread
+                Thread worker = new Thread(() =>
+                {
+                    StellarDownload(mainwindow);
+                });
+
+                // Start Download Thread
+                //
+                worker.Start();
+            }
+
+        }
+
+
+        // -------------------------
+        // Stellar Self-Update Download (Method)
+        // -------------------------
+        public static void StellarDownload(MainWindow mainwindow)
+        {
+            // -------------------------
+            // Download
+            // -------------------------
+            waiter = new ManualResetEvent(false); //start a new waiter for next pass (clicking update again)
+
+            Uri downloadUrl = new Uri(Parse.nightlyUrl); // Parse.nightlyUrl = x84/x86_64 + Parse.nightly7z
+            //Uri downloadUrl = new Uri("http://127.0.0.1:8888/Stellar.7z"); // TESTING Virtual Server URL
+            //Async
+            wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wc_DownloadProgressChanged);
+            wc.DownloadFileCompleted += new AsyncCompletedEventHandler(wc_DownloadFileCompleted);
+            wc.DownloadFileAsync(downloadUrl, Paths.tempPath + Parse.nightly7z);
+
+            // Progress Info
+            progressInfo = "Downloading Stellar...";
+
+            waiter.WaitOne();
+
+
+            // -------------------------
+            // Extract
+            // -------------------------
+            // Progress Info
+            progressInfo = "Extracting Stellar...";
+
+            using (Process execExtract = new Process())
+            {
+                // -------------------------
+                // 7-Zip
+                // -------------------------
+                if (Archiver.extract == "7-Zip")
+                {
+                    Process.Start(
+                        "cmd.exe",
+                        "/c "
+                        + "timeout 3 "
+                        + "&& "
+                        + "\"" + Archiver.archiver + "\"" + " -r -y e " + "\"" + Paths.tempPath + Parse.nightly7z + "\"" + " -o\"" + Paths.currentDir + "\"" + " *"
+                        + "&& "
+                        + "\"" + Paths.currentDir + "Stellar.exe" + "\""
+                        );
+                }
+                // -------------------------
+                // WinRAR
+                // -------------------------
+                else if (Archiver.extract == "WinRAR")
+                {
+                    Process.Start(
+                        "cmd.exe",
+                        "/c "
+                        + "timeout 3 "
+                        + "&& "
+                        + "\"" + Archiver.archiver + "\"" + " -r -y e " + "\"" + Paths.tempPath + Parse.nightly7z + "\"" + " -o\"" + Paths.currentDir + "\"" + " *"
+                        + "&& "
+                        + "\"" + Paths.currentDir + "Stellar.exe" + "\""
+                        );
+                }
+
+                //execExtract.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden; //use with ShellExecute
+                //execExtract.StartInfo.UseShellExecute = true;
+                //execExtract.StartInfo.Verb = "runas"; //use with ShellExecute for admin
+                //execExtract.StartInfo.CreateNoWindow = true;
+                //execExtract.StartInfo.RedirectStandardOutput = false; //set to false if using ShellExecute
+                //execExtract.StartInfo.FileName = Archiver.archiver; //archiver string
+                //// Extract -o and Overwrite -y Selected Files -r
+
+                //// -------------------------
+                //// 7-Zip
+                //// -------------------------
+                //if (Archiver.extract == "7-Zip")
+                //{
+                //    // -------------------------
+                //    // Stellar
+                //    // -------------------------
+                //    if ((string)mainwindow.comboBoxDownload.Dispatcher.Invoke((() => { return mainwindow.comboBoxDownload.SelectedItem; })) == "Stellar")
+                //    {
+                //        // Extract All Files
+                //        List<string> extractArgs = new List<string>() {
+                //            "-r -y e",
+                //            "\"" + Paths.tempPath + Parse.nightly7z + "\"",
+                //            "-o\"" + Paths.currentDir + "\"",
+                //            "*"
+                //        };
+
+                //        // Join List with Spaces
+                //        execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
+                //    }
+                //}
+
+                //// -------------------------
+                //// WinRAR
+                //// -------------------------
+                //else if (Archiver.extract == "WinRAR")
+                //{
+                //    // -------------------------
+                //    // Stellar
+                //    // -------------------------
+                //    if ((string)mainwindow.comboBoxDownload.SelectedItem == "Stellar")
+                //    {
+                //        // Extract only retroarch.exe & retroarch_debug.exe
+                //        List<string> extractArgs = new List<string>() {
+                //            "-y x",
+                //            "\"" + Paths.tempPath + Parse.nightly7z + "\"",
+                //            "*",
+                //            "\"" + Paths.currentDir + "\"",
+                //        };
+
+                //        // Join List with Spaces
+                //        execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
+                //    }
+                //}
+
+                //// Start Extract
+                //execExtract.Start();
+            }
+
+            // Close Stellar before updating exe
+            Environment.Exit(0);
+
+            // -------------------------
+            // Delete Temporary Nightly 7z file
+            // -------------------------
+            using (Process deleteTemp = new Process())
+            {
+                // Allow 0.1 seconds before Deleting Temporary Files
+                Thread.Sleep(100);
+
+                //deleteTemp.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden; //use with ShellExecute
+                deleteTemp.StartInfo.UseShellExecute = false;
+                deleteTemp.StartInfo.Verb = "runas"; //use with ShellExecute for admin
+                deleteTemp.StartInfo.CreateNoWindow = true;
+                deleteTemp.StartInfo.RedirectStandardOutput = true; //set to false if using ShellExecute
+                deleteTemp.StartInfo.FileName = "cmd.exe";
+                deleteTemp.StartInfo.Arguments = "/c del " + "\"" + Paths.tempPath + Parse.nightly7z + "\"";
+                deleteTemp.Start();
+                deleteTemp.WaitForExit();
+                deleteTemp.Close();
+            }
+
+
+            // -------------------------
+            // RetroArch Download Complete
+            // -------------------------
+            // Cross Thread
+            mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
+            {
+                mainwindow.labelProgressInfo.Content = "Stellar Complete";
+                MainWindow.ClearRetroArchVars();
+            });
         }
 
 
@@ -279,7 +451,7 @@ namespace Stellar
                     // -------------------------
                     // New Install
                     // -------------------------
-                    if ((string)mainwindow.comboBoxDownload.SelectedItem == "New Install")
+                    if ((string)mainwindow.comboBoxDownload.Dispatcher.Invoke((() => { return mainwindow.comboBoxDownload.SelectedItem; })) == "New Install")
                     {
                         // Extract All Files
                         List<string> extractArgs = new List<string>() {
@@ -295,7 +467,7 @@ namespace Stellar
                     // -------------------------
                     // Upgrade
                     // -------------------------
-                    else if ((string)mainwindow.comboBoxDownload.SelectedItem == "Upgrade")
+                    else if ((string)mainwindow.comboBoxDownload.Dispatcher.Invoke((() => { return mainwindow.comboBoxDownload.SelectedItem; })) == "Upgrade")
                     {
                         // Extract All Files, Exclude Configs
                         List<string> extractArgs = new List<string>() {
@@ -312,7 +484,8 @@ namespace Stellar
                     // -------------------------
                     // Update
                     // -------------------------
-                    else if ((string)mainwindow.comboBoxDownload.SelectedItem == "RetroArch" || (string)mainwindow.comboBoxDownload.SelectedItem == "RA+Cores")
+                    else if ((string)mainwindow.comboBoxDownload.Dispatcher.Invoke((() => { return mainwindow.comboBoxDownload.SelectedItem; })) == "RetroArch"
+                            || (string)mainwindow.comboBoxDownload.Dispatcher.Invoke((() => { return mainwindow.comboBoxDownload.SelectedItem; })) == "RA+Cores")
                     {
                         // Extract only retroarch.exe & retroarch_debug.exe
                         List<string> extractArgs = new List<string>() {
@@ -328,7 +501,7 @@ namespace Stellar
                     // -------------------------
                     // Redist
                     // -------------------------
-                    else if ((string)mainwindow.comboBoxDownload.SelectedItem == "Redist")
+                    else if ((string)mainwindow.comboBoxDownload.Dispatcher.Invoke((() => { return mainwindow.comboBoxDownload.SelectedItem; })) == "Redist")
                     {
                         // Extract only retroarch.exe & retroarch_debug.exe
                         List<string> extractArgs = new List<string>() {

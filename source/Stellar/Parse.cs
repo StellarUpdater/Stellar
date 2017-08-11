@@ -32,16 +32,100 @@ namespace Stellar
         public static string page;
         public static string element;
 
+        //public static string stellar7z; // Self-Update 7z Filename
+        public static string stellarLatestVersion; // Self-Update File Version
+        public static int? latestVer = null;
+        public static int? currentVer = null;
+
         public static string nightly7z; // The Parsed Dated 7z Nightly Filename
         public static string nightlyUrl; // Download URL + Dated 7z Filename
 
         public static string parseUrl = "https://buildbot.libretro.com/nightly/windows/x86_64/"; // Parse URL to be changed with Dropdown Combobox. Default is 64-bit.
+        public static string parseGitHubUrl = "https://github.com/StellarUpdater/Stellar/releases/"; // Self-Update
         public static string indexextendedUrl = string.Empty; // index-extended Cores Text File
         public static string parseCoresUrl = string.Empty; // Buildbot Cores URL to be parsed
         public static string libretro_x86 = "https://buildbot.libretro.com/nightly/windows/x86/"; // Download URL 32-bit
         public static string libretro_x86_64 = "https://buildbot.libretro.com/nightly/windows/x86_64/"; // Download URL 64-bit
         public static string libretro_x86_64_w32 = "https://buildbot.libretro.com/nightly/windows/x86_64_w32/"; // Download URL 64-bit w32
 
+
+        // -----------------------------------------------
+        // Parse GitHub Release Tags Page HTML
+        // -----------------------------------------------
+        public static void ParseGitHubReleases(MainWindow mainwindow)
+        {
+            // -------------------------
+            // Update Selected
+            // -------------------------
+            try
+            {
+                // Parse the HTML Page from parseUrl
+                page = Download.wc.DownloadString(parseGitHubUrl); // HTML Page
+                element = "<a href=\"/StellarUpdater/Stellar/releases/download/(.*?)/Stellar.7z\" rel=\"nofollow\">"; // HTML Tag containing Stellar Version, (.*?) is the text to keep
+
+                // Add each zip Date/Time to the Nightlies List
+                foreach (Match match in Regex.Matches(page, element))
+                    Queue.ListGitHub.Add(match.Groups[1].Value);
+
+                // Remove extra characters from version number
+                //for (int i = 0; i < Queue.ListGitHub.Count; i++)
+                //{
+                //    Queue.ListGitHub[i] = Regex.Replace(Queue.ListGitHub[i], @"[^\d]", "");
+                //}
+
+                // Sort the Nighlies List, lastest 7z is first
+                Queue.ListGitHub.Sort(); //do not disable this sort
+
+                // Get Lastest Element of File List
+                stellarLatestVersion = Queue.ListGitHub.Last();
+
+
+                // Remove extra characters from version number
+                latestVer = Convert.ToInt32( Regex.Replace(stellarLatestVersion, @"[^\d]", "") );
+                currentVer = Convert.ToInt32( Regex.Replace(MainWindow.stellarCurrentVersion, @"[^\d]", "") );
+
+                // Debug
+                //MessageBox.Show(Convert.ToString(latestVer));
+                //MessageBox.Show(Convert.ToString(currentVer));
+
+                // Check if Stellar is the Latest Version
+                // Moved to MainWindow Check & Update Buttons
+                //if (latestVer > currentVer)
+                //{
+                //    if (MessageBox.Show("Confirm Update?", "Update Available", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
+                //    {
+                //        // proceed
+                //    }
+                //    else
+                //    {
+                //        MainWindow.ready = 0;
+                //    }
+                //}
+                //else if (latestVer < currentVer)
+                //{
+                //    MessageBox.Show("Already Latest Version");
+                //    MainWindow.ready = 0;
+                //}
+                //else // null
+                //{
+                //    MessageBox.Show("Could Not Find Download");
+                //    MainWindow.ready = 0;
+                //}
+            }
+            catch
+            {
+                MainWindow.ready = 0;
+                MessageBox.Show("Error: Problem Parsing GitHub HTML.");
+            }
+
+            // -------------------------
+            // Stellar Selected
+            // -------------------------
+            if ((string)mainwindow.comboBoxDownload.SelectedItem == "Stellar")
+            {
+                nightlyUrl = "https://github.com/StellarUpdater/Stellar/releases/download/" + stellarLatestVersion + "/Stellar.7z";
+            }
+        }
 
 
         // -----------------------------------------------
@@ -61,7 +145,7 @@ namespace Stellar
             {
                 // Parse the HTML Page from parseUrl
                 page = Download.wc.DownloadString(parseUrl); // HTML Page
-                element = "<a href='/nightly/windows/" + Paths.buildbotArchitecture + "/(.*?)'>"; // HTML Table containing Dated 7z, (.*?) is the text to keep
+                element = "<a href='/nightly/windows/" + Paths.buildbotArchitecture + "/(.*?)'>"; // HTML Tag containing Dated 7z, (.*?) is the text to keep
 
                 // Add each 7z Date/Time to the Nightlies List
                 foreach (Match match in Regex.Matches(page, element))
@@ -75,11 +159,16 @@ namespace Stellar
                 Queue.NightliesList.Sort(); //do not disable this sort
 
 
-                // Get First Element of Nightlies List 
-                nightly7z = Queue.NightliesList.First();
+                // Get Lastest Element of Nightlies List 
+                nightly7z = Queue.NightliesList.Last();
+
+                // Debug
+                //MessageBox.Show(nightly7z);
+
             }
             catch
             {
+                MainWindow.ready = 0;
                 MessageBox.Show("Error: Problem creating RetroArch list from HTML.");
             }
 
@@ -158,6 +247,7 @@ namespace Stellar
                 // Check if index-extended failed or is empty
                 if (string.IsNullOrEmpty(buildbotCoresIndex))
                 {
+                    MainWindow.ready = 0;
                     MessageBox.Show("Error: Cores list is empty or failed to donwload index-extended.");
                 }
 
@@ -217,6 +307,7 @@ namespace Stellar
             }
             catch
             {
+                MainWindow.ready = 0;
                 MessageBox.Show("Error: Cannot connect to Server.");
             }
         }
@@ -260,8 +351,8 @@ namespace Stellar
                 && (string)mainwindow.comboBoxDownload.SelectedItem != "New Install" // Ignore
                 && (string)mainwindow.comboBoxDownload.SelectedItem != "New Cores") // Ignore
             {
-                MessageBox.Show("Cores not found. \n\nPlease select your RetroArch main folder.");
                 MainWindow.ready = 0;
+                MessageBox.Show("Cores not found. \n\nPlease select your RetroArch main folder.");
             }
 
             // -------------------------

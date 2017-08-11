@@ -41,6 +41,14 @@ namespace Stellar
         public static Configure configure;
         public static Checklist checklist;
 
+        // MainWindow Title
+        public string TitleVersion
+        {
+            get { return (string)GetValue(TitleProperty); }
+            set { SetValue(TitleProperty, value); }
+        }
+        public static string stellarCurrentVersion;
+
         // Ready Check
         public static int ready = 1; // If 0 halt progress
 
@@ -51,6 +59,10 @@ namespace Stellar
         public MainWindow() // Pass Exclude Cores Data from Checklist
         {
             InitializeComponent();
+
+            stellarCurrentVersion = "0.8.5";
+            TitleVersion = "Stellar ~ RetroArch Nightly Updater (" + stellarCurrentVersion + "-beta)";
+            DataContext = this;
 
             this.MinWidth = 500;
             this.MinHeight = 225;
@@ -182,6 +194,10 @@ namespace Stellar
             Parse.parseUrl = string.Empty;
             Parse.nightly7z = string.Empty;
             Download.extractArgs = string.Empty;
+
+            Parse.stellarLatestVersion = string.Empty;
+            Parse.latestVer = null;
+            Parse.currentVer = null;
         }
 
         // -----------------------------------------------
@@ -580,6 +596,35 @@ namespace Stellar
             Paths.SetArchitecture(this);
 
             // -------------------------
+            // Stellar Self-Update
+            // -------------------------
+            if ((string)comboBoxDownload.SelectedItem == "Stellar")
+            {
+                //Parse.libretro_x86 = string.Empty;
+                //Parse.libretro_x86_64 = string.Empty;
+                //Parse.parseCoresUrl = string.Empty;
+                //Parse.indexextendedUrl = string.Empty;
+
+                // Parse GitHub Page HTML
+                Parse.ParseGitHubReleases(this);
+
+
+                // Check if Stellar is the Latest Version
+                if (Parse.latestVer > Parse.currentVer)
+                {
+                    System.Windows.MessageBox.Show("Update Available");
+                }
+                else if (Parse.latestVer < Parse.currentVer)
+                {
+                    System.Windows.MessageBox.Show("Already Latest Version");
+                }
+                else // null
+                {
+                    System.Windows.MessageBox.Show("Could Not Find Download");
+                }
+            }
+
+            // -------------------------
             // RetroArch Part
             // -------------------------
             if ((string)comboBoxDownload.SelectedItem == "New Install"
@@ -588,7 +633,7 @@ namespace Stellar
                 || (string)comboBoxDownload.SelectedItem == "RetroArch" 
                 || (string)comboBoxDownload.SelectedItem == "Redist")
             {
-                // Call parse Page (HTML) Method
+                // Parse Page (HTML) Method
                 Parse.ParseBuildbotPage(this);
 
                 // Display message if download available
@@ -684,6 +729,40 @@ namespace Stellar
             Archiver.SetArchiver(this);
 
 
+            // -------------------------
+            // Stellar Self-Update
+            // -------------------------
+            if ((string)comboBoxDownload.SelectedItem == "Stellar")
+            {
+                // Parse GitHub Page HTML
+                Parse.ParseGitHubReleases(this);
+
+                // Check if Stellar is the Latest Version
+                if (Parse.latestVer > Parse.currentVer)
+                {
+                    //System.Windows.MessageBox.Show("Update Available");
+
+                    //if (System.Windows.MessageBox.Show("Confirm Update?", "Update Available", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
+                    //{
+                    //    // proceed
+                    //    return;
+                    //}
+                    //else
+                    //{
+                    //    MainWindow.ready = 0;
+                    //}
+                }
+                else if (Parse.latestVer < Parse.currentVer)
+                {
+                    MainWindow.ready = 0;
+                    System.Windows.MessageBox.Show("Already Latest Version");
+                }
+                else // null
+                {
+                    MainWindow.ready = 0;
+                    System.Windows.MessageBox.Show("Could Not Find Download");
+                }
+            }
 
 
             // -----------------------------------------------

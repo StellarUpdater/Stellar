@@ -29,6 +29,10 @@ namespace Stellar
 {
     public partial class Queue
     {
+        // GitHub Self-Update
+        public static List<string> ListGitHub = new List<string>();
+
+
         // RetroArch Nightly
         // Create Nightlies 7z List to be populated by Parse
         public static List<string> NightliesList = new List<string>();
@@ -237,6 +241,11 @@ namespace Stellar
                         {
                             RemovePCUnknownCores();
                         }
+
+                        if (i > 99) // exit if stuck in loop
+                        {
+                            break;
+                        }
                     }
                 }
                 catch
@@ -258,6 +267,11 @@ namespace Stellar
                         if (Queue.ListBuildbotCoresName.Count() > Queue.ListPcCoresNameDate.Count())
                         {
                             RemoveBuildbotMissingCores();
+                        }
+
+                        if (i > 99) // exit if stuck in loop
+                        {
+                            break;
                         }
                     }
                 }

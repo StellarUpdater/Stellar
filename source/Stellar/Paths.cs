@@ -19,6 +19,8 @@
     Image Credit: ESO & NASA (CC)
    ---------------------------------------------------------------------- */
 
+using System.IO;
+
 namespace Stellar
 {
     public partial class Paths
@@ -27,6 +29,7 @@ namespace Stellar
         public static string tempPath = System.IO.Path.GetTempPath();
 
         // System Paths
+        public static string currentDir = Directory.GetCurrentDirectory().TrimEnd('\\') + @"\";
         public static string retroarchPath; // Location of User's RetroArch Folder
         public static string coresPath; // Location of User's cores folder
 
@@ -121,6 +124,13 @@ namespace Stellar
             else if ((string)mainwindow.comboBoxDownload.SelectedItem == "Redist")
             {
                 mainwindow.textBoxDownload.Text = Parse.parseUrl;
+            }
+
+            // If Stellar Selected, Textbox will display URL
+            //
+            else if ((string)mainwindow.comboBoxDownload.SelectedItem == "Stellar")
+            {
+                mainwindow.textBoxDownload.Text = Parse.parseGitHubUrl;
             }
 
         }
