@@ -234,17 +234,16 @@ namespace Stellar
                 // -------------------------
                 try
                 {
-                    RemovePCUnknownCores();
-
-                    // Double Check
-                    for (int i = 0; i < Queue.ListBuildbotCoresName.Count(); i++)
+                    // Remove Cores until both Lists are equal
+                    int i = 0;
+                    while (Queue.ListPcCoresNameDate.Count() > Queue.ListBuildbotCoresName.Count())
                     {
-                        if (Queue.ListPcCoresNameDate.Count() > Queue.ListBuildbotCoresName.Count())
-                        {
-                            RemovePCUnknownCores();
-                        }
+                        RemovePCUnknownCores();
 
-                        if (i > 99) // exit if stuck in loop
+                        // exit if stuck in loop
+                        i++;
+
+                        if (i > 300) 
                         {
                             break;
                         }
@@ -261,17 +260,16 @@ namespace Stellar
                 // -------------------------
                 try
                 {
-                    RemoveBuildbotMissingCores();
-
-                    // Double Check
-                    for (int i = 0; i < Queue.ListBuildbotCoresName.Count(); i++)
+                    // Remove Cores until both Lists are equal
+                    int i = 0;
+                    while (Queue.ListBuildbotCoresName.Count() > Queue.ListPcCoresNameDate.Count())
                     {
-                        if (Queue.ListBuildbotCoresName.Count() > Queue.ListPcCoresNameDate.Count())
-                        {
-                            RemoveBuildbotMissingCores();
-                        }
+                        RemoveBuildbotMissingCores();
 
-                        if (i > 99) // exit if stuck in loop
+                        // exit if stuck in loop
+                        i++;
+
+                        if (i > 300)
                         {
                             break;
                         }

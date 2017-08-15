@@ -3,14 +3,18 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:System="clr-namespace:System;assembly=mscorlib" 
+        xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
         xmlns:local="clr-namespace:Stellar"
         mc:Ignorable="d"
+        
+        Title="Debug" 
         Icon="logo.ico"
+        Height="622" Width="1328"
         UseLayoutRounding="True"
         ResizeMode="CanMinimize" 
         WindowStartupLocation="CenterScreen"
-        Title="Debug" 
-        Height="622" Width="1328">
+        >
     <Grid>
 
         <!-- PC -->

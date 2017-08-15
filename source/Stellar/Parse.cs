@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Windows;
 
@@ -32,12 +33,9 @@ namespace Stellar
         public static string page;
         public static string element;
 
-        //public static string stellar7z; // Self-Update 7z Filename
-        public static string stellarLatestVersion; // Self-Update File Version
-        //public static int? latestVer = null;
-        //public static int? currentVer = null;
-        public static Version latestVer;
-        public static Version currentVer;
+        public static Version latestVersion; // Stellar GitHub Latest Version
+        public static string latestBuildPhase; // Alpha, Beta, Stable
+        public static string[] splitVersionBuildPhase;
 
         public static string stellar7z; // Self-Update File
         public static string stellarUrl; // Self-Update Url
@@ -54,60 +52,92 @@ namespace Stellar
         public static string libretro_x86_64_w32 = "https://buildbot.libretro.com/nightly/windows/x86_64_w32/"; // Download URL 64-bit w32
 
 
+        // -------------------------
+        // Check For Internet Connection
+        // -------------------------
+        public static bool CheckForInternetConnection()
+        {
+            try
+            {
+                using (var client = new WebClient())
+                {
+                    using (client.OpenRead("http://clients3.google.com/generate_204"))
+                    {
+                        return true;
+                    }
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         // -----------------------------------------------
         // Parse GitHub Release Tags Page HTML
         // -----------------------------------------------
         public static void ParseGitHubReleases(MainWindow mainwindow)
         {
-            // Need to Update Version Number at 3 places, Format 0.0.0.0
-            // MainWindow.stellarCurrentVersion
-            // GitHub ./version file
+            // Update Version Number at 4 places, Format 0.0.0.0
+            // MainWindow CurrentVersion
             // GitHub Release tag
+            // GitHub ./version file
+            // Stellar Website Download Links
 
             // -------------------------
             // Update Selected
             // -------------------------
-            try
+            if (CheckForInternetConnection() == true)
             {
                 // Parse the HTML Page from parseUrl
-                stellarLatestVersion = Download.wc.DownloadString("https://raw.githubusercontent.com/StellarUpdater/Stellar/master/.version");
-                //page = Download.wc.DownloadString(parseGitHubUrl); // HTML Page
-                //element = "<a href=\"/StellarUpdater/Stellar/releases/download/(.*?)/Stellar.7z\" rel=\"nofollow\">"; // HTML Tag containing Stellar Version, (.*?) is the text to keep
+                //
+                string parseLatestVersion = string.Empty;
+
+                try
+                {
+                    parseLatestVersion = Download.wc.DownloadString("https://raw.githubusercontent.com/StellarUpdater/Stellar/master/.version");
+                }
+                catch
+                {
+                    MessageBox.Show("GitHub version not found.");
+                }
 
 
-                // Add each zip Date/Time to the Nightlies List
-                //foreach (Match match in Regex.Matches(page, element))
-                //    Queue.ListGitHub.Add(match.Groups[1].Value);
+                //Split Version & Build Phase by dash
+                //
+                if (!string.IsNullOrEmpty(parseLatestVersion)) //null check
+                {
+                    try
+                    {
+                        // Split Version and Build Phase
+                        splitVersionBuildPhase = Convert.ToString(parseLatestVersion).Split('-');
 
-                // Remove extra characters from version number
-                //for (int i = 0; i < Queue.ListGitHub.Count; i++)
-                //{
-                //    Queue.ListGitHub[i] = Regex.Replace(Queue.ListGitHub[i], @"[^\d]", "");
-                //}
+                        // Set Version Number
+                        latestVersion = new Version(splitVersionBuildPhase[0]); //number
+                        latestBuildPhase = splitVersionBuildPhase[1]; //beta
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Error reading version.");
+                    }
 
-                // Sort the Nighlies List, lastest 7z is first
-                //Queue.ListGitHub.Sort(); //do not disable this sort
+                    // Debug
+                    //MessageBox.Show(Convert.ToString(latestVersion));
+                    //MessageBox.Show(latestBuildPhase);
 
-                // Get Latest Element of File List
-                //stellarLatestVersion = Queue.ListGitHub.Last();
-
-
-                // Remove extra characters from version number
-                //latestVer = Convert.ToInt32( Regex.Replace(stellarLatestVersion, @"[^\d]", "") );
-                //currentVer = Convert.ToInt32( Regex.Replace(MainWindow.stellarCurrentVersion, @"[^\d]", "") );
-
-                latestVer = new Version(Parse.stellarLatestVersion);
-                currentVer = new Version(MainWindow.stellarCurrentVersion);
-
-                // Debug
-                //MessageBox.Show(Convert.ToString(latestVer));
-                //MessageBox.Show(Convert.ToString(currentVer));
+                }
+                // Version is Null
+                else
+                {
+                    MessageBox.Show("GitHub version returned empty.");
+                }
             }
-            catch
+            else
             {
-                MainWindow.ready = 0;
-                MessageBox.Show("Error: Problem Parsing GitHub Version.");
+                //MainWindow.ready = false;
+                MessageBox.Show("Could not detect Internet Connection.");
             }
+
 
             // -------------------------
             // Stellar Selected
@@ -115,7 +145,7 @@ namespace Stellar
             if ((string)mainwindow.comboBoxDownload.SelectedItem == "Stellar")
             {
                 stellar7z = "Stellar.7z";
-                stellarUrl = "https://github.com/StellarUpdater/Stellar/releases/download/" + stellarLatestVersion + "/" + stellar7z;
+                stellarUrl = "https://github.com/StellarUpdater/Stellar/releases/download/" + "v" + Convert.ToString(latestVersion) + "-" + latestBuildPhase + "/" + stellar7z;
                 // .../0.8.5.3-beta/Stellar.7z
             }
         }
@@ -126,10 +156,8 @@ namespace Stellar
         // -----------------------------------------------
         public static void ParseBuildbotPage(MainWindow mainwindow)
         {
-            // -------------------------
-            // Begin Parse
-            // -------------------------
-            // If No Internet Connect, program will crash. Use Try & Catch to display Error.
+            // If No Internet Connect, program will crash.
+            // Try Catch Errors
 
             // -------------------------
             // Update Selected
@@ -157,7 +185,7 @@ namespace Stellar
             }
             catch
             {
-                MainWindow.ready = 0;
+                MainWindow.ready = false;
                 MessageBox.Show("Error: Problem creating RetroArch list from HTML.");
             }
 
@@ -236,7 +264,7 @@ namespace Stellar
                 // Check if index-extended failed or is empty
                 if (string.IsNullOrEmpty(buildbotCoresIndex))
                 {
-                    MainWindow.ready = 0;
+                    MainWindow.ready = false;
                     MessageBox.Show("Error: Cores list is empty or failed to donwload index-extended.");
                 }
 
@@ -296,7 +324,7 @@ namespace Stellar
             }
             catch
             {
-                MainWindow.ready = 0;
+                MainWindow.ready = false;
                 MessageBox.Show("Error: Cannot connect to Server.");
             }
         }
@@ -331,7 +359,7 @@ namespace Stellar
             }
             catch
             {
-                MainWindow.ready = 0;
+                MainWindow.ready = false;
                 MessageBox.Show("Error: Problem scanning PC Cores Name & Dates.");
             }
 
@@ -340,7 +368,7 @@ namespace Stellar
                 && (string)mainwindow.comboBoxDownload.SelectedItem != "New Install" // Ignore
                 && (string)mainwindow.comboBoxDownload.SelectedItem != "New Cores") // Ignore
             {
-                MainWindow.ready = 0;
+                MainWindow.ready = false;
                 MessageBox.Show("Cores not found. \n\nPlease select your RetroArch main folder.");
             }
 

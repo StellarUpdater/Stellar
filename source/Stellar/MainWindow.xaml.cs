@@ -3,9 +3,9 @@ using System;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Threading;
 
@@ -37,6 +37,11 @@ namespace Stellar
     /// </summary>
     public partial class MainWindow : Window
     {
+        // Stellar Current Version
+        public static Version currentVersion = new Version("0.8.6.0");
+        // Alpha, Beta, Stable
+        public static string currentBuildPhase = "beta";
+
         // Windows
         public static Configure configure;
         public static Checklist checklist;
@@ -50,7 +55,7 @@ namespace Stellar
         public static string stellarCurrentVersion;
 
         // Ready Check
-        public static int ready = 1; // If 0 halt progress
+        public static bool ready = true; // If 0 halt progress
 
 
         // -----------------------------------------------
@@ -60,8 +65,7 @@ namespace Stellar
         {
             InitializeComponent();
 
-            stellarCurrentVersion = "0.8.5.3";
-            TitleVersion = "Stellar ~ RetroArch Nightly Updater (" + stellarCurrentVersion + "-beta)";
+            TitleVersion = "Stellar ~ RetroArch Nightly Updater (" + Convert.ToString(currentVersion) + "-" + currentBuildPhase + ")";
             DataContext = this;
 
             this.MinWidth = 500;
@@ -95,6 +99,15 @@ namespace Stellar
             // --------------------------------------------------
             // Load Saved Settings
             // --------------------------------------------------
+
+            // Window Position
+            // First time use
+            if (Convert.ToDouble(Settings.Default["Left"]) == 0 
+                || Convert.ToDouble(Settings.Default["Top"]) == 0)
+            {
+                this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            }
+
             // Theme CombBox
             Configure.ConfigTheme(configure);
 
@@ -181,6 +194,8 @@ namespace Stellar
         // -----------------------------------------------
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            Settings.Default.Save();
+
             e.Cancel = true;
             System.Windows.Forms.Application.ExitThread();
             Environment.Exit(0);
@@ -197,9 +212,9 @@ namespace Stellar
 
             Parse.stellar7z = string.Empty;
             Parse.stellarUrl = string.Empty;
-            Parse.stellarLatestVersion = string.Empty;
-            Parse.latestVer = null;
-            Parse.currentVer = null;
+            //Parse.stellarLatestVersion = string.Empty;
+            Parse.latestVersion = null;
+            //Parse.currentVer = null;
         }
 
         // -----------------------------------------------
@@ -354,8 +369,8 @@ namespace Stellar
         public void FolderBrowser() // Method
         {
             // Open Folder
-            FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
-            DialogResult result = folderBrowserDialog.ShowDialog();
+            System.Windows.Forms.FolderBrowserDialog folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
+            System.Windows.Forms.DialogResult result = folderBrowserDialog.ShowDialog();
 
             // Popup Folder Browse Window
             if (result == System.Windows.Forms.DialogResult.OK)
@@ -394,7 +409,22 @@ namespace Stellar
         // -----------------------------------------------
         private void buttonInfo_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.MessageBox.Show("RetroArch Nightly Updater (Unofficial) \nby wyzrd \n\nNew versions at https://stellarupdater.github.io. \n\nPlease install 7-Zip for this program to properly extract files. \nhttp://www.7-zip.org \n\nThis software is licensed under GNU GPLv3. \nSource code is included in the archive with this executable. \n\nImage Credit: \nESO/José Francisco (josefrancisco.org), Milky Way \nESO, NGC 1232, Galaxy \nNASA, IC 405 Flaming Star \nNASA, NGC 5189, Spiral Nebula \nNASA, M100, Galaxy \nNASA, IC 405, Lagoon \nNASA, Solar Flare \nNASA, Rho Ophiuchi, Dark Nebula \nNASA, N159, Star Dust \nNASA, NGC 6357, Chaos \n\nThis software comes with no warranty, express or implied, and the author makes no representation of warranties. The author claims no responsibility for damages resulting from any use or misuse of the software.");
+            MessageBox.Show("RetroArch Nightly Updater (Unofficial)" 
+                + "\nby wyzrd \n\nNew versions at https://stellarupdater.github.io." 
+                + "\n\nPlease install 7-Zip for this program to properly extract files." 
+                + "\nhttp://www.7-zip.org \n\nThis software is licensed under GNU GPLv3." 
+                + "\nSource code is included in the archive with this executable." 
+                + "\n\nImage Credit: \nESO/José Francisco (josefrancisco.org), Milky Way" 
+                + "\nESO, NGC 1232, Galaxy \nNASA, IC 405 Flaming Star" 
+                + "\nNASA, NGC 5189, Spiral Nebula"
+                + "\nNASA, M100, Galaxy" 
+                + "\nNASA, IC 405, Lagoon" 
+                + "\nNASA, Solar Flare" 
+                + "\nNASA, Rho Ophiuchi, Dark Nebula" 
+                + "\nNASA, N159, Star Dust" 
+                + "\nNASA, NGC 6357, Chaos" 
+                + "\n\nThis software comes with no warranty, express or implied, and the author makes no representation of warranties." 
+                + "The author claims no responsibility for damages resulting from any use or misuse of the software.");
         }
 
         // -----------------------------------------------
@@ -402,11 +432,22 @@ namespace Stellar
         // -----------------------------------------------
         private void buttonConfigure_Click(object sender, RoutedEventArgs e)
         {
+            // Detect which screen we're on
+            var allScreens = System.Windows.Forms.Screen.AllScreens.ToList();
+            var thisScreen = allScreens.SingleOrDefault(s => this.Left >= s.WorkingArea.Left && this.Left < s.WorkingArea.Right);
+
             // Open Configure Window
             configure = new Configure();
-            configure.Left = this.Left + 25;
-            configure.Top = this.Top - 205;
+
+            // Position Relative to MainWindow
+            // Keep from going off screen
+            configure.Left = Math.Max((this.Left + (this.Width - configure.Width) / 2), thisScreen.WorkingArea.Left);
+            configure.Top = Math.Max(this.Top - configure.Height - 12, thisScreen.WorkingArea.Top);
+
+            // Keep Window on Top
             configure.Owner = Window.GetWindow(this);
+
+            // Open Winndow
             configure.ShowDialog();
         }
 
@@ -438,7 +479,7 @@ namespace Stellar
             }
             else
             {
-                System.Windows.MessageBox.Show("Please choose RetroArch Folder location first.");
+                MessageBox.Show("Please choose RetroArch Folder location first.");
             }
         }
 
@@ -519,7 +560,7 @@ namespace Stellar
             }
 
             // Cross Thread
-            Dispatcher.BeginInvoke((MethodInvoker)delegate
+            Dispatcher.BeginInvoke((System.Windows.Forms.MethodInvoker)delegate
             {
                 // New Install
                 //
@@ -529,7 +570,9 @@ namespace Stellar
                     buttonUpdateTextBlock.Text = "Install";
 
                     // Warn user about New Install
-                    System.Windows.MessageBox.Show("This will install a New Nightly RetroArch + Cores. \n\nIt will overwrite any existing files/configs in the selected folder. \n\nDo not use the New Install option to Update.");
+                    MessageBox.Show("This will install a New Nightly RetroArch + Cores." 
+                                    + "\n\nIt will overwrite any existing files/configs in the selected folder." 
+                                    + "\n\nDo not use the New Install option to Update.");
 
                     // Save Download Combobox Settings back to RA+Cores instead of New Install for next launch
                     Settings.Default["download"] = "RA+Cores";
@@ -545,7 +588,10 @@ namespace Stellar
                     buttonUpdateTextBlock.Text = "Upgrade";
 
                     // Warn user about Upgrade
-                    System.Windows.MessageBox.Show("Backup your configs and custom shaders! Large Download. \n\nThis will fully upgrade RetroArch to the latest version. \n\nUpdate Cores separately using \"Cores\" menu option. \nFor small updates use the \"RetroArch\" or \"RA+Cores\" menu option.");
+                    MessageBox.Show("Backup your configs and custom shaders! Large Download." 
+                                    + "\n\nThis will fully upgrade RetroArch to the latest version."
+                                    + "\nFor small updates use the \"RetroArch\" or \"RA+Cores\" menu option."
+                                    + "\n\nUpdate Cores separately using \"Cores\" menu option.");
 
                     // Save Download Combobox Settings back to RA+Cores instead of Upgrade for next launch
                     Settings.Default["download"] = "RA+Cores";
@@ -611,19 +657,21 @@ namespace Stellar
                 // Parse GitHub Page HTML
                 Parse.ParseGitHubReleases(this);
 
-
                 // Check if Stellar is the Latest Version
-                if (Parse.latestVer > Parse.currentVer)
+                if (MainWindow.currentVersion != null && Parse.latestVersion != null)
                 {
-                    System.Windows.MessageBox.Show("Update Available");
-                }
-                else if (Parse.latestVer <= Parse.currentVer)
-                {
-                    System.Windows.MessageBox.Show("Already Latest Version");
-                }
-                else // null
-                {
-                    System.Windows.MessageBox.Show("Could Not Find Download");
+                    if (Parse.latestVersion > MainWindow.currentVersion)
+                    {
+                        MessageBox.Show("Update Available \n\n" + "v" + Parse.latestVersion + "-" + Parse.latestBuildPhase);
+                    }
+                    else if (Parse.latestVersion <= MainWindow.currentVersion)
+                    {
+                        MessageBox.Show("This version is up to date.");
+                    }
+                    else // null
+                    {
+                        MessageBox.Show("Could not find download.");
+                    }
                 }
             }
 
@@ -643,11 +691,11 @@ namespace Stellar
                 // Display message if download available
                 if (!string.IsNullOrEmpty(Parse.nightly7z)) // If Last Item in Nightlies List is available
                 {
-                    System.Windows.MessageBox.Show("Download Available \n\n" + Paths.buildbotArchitecture + "\n\n" + Parse.nightly7z);
+                    MessageBox.Show("Download Available \n\n" + Paths.buildbotArchitecture + "\n\n" + Parse.nightly7z);
                 }
-                else // If Last Item in Nightlies List cannot be found
+                else
                 {
-                    System.Windows.MessageBox.Show("Could not find download.");
+                    MessageBox.Show("Could not find download.");
                 }
             }
 
@@ -663,16 +711,16 @@ namespace Stellar
                 || (string)comboBoxDownload.SelectedItem == "Cores"
                 || (string)comboBoxDownload.SelectedItem == "New Cores")
             {
-                // Call Parse Builtbot Page Method
+                // Create Builtbot Cores List
                 Parse.ParseBuildbotCoresIndex(this);
 
-                // Call Methods - Build Cores Lists
+                // Create PC Cores Lists
                 Parse.ScanPcCoresDir(this);
 
-                // Create Update List
+                // Create Cores to Update List
                 Queue.UpdatedCores(this);
 
-                // Call Cores Up To Date Method
+                // Check if Cores Up To Date
                 // If All Cores up to date, display message
                 Queue.CoresUpToDateCheck(this); //Note there are Clears() in this method
 
@@ -682,9 +730,21 @@ namespace Stellar
                 // If Update List greater than 0, Popup Checklist
                 if (Queue.ListUpdatedCoresName.Count != 0)
                 {
-                    // Open Checklist Window
+                    // Detect which screen we're on
+                    var allScreens = System.Windows.Forms.Screen.AllScreens.ToList();
+                    var thisScreen = allScreens.SingleOrDefault(s => this.Left >= s.WorkingArea.Left && this.Left < s.WorkingArea.Right);
+
+                    // Start Window
                     checklist = new Checklist();
+
+                    // Keep Window on Top
                     checklist.Owner = Window.GetWindow(this);
+
+                    // Position Relative to MainWindow
+                    checklist.Left = Math.Max((this.Left + (this.Width - checklist.Width) / 2), thisScreen.WorkingArea.Left);
+                    checklist.Top = Math.Max((this.Top + (this.Height - checklist.Height) / 2), thisScreen.WorkingArea.Top);
+
+                    // Open Window
                     checklist.ShowDialog();
                 }
             }
@@ -714,8 +774,8 @@ namespace Stellar
             // If RetroArch Path is empty, halt progress
             if (string.IsNullOrEmpty(Paths.retroarchPath))
             {
-                ready = 0;
-                System.Windows.MessageBox.Show("Please select your RetroArch main folder.");
+                ready = false;
+                MessageBox.Show("Please select your RetroArch main folder.");
             }
 
             // MUST BE IN THIS ORDER: 1. SetArchitecture -> 2. parsePage -> 3. SetArchiver  ##################
@@ -741,31 +801,38 @@ namespace Stellar
                 // Parse GitHub Page HTML
                 Parse.ParseGitHubReleases(this);
 
-                // Check if Stellar is the Latest Version
-                if (Parse.latestVer > Parse.currentVer)
+                if (Parse.latestVersion != null && MainWindow.currentVersion != null)
                 {
-                    //System.Windows.MessageBox.Show("Update Available");
-
-                    //if (System.Windows.MessageBox.Show("Confirm Update?", "Update Available", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
-                    //{
-                    //    // proceed
-                    //    return;
-                    //}
-                    //else
-                    //{
-                    //    MainWindow.ready = 0;
-                    //}
-                }
-                else if (Parse.latestVer <= Parse.currentVer)
-                {
-                    MainWindow.ready = 0;
-                    System.Windows.MessageBox.Show("Already Latest Version");
-                }
-                else // null
-                {
-                    MainWindow.ready = 0;
-                    System.Windows.MessageBox.Show("Could Not Find Download");
-                }
+                    // Check if Stellar is the Latest Version
+                    if (Parse.latestVersion > MainWindow.currentVersion)
+                    {
+                        // Yes/No Dialog Confirmation
+                        //
+                        MessageBoxResult result = MessageBox.Show("v" + Parse.latestVersion + "-" + Parse.latestBuildPhase + "\n\nDownload Update?", "Update Available", MessageBoxButton.YesNo);
+                        switch (result)
+                        {
+                            case MessageBoxResult.Yes:
+                                // Proceed
+                                break;
+                            case MessageBoxResult.No:
+                                // Lock
+                                MainWindow.ready = false;
+                                break;
+                        }
+                    }
+                    else if (Parse.latestVersion <= MainWindow.currentVersion)
+                    {
+                        // Lock
+                        MainWindow.ready = false;
+                        MessageBox.Show("This version is up to date.");
+                    }
+                    else // null
+                    {
+                        // Lock
+                        MainWindow.ready = false;
+                        MessageBox.Show("Could not find download. Try updating manually.");
+                    }
+                }              
             }
 
 
@@ -807,16 +874,16 @@ namespace Stellar
                 || (string)comboBoxDownload.SelectedItem == "Cores" 
                 || (string)comboBoxDownload.SelectedItem == "New Cores")
             {
-                // Call Parse Builtbot Page Method
+                // Create Builtbot Cores List
                 Parse.ParseBuildbotCoresIndex(this);
 
-                // Call Methods - Build Cores Lists
+                // Create PC Cores List
                 Parse.ScanPcCoresDir(this);
 
-                // Create Update List
+                // Create Cores to Update List
                 Queue.UpdatedCores(this);
 
-                // Call Cores Up To Date Method
+                // Check if Cores Up To Date
                 // If All Cores up to date, display message
                 Queue.CoresUpToDateCheck(this); //Note there are Clears() in this method
             }
@@ -826,14 +893,14 @@ namespace Stellar
             // -----------------------------------------------
             // Ready
             // -----------------------------------------------
-            if (ready == 1)
+            if (ready == true)
             {
                 Download.StartDownload(this);
             }
             else
             {
                 // Restart & Reset ready value
-                ready = 1;
+                ready = true;
                 // Call Garbage Collector
                 GC.Collect();
             }

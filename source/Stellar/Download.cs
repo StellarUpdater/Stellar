@@ -39,11 +39,12 @@ namespace Stellar
         public static WebClient wc = new WebClient();
         public static WebClient wc2 = new WebClient();
         public static ManualResetEvent waiter = new ManualResetEvent(false); // Download one at a time
+                                                                             
+        public static string progressInfo; // Progress Label Info
+        
+        public static string extractArgs; // Unzip Arguments
 
-        public static string extractArgs;
 
-        // Progress Label Info
-        public static string progressInfo;
 
         // -----------------------------------------------
         // Download Handlers
@@ -54,19 +55,19 @@ namespace Stellar
         public static void wc_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
             // Progress Info
-            mainwindow.Dispatcher.BeginInvoke((Action)(() =>
+            mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
             {
                 mainwindow.labelProgressInfo.Content = progressInfo;
-            }));
+            });
 
             // Progress Bar
-            mainwindow.Dispatcher.BeginInvoke((Action)(() =>
+            mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
             {
                 double bytesIn = double.Parse(e.BytesReceived.ToString());
                 double totalBytes = double.Parse(e.TotalBytesToReceive.ToString());
                 double percentage = bytesIn / totalBytes * 100;
                 mainwindow.progressBar.Value = int.Parse(Math.Truncate(percentage).ToString());
-            }));
+            });
         }
 
         // -------------------------
@@ -204,43 +205,85 @@ namespace Stellar
             // -------------------------
             if (Archiver.extract == "7-Zip")
             {
-                Process.Start(
-                    "cmd.exe",
-                    "/c "
-                    + "timeout 3"
-                    + " && "
-                    + "\"" + Archiver.archiver + "\"" + " -r -y e " + "\"" + Paths.tempPath + Parse.stellar7z + "\"" + " -o\"" + Paths.currentDir + "\"" + " *"
-                    + " && "
-                    + "del " + "\"" + Paths.tempPath + Parse.stellar7z + ".7z" + "\""
-                    + " && "
-                    + "\"" + Paths.currentDir + "Stellar.exe" + "\""
-                    //+ " && "
-                    //+ "exit"
-                    );
+                List<string> extractArgs = new List<string>() {
+                    "/c",
+                    "echo Updating Stellar to version " + Convert.ToString(Parse.latestVersion) + ".",
+                    "&&",
+                    "echo Please wait for program to close.",
+                    // Wait
+                    "&&",
+                    "timeout /t 3",
+                    // Extract
+                    "&&",
+                    "\"" + Archiver.archiver + "\"",
+                    "-r -y e",
+                    "\"" + Paths.tempPath + Parse.stellar7z + "\"",
+                    "-o\"" + Paths.currentDir + "\"",
+                    "*",
+                    // Delete Temp
+                    "&&",
+                    "echo Deleting Temp File",
+                    "&&",
+                    "del " + "\"" + Paths.tempPath + Parse.stellar7z + ".7z" + "\"",
+                    // Relaunch Stellar
+                    "&&",
+                    "\"" + Paths.currentDir + "Stellar.exe" + "\"",
+                    // Complete
+                    "&&",
+                    "echo Update Complete"
+                };
+
+                // Join List with Spaces
+                string arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
+
+                // Start
+                Process.Start("cmd.exe", arguments);
+
+                // Close Stellar before updating exe
+                Environment.Exit(0);
             }
             // -------------------------
             // WinRAR
             // -------------------------
             else if (Archiver.extract == "WinRAR")
             {
-                Process.Start(
-                    "cmd.exe",
-                    "/c "
-                    + "timeout 3"
-                    + " && "
-                    + "\"" + Archiver.archiver + "\"" + " -r -y e " + "\"" + Paths.tempPath + Parse.stellar7z + "\"" + " -o\"" + Paths.currentDir + "\"" + " *"
-                    + " && "
-                    + "del " + "\"" + Paths.tempPath + Parse.stellar7z + ".7z" + "\""
-                    + " && "
-                    + "\"" + Paths.currentDir + "Stellar.exe" + "\""
-                    //+ " && "
-                    //+ "exit"
-                    );
+                List<string> extractArgs = new List<string>() {
+                    "/c",
+                    "echo Updating Stellar to version " + Convert.ToString(Parse.latestVersion) + ".",
+                    "&&",
+                    "echo Please wait for program to close.",
+                    // Wait
+                    "&&",
+                    "timeout /t 3",
+                    // Extract
+                    "&&",
+                    "\"" + Archiver.archiver + "\"",
+                    "-y x",
+                    "\"" + Paths.tempPath + Parse.stellar7z + "\"",
+                    "*",
+                    "\"" + Paths.currentDir + "\"",
+                    // Delete Temp
+                    "&&",
+                    "echo Deleting Temp File",
+                    "&&",
+                    "del " + "\"" + Paths.tempPath + Parse.stellar7z + ".7z" + "\"",
+                    // Relaunch Stellar
+                    "&&",
+                    "\"" + Paths.currentDir + "Stellar.exe" + "\"",
+                    // Complete
+                    "&&",
+                    "echo Update Complete"
+                };
+
+                // Join List with Spaces
+                string arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
+
+                // Start
+                Process.Start("cmd.exe", arguments);
+
+                // Close Stellar before updating exe
+                Environment.Exit(0);
             }
-
-
-            // Close Stellar before updating exe
-            Environment.Exit(0);
         }
 
 
@@ -284,7 +327,7 @@ namespace Stellar
                 execExtract.StartInfo.Verb = "runas"; //use with ShellExecute for admin
                 execExtract.StartInfo.CreateNoWindow = true;
                 execExtract.StartInfo.RedirectStandardOutput = true; //set to false if using ShellExecute
-                execExtract.StartInfo.FileName = Archiver.archiver; //archiver string
+                execExtract.StartInfo.FileName = Archiver.archiver;
                 // Extract -o and Overwrite -y Selected Files -r
 
                 // -------------------------

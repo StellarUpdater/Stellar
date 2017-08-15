@@ -18,7 +18,7 @@
     
     Image Credit: ESO & NASA (CC)
  -->
-<Window
+<Window x:Class="Stellar.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -26,13 +26,15 @@
         xmlns:System="clr-namespace:System;assembly=mscorlib" 
         xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
         xmlns:my="clr-namespace:Stellar"
-        x:Class="Stellar.MainWindow"
+        xmlns:settings="clr-namespace:Stellar.Properties"
+        
         Title="{Binding TitleVersion, RelativeSource={RelativeSource Mode=Self}}" 
-        Height="225" Width="500"
-        ResizeMode="CanMinimize" 
         Icon="logo.ico"
+        Height="225" Width="500"
+        Top="{Binding Top, Source={x:Static settings:Settings.Default}, Mode=TwoWay}"
+        Left="{Binding Left, Source={x:Static settings:Settings.Default}, Mode=TwoWay}"
+        ResizeMode="CanMinimize" 
         UseLayoutRounding="True"
-        WindowStartupLocation="CenterScreen"
         Closing="Window_Closing" 
         Style="{DynamicResource WindowStyleTheme}"
         >
@@ -515,7 +517,7 @@
             <Setter Property="Background" Value="{StaticResource Button.Static.Background}"/>
             <Setter Property="BorderBrush" Value="{StaticResource Button.Static.Border}"/>
             <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
-            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Padding" Value="1"/>
@@ -678,6 +680,7 @@
 
         <!-- Buildbot Web Directory Button -->
         <Button x:Name="buttonBuildBotDir" 
+                Style="{DynamicResource ButtonStyleQuickBrowse}"
                 HorizontalAlignment="Left"
                 Margin="451,48,0,0" 
                 VerticalAlignment="Top"

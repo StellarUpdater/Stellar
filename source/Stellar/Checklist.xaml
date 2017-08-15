@@ -18,20 +18,21 @@
     
     Image Credit: ESO & NASA (CC)
  -->
-<Window
+<Window x:Class="Stellar.Checklist"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero" 
-        x:Name="windowChecklist" 
-        x:Class="Stellar.Checklist"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:System="clr-namespace:System;assembly=mscorlib" 
+        xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
+       
         Title="Checklist" 
+        Icon="Resources/Images/Icons/checklist.ico"
         Height="470"
         Width="340" 
-        Icon="Resources/Images/Icons/checklist.ico"
         Foreground="White"
         ResizeMode="CanMinimize" 
         UseLayoutRounding="True"
-        WindowStartupLocation="CenterScreen"
         >
     <Window.Resources>
         <SolidColorBrush x:Key="ListBorder" Color="#828790"/>

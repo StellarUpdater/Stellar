@@ -38,14 +38,14 @@ namespace Stellar
             // Null Checker
             if (string.IsNullOrEmpty(Configure.sevenZipPath))
             {
-                MainWindow.ready = 0;
+                MainWindow.ready = false;
                 System.Windows.MessageBox.Show("Please set 7-Zip Path in Settings.");
             }
 
             // Null Checker
             if (string.IsNullOrEmpty(Configure.winRARPath))
             {
-                MainWindow.ready = 0;
+                MainWindow.ready = false;
                 System.Windows.MessageBox.Show("Please set WinRAR Path in Settings.");
             }
 
@@ -56,7 +56,7 @@ namespace Stellar
             //
             if (Configure.sevenZipPath == "<auto>" && Configure.winRARPath == "<auto>")
             {
-                // Check for 7zip 32-bit
+                // Check for 7-Zip 32-bit
                 if (File.Exists("C:\\Program Files (x86)\\7-Zip\\7z.exe"))
                 {
                     // Path to 7-Zip
@@ -64,7 +64,7 @@ namespace Stellar
                     // CLI Arguments unzip files
                     extract = "7-Zip"; //args selector
                 }
-                // Check for 7zip 64-bit
+                // Check for 7-Zip 64-bit
                 else if (File.Exists("C:\\Program Files\\7-Zip\\7z.exe"))
                 {
                     // Path to 7-Zip
@@ -90,8 +90,8 @@ namespace Stellar
                 }
                 else
                 {
-                    MainWindow.ready = 0;
-                    System.Windows.MessageBox.Show("Please install 7-Zip or WinRAR to extract files.\n\nOr set Path in Settings.");
+                    MainWindow.ready = false;
+                    System.Windows.MessageBox.Show("Please install 7-Zip or WinRAR to extract files.\n\nOr set Path in Configure Window.");
                 }
             }
 
@@ -109,7 +109,7 @@ namespace Stellar
                 }
                 catch
                 {
-                    MainWindow.ready = 0;
+                    MainWindow.ready = false;
                     System.Windows.MessageBox.Show("Error: Could not load 7-Zip. Please restart the program.");
                 }
 
@@ -132,7 +132,7 @@ namespace Stellar
                 }
                 catch
                 {
-                    MainWindow.ready = 0;
+                    MainWindow.ready = false;
                     System.Windows.MessageBox.Show("Error: Could not load WinRAR. Please restart the program.");
                 }
 
