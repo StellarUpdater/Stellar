@@ -224,7 +224,7 @@ namespace Stellar
                     "&&",
                     "echo Deleting Temp File",
                     "&&",
-                    "del " + "\"" + Paths.tempPath + Parse.stellar7z + ".7z" + "\"",
+                    "del " + "\"" + Paths.tempPath + Parse.stellar7z + "\"",
                     // Relaunch Stellar
                     "&&",
                     "\"" + Paths.currentDir + "Stellar.exe" + "\"",
@@ -266,7 +266,7 @@ namespace Stellar
                     "&&",
                     "echo Deleting Temp File",
                     "&&",
-                    "del " + "\"" + Paths.tempPath + Parse.stellar7z + ".7z" + "\"",
+                    "del " + "\"" + Paths.tempPath + Parse.stellar7z + "\"",
                     // Relaunch Stellar
                     "&&",
                     "\"" + Paths.currentDir + "Stellar.exe" + "\"",
