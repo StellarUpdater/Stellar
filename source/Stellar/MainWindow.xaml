@@ -93,7 +93,7 @@
         <SolidColorBrush x:Key="ComboBox.Disabled.Editable.Button.Background" Color="Transparent"/>
         <SolidColorBrush x:Key="ComboBox.Disabled.Editable.Button.Border" Color="Transparent"/>
         <SolidColorBrush x:Key="ComboBox.Static.Glyph" Color="#FFFFFFFF"/>
-        
+
         <Style x:Key="ComboBoxToggleButton" TargetType="{x:Type ToggleButton}">
             <Setter Property="OverridesDefaultStyle" Value="true"/>
             <Setter Property="IsTabStop" Value="false"/>
@@ -191,7 +191,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        
+
         <ControlTemplate x:Key="ComboBoxTemplate" TargetType="{x:Type ComboBox}">
             <Grid x:Name="templateRoot" SnapsToDevicePixels="true">
                 <Grid.ColumnDefinitions>
@@ -244,7 +244,7 @@
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
-        
+
         <SolidColorBrush x:Key="TextBox.Static.Background" Color="#FFFFFFFF"/>
         <Style x:Key="ComboBoxEditableTextBox" TargetType="{x:Type TextBox}">
             <Setter Property="OverridesDefaultStyle" Value="true"/>
@@ -262,7 +262,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        
+
         <ControlTemplate x:Key="ComboBoxEditableTemplate" TargetType="{x:Type ComboBox}">
             <Grid x:Name="templateRoot" SnapsToDevicePixels="true">
                 <Grid.ColumnDefinitions>
@@ -446,8 +446,8 @@
                 </Setter.Value>
             </Setter>
         </Style>
-               
-        
+
+
         <Style TargetType="{x:Type ComboBox}">
             <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
             <Setter Property="Background" Value="{StaticResource ComboBox.Static.Background}"/>
@@ -614,7 +614,7 @@
                Foreground="White" 
                PreviewMouseDown="labelLocation_PreviewMouseDown"
                ToolTip="Click and Select your RetroArch Folder Path." />
-        
+
         <TextBox x:Name="textBoxLocation"
                  Style="{DynamicResource TextBoxStyleCustom}"
                  HorizontalAlignment="Left"
@@ -627,7 +627,7 @@
                  PreviewMouseDown="textBoxLocation_PreviewMouseDown" 
                  TextChanged="textBoxLocation_TextChanged" 
                  ToolTip="Click and Select your RetroArch Folder Path." />
-        
+
 
         <!-- Download TextBox -->
         <Label x:Name="labelDownload" 
@@ -639,7 +639,7 @@
                Width="65"
                Foreground="White" 
                ToolTip="File to be fetched."/>
-        
+
         <TextBox x:Name="textBoxDownload" 
                  Style="{DynamicResource TextBoxStyleCustom}"
                  HorizontalAlignment="Left"
@@ -653,7 +653,7 @@
                  IsUndoEnabled="False" 
                  Cursor="" 
                  ToolTip="File to be fetched." />
-        
+
 
         <!-- Location Open Button -->
         <Button x:Name="buttonRetroArchExplorer" 
@@ -702,21 +702,21 @@
         </Button>
 
         <!-- Progres Info -->
-        <Label x:Name="labelProgressInfo" 
-               Content="" 
-               HorizontalContentAlignment="Center"
+        <TextBlock x:Name="textBlockProgressInfo" 
                HorizontalAlignment="Left" 
-               Height="26" 
-               Margin="12,76,0,0" 
-               VerticalAlignment="Top" 
-               Width="461" 
-               Foreground="White"/>
+               VerticalAlignment="Top"
+               TextAlignment="Center"
+               Height="22" 
+               Margin="12,80,0,0" 
+               Width="459" 
+               Foreground="White"
+               Background="Transparent"/>
 
         <!-- Progres Bar -->
         <ProgressBar x:Name="progressBar" 
                      HorizontalAlignment="Left" 
                      Height="23" 
-                     Margin="12,104,0,0" 
+                     Margin="12,105,0,0" 
                      VerticalAlignment="Top" 
                      Width="460" 
                      ToolTip="Download Progress"/>
@@ -725,7 +725,7 @@
         <Button x:Name="buttonInfo" 
                 Style="{DynamicResource ButtonStyleCustom}"
                 HorizontalAlignment="Left"
-                Margin="12,151,0,0"
+                Margin="12,150,0,0"
                 VerticalAlignment="Top"
                 Width="26" 
                 Height="23"
@@ -747,7 +747,7 @@
         <Button x:Name="buttonConfigure"
                 Style="{DynamicResource ButtonStyleCustom}"
                 HorizontalAlignment="Left"
-                Margin="43,151,0,0" 
+                Margin="43,150,0,0" 
                 VerticalAlignment="Top" 
                 Width="26"
                 Height="23"
@@ -770,7 +770,7 @@
         <Button x:Name="buttonStellarWebsite"
                 Style="{DynamicResource ButtonStyleCustom}"
                 HorizontalAlignment="Left" 
-                Margin="74,151,0,0"
+                Margin="74,150,0,0"
                 VerticalAlignment="Top"
                 Width="26" 
                 Height="23" 
@@ -793,7 +793,7 @@
         <Button x:Name="buttonRetroArchWebsite" 
                 Style="{DynamicResource ButtonStyleCustom}"
                 HorizontalAlignment="Left"
-                Margin="105,151,0,0"
+                Margin="105,150,0,0"
                 VerticalAlignment="Top"
                 Width="26"
                 Height="23"
@@ -817,7 +817,7 @@
                   ItemContainerStyle="{DynamicResource ComboBoxItemCustom}" 
                   Foreground="White"
                   HorizontalAlignment="Left" 
-                  Margin="147,151,0,0"
+                  Margin="147,150,0,0"
                   VerticalAlignment="Top" 
                   Width="85" 
                   Height="23" 
@@ -835,11 +835,11 @@
             <System:String>Stellar</System:String>
         </ComboBox>
 
-        <!-- Architecture ComboBox -->  
+        <!-- Architecture ComboBox -->
         <ComboBox x:Name="comboBoxArchitecture" 
                   ItemContainerStyle="{DynamicResource ComboBoxItemCustom}"
                   HorizontalAlignment="Left"
-                  Margin="237,151,0,0" 
+                  Margin="237,150,0,0" 
                   VerticalAlignment="Top" 
                   Width="85"
                   Height="23"
@@ -857,7 +857,7 @@
                 Style="{DynamicResource ButtonStyleCustom}"
                 Padding="0" 
                 HorizontalAlignment="Left"
-                Margin="327,151,0,0" 
+                Margin="327,150,0,0" 
                 VerticalAlignment="Top"
                 Width="70" 
                 Foreground="White" 
@@ -878,7 +878,7 @@
                 Padding="0" 
                 VerticalContentAlignment="Center" 
                 HorizontalAlignment="Left" 
-                Margin="402,151,0,0" 
+                Margin="402,150,0,0" 
                 VerticalAlignment="Top"
                 Width="70" 
                 Foreground="White" 

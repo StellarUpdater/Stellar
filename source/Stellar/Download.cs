@@ -57,7 +57,7 @@ namespace Stellar
             // Progress Info
             mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
             {
-                mainwindow.labelProgressInfo.Content = progressInfo;
+                mainwindow.textBlockProgressInfo.Text = progressInfo;
             });
 
             // Progress Bar
@@ -82,7 +82,7 @@ namespace Stellar
             //Progress Info
             mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
             {
-                mainwindow.labelProgressInfo.Content = progressInfo;
+                mainwindow.textBlockProgressInfo.Text = progressInfo;
             });
         }
 
@@ -530,7 +530,7 @@ namespace Stellar
             // Cross Thread
             mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
             {
-                mainwindow.labelProgressInfo.Content = "RetroArch Complete";
+                mainwindow.textBlockProgressInfo.Text = "RetroArch Complete";
                 MainWindow.ClearRetroArchVars();
             }); 
         }
@@ -602,7 +602,7 @@ namespace Stellar
                         {
                             // Progress Info
                             progressInfo = "RetroArch + Cores Install Complete";
-                            mainwindow.labelProgressInfo.Content = progressInfo;
+                            mainwindow.textBlockProgressInfo.Text = progressInfo;
                         }
 
                         // RA+Cores
@@ -611,7 +611,7 @@ namespace Stellar
                         {
                             // Progress Info
                             progressInfo = "RetroArch + Cores Update Complete";
-                            mainwindow.labelProgressInfo.Content = progressInfo;
+                            mainwindow.textBlockProgressInfo.Text = progressInfo;
                         }
 
                         // Cores
@@ -620,7 +620,7 @@ namespace Stellar
                         {
                             // Progress Info
                             progressInfo = "Cores Update Complete";
-                            mainwindow.labelProgressInfo.Content = progressInfo;
+                            mainwindow.textBlockProgressInfo.Text = progressInfo;
                         }
 
                         // New Cores
@@ -629,7 +629,7 @@ namespace Stellar
                         {
                             // Progress Info
                             progressInfo = "Cores Install Complete";
-                            mainwindow.labelProgressInfo.Content = progressInfo;
+                            mainwindow.textBlockProgressInfo.Text = progressInfo;
                         }
                     });
                 }

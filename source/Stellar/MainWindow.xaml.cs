@@ -38,7 +38,7 @@ namespace Stellar
     public partial class MainWindow : Window
     {
         // Stellar Current Version
-        public static Version currentVersion = new Version("0.8.6.0");
+        public static Version currentVersion;
         // Alpha, Beta, Stable
         public static string currentBuildPhase = "beta";
 
@@ -64,6 +64,11 @@ namespace Stellar
         public MainWindow() // Pass Exclude Cores Data from Checklist
         {
             InitializeComponent();
+
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+            string assemblyVersion = fvi.FileVersion;
+            currentVersion = new Version(assemblyVersion);
 
             TitleVersion = "Stellar ~ RetroArch Nightly Updater (" + Convert.ToString(currentVersion) + "-" + currentBuildPhase + ")";
             DataContext = this;
@@ -643,7 +648,7 @@ namespace Stellar
         private void buttonCheck_Click(object sender, RoutedEventArgs e)
         {
             // Progress Info
-            labelProgressInfo.Content = "Checking...";
+            textBlockProgressInfo.Text = "Checking...";
 
             // Call SetArchitecture Method
             Paths.SetArchitecture(this);
@@ -700,7 +705,7 @@ namespace Stellar
             }
 
             // Progress Info
-            labelProgressInfo.Content = "";
+            textBlockProgressInfo.Text = "";
 
 
             // -------------------------
