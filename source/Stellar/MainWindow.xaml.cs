@@ -763,7 +763,7 @@ namespace Stellar
         private void buttonUpdate_Click(object sender, RoutedEventArgs e)
         {
             // Add backslash to Location Textbox path if missing
-            if (!textBoxLocation.Text.EndsWith("\\") && textBoxLocation.Text != "")
+            if (!textBoxLocation.Text.EndsWith("\\") && !string.IsNullOrWhiteSpace(textBoxLocation.Text))
             {
                 textBoxLocation.Text = textBoxLocation.Text + "\\";
             }
@@ -772,7 +772,8 @@ namespace Stellar
 
 
             // If RetroArch Path is empty, halt progress
-            if (string.IsNullOrEmpty(Paths.retroarchPath))
+            if (string.IsNullOrEmpty(Paths.retroarchPath) 
+                && (string)comboBoxDownload.SelectedItem != "Stellar") // ignore if Stellar Self Update
             {
                 ready = false;
                 MessageBox.Show("Please select your RetroArch main folder.");
