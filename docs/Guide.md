@@ -36,6 +36,7 @@ Program needs [7-zip](http://www.7-zip.org/download.html) installed in order to 
 - `Cores` - Updates currently installed Cores.
 - `New Cores` - Installs Cores that are newly releseased or missing from your current install.
 - `Redist` - Installs Redistributables. Helpful if RetroArch won't start after update.
+- `Stellar` - Updates Stellar
 <br>
 
 ### New Install
