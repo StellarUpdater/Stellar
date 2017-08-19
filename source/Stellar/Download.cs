@@ -571,28 +571,36 @@ namespace Stellar
             //Queue.List_UpdatedCores_Name.TrimExcess();
 
             //// Remove Rejected Names & Dates from the Update List
-            int updateCount = Queue.List_UpdatedCores_Name.Count();
-            for (int r = updateCount - 1; r >= 0; r--)
+            try
             {
-                if (Queue.List_RejectedCores_Name.Contains(Queue.List_UpdatedCores_Name[r]))
+                int updateCount = Queue.List_UpdatedCores_Name.Count();
+                for (int r = updateCount - 1; r >= 0; r--)
                 {
-                    // Name
-                    if (Queue.List_UpdatedCores_Name.Count() > r
-                        && Queue.List_UpdatedCores_Name.Count() != 0) // null check
+                    if (Queue.List_RejectedCores_Name.Contains(Queue.List_UpdatedCores_Name[r]))
                     {
-                        Queue.List_UpdatedCores_Name.RemoveAt(r);
-                        Queue.List_UpdatedCores_Name.TrimExcess();
-                    }
+                        // Name
+                        if (Queue.List_UpdatedCores_Name.Count() > r
+                            && Queue.List_UpdatedCores_Name.Count() != 0) // null check
+                        {
+                            Queue.List_UpdatedCores_Name.RemoveAt(r);
+                            Queue.List_UpdatedCores_Name.TrimExcess();
+                        }
 
-                    // Date
-                    if (Queue.List_UpdatedCores_Date.Count() > r
-                        && Queue.List_UpdatedCores_Date.Count() != 0) // null check
-                    {
-                        Queue.List_UpdatedCores_Date.RemoveAt(r);
-                        Queue.List_UpdatedCores_Date.TrimExcess();
+                        // Date
+                        if (Queue.List_UpdatedCores_Date.Count() > r
+                            && Queue.List_UpdatedCores_Date.Count() != 0) // null check
+                        {
+                            Queue.List_UpdatedCores_Date.RemoveAt(r);
+                            Queue.List_UpdatedCores_Date.TrimExcess();
+                        }
                     }
                 }
             }
+            catch
+            {
+                MessageBox.Show("Error: Problem Excluding cores from Update List.");
+            }
+            
 
             //debug
             //var messageNames = string.Join(Environment.NewLine, Queue.List_UpdatedCores_Name);

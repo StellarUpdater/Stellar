@@ -248,73 +248,128 @@ namespace Stellar
         public static void ParseBuildbotCoresIndex(MainWindow mainwindow)
         {
             // -------------------------
-            // Begin Parse
+            // Download
             // -------------------------
             // If No Internet Connect, program will crash. Use Try & Catch to display Error.
+            string buildbotCoresIndex = string.Empty;
+
             try
             {
-                // -------------------------
-                // Download
-                // -------------------------
                 // index-extended cores text file
-                string buildbotCoresIndex = Download.wc.DownloadString(indexextendedUrl);
+                buildbotCoresIndex = Download.wc.DownloadString(indexextendedUrl);
+
                 // Trim ending linebreak
                 buildbotCoresIndex = buildbotCoresIndex.TrimEnd('\n');
+            }
+            catch
+            {
+                MainWindow.ready = false;
+                MessageBox.Show("Error: Buildbot index-extended file may be offline.");
+            }
 
-                // Check if index-extended failed or is empty
-                if (string.IsNullOrEmpty(buildbotCoresIndex))
+
+            if (!string.IsNullOrEmpty(buildbotCoresIndex)) //null check
+            {
+                try
                 {
-                    MainWindow.ready = false;
-                    MessageBox.Show("Error: Cores list is empty or failed to download index-extended.");
+                    // index-extended to array
+                    var lines = buildbotCoresIndex.Split("\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
+                        .Select(tag => tag.Trim())
+                        .Where(tag => !string.IsNullOrEmpty(tag))
+                        .ToArray();
+
+                    // -------------------------
+                    // Corrupt Fix
+                    // -------------------------
+                    // Remove line if it does not contain a space, might be corrupt
+                    for (int i = lines.Count() - 1; i >= 0; --i)
+                    {
+                        if (lines.Count() > i && lines.Count() != 0) // null check
+                        {
+                            if (!lines[i].Contains(' '))
+                            {
+                                lines = lines.Where(w => w != lines[i]).ToArray();
+                            }
+                        }
+                    }
+
+                    // -------------------------
+                    // Sort
+                    // -------------------------
+                    // Split the index-extended by LineBreak Array
+                    // Sort the Array by Core Name (3rd word in Line)
+                    //var lines = buildbotCoresIndex.Split("\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
+                    //    .Select(tag => tag.Trim())
+                    //    .Where(tag => !string.IsNullOrEmpty(tag))
+                    //    .OrderBy(s => s.Split(' ')[2]) //sort by Name
+                    //    .ToArray();
+                    lines = lines.OrderBy(s => s.Split(' ')[2]).ToArray();
+
+                    // Split the index-extended into 3 Lists, BuildbotCoreDate, BuildbotID, BuildbotCoresName
+                    foreach (string line in lines)
+                    {
+                        string[] arr = line.Split(' ');
+
+                        if (arr[0] != null)
+                        {
+                            Queue.List_BuildbotCores_Date.Add(arr[0]);
+                            Queue.List_BuildbotCores_Date.TrimExcess();
+                        }
+
+                        //Queue.ListBuildbotID.Add(arr[1]);
+                        //Queue.ListBuildbotID.TrimExcess();
+
+                        if (arr[2] != null)
+                        {
+                            Queue.List_BuildbotCores_Name.Add(arr[2]);
+                            Queue.List_BuildbotCores_Name.TrimExcess();
+                        }
+                    }
+                }
+                catch
+                {
+                    MessageBox.Show("Error: Problem sorting Buildbot Cores.");
                 }
 
-                // -------------------------
-                // Sort
-                // -------------------------
-                // Split the index-extended by LineBreak Array
-                // Sort the Array by Core Name (3rd word in Line)
-                var lines = buildbotCoresIndex.Split("\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
-                    .Select(tag => tag.Trim())
-                    .Where(tag => !string.IsNullOrEmpty(tag))
-                    .OrderBy(s => s.Split(' ')[2])
-                    .ToArray();
 
-                // Split the index-extended into 3 Lists, BuildbotCoreDate, BuildbotID, BuildbotCoresName
-                foreach (string line in lines)
+                try
                 {
-                    string[] arr = line.Split(' ');
-                    Queue.List_BuildbotCores_Date.Add(arr[0]);
-                    Queue.List_BuildbotCores_Date.TrimExcess();
-
-                    //Queue.ListBuildbotID.Add(arr[1]);
-                    //Queue.ListBuildbotID.TrimExcess();
-
-                    Queue.List_BuildbotCores_Name.Add(arr[2]);
+                    // -------------------------
+                    // Modify
+                    // -------------------------
+                    // Remove from the List all that do not contain .dll.zip (filters out unwanted)
+                    Queue.List_BuildbotCores_Name.RemoveAll(u => !u.Contains(".dll.zip"));
                     Queue.List_BuildbotCores_Name.TrimExcess();
+
+                    // Remove .zip from all in List
+                    for (int i = 0; i < Queue.List_BuildbotCores_Name.Count; i++)
+                    {
+                        if (Queue.List_BuildbotCores_Name[i].Contains(".zip"))
+                            Queue.List_BuildbotCores_Name[i] = Queue.List_BuildbotCores_Name[i].Replace(".zip", "");
+                    }
                 }
-
-                // -------------------------
-                // Modify
-                // -------------------------
-                // Remove from the List all that do not contain .dll.zip (filters out unwanted)
-                Queue.List_BuildbotCores_Name.RemoveAll(u => !u.Contains(".dll.zip"));
-                Queue.List_BuildbotCores_Name.TrimExcess();
-
-                // Remove .zip from all in List
-                for (int i = 0; i < Queue.List_BuildbotCores_Name.Count; i++)
+                catch
                 {
-                    if (Queue.List_BuildbotCores_Name[i].Contains(".zip"))
-                        Queue.List_BuildbotCores_Name[i] = Queue.List_BuildbotCores_Name[i].Replace(".zip", "");
+                    MessageBox.Show("Error: Problem modifying Buildbot Cores.");
                 }
+                
 
-                // -------------------------
-                // Combine
-                // -------------------------
-                // Join Lists Name & Date
-                for (int i = 0; i < Queue.List_BuildbotCores_Name.Count; i++)
+                try
                 {
-                    Queue.List_BuildbotCores_NameDate.Add(Queue.List_BuildbotCores_Name[i] + " " + Queue.List_BuildbotCores_Date[i]);
+                    // -------------------------
+                    // Combine
+                    // -------------------------
+                    // Join Lists Name & Date
+                    for (int i = 0; i < Queue.List_BuildbotCores_Name.Count; i++)
+                    {
+                        Queue.List_BuildbotCores_NameDate.Add(Queue.List_BuildbotCores_Name[i] + " " + Queue.List_BuildbotCores_Date[i]);
+                    }
                 }
+                catch
+                {
+                    MessageBox.Show("Error: Problem combining Buildbot Cores.");
+                }
+                
 
                 // -------------------------
                 // Sort Correction
@@ -322,11 +377,15 @@ namespace Stellar
                 Queue.List_BuildbotCores_NameDate.Sort();
                 Queue.List_BuildbotCores_NameDate.TrimExcess();
             }
-            catch
+
+            // index-extended null
+            else
             {
                 MainWindow.ready = false;
-                MessageBox.Show("Error: Cannot connect to Server.");
+                MessageBox.Show("Error: Cores list is empty or failed to download index-extended.");
             }
+
+               
         }
 
 
