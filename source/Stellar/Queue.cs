@@ -225,6 +225,8 @@ namespace Stellar
 
         // -----------------------------------------------
         // Create Updated Cores List
+        // Compare Dates
+        // Add Names to Update List
         // -----------------------------------------------
         public static void UpdatedCores(MainWindow mainwindow)
         {
@@ -269,13 +271,13 @@ namespace Stellar
                     for (int i = 0; i < largestList; i++)
                     {
                         // Buildbot
-                        if (List_BuildbotCores_NameDate.Count() > i) //index range check
+                        if (List_BuildbotCores_NameDate.Count() > i && List_BuildbotCores_NameDate.Count() != 0) //index range check
                         {
                             bbArr = Convert.ToString(List_BuildbotCores_NameDate[i]).Split(' ');
                         }
 
                         // PC
-                        if (List_PcCores_NameDate.Count() > i) //index range check
+                        if (List_PcCores_NameDate.Count() > i && List_PcCores_NameDate.Count() != 0) //index range check
                         {
                             pcArr = Convert.ToString(List_PcCores_NameDate[i]).Split(' ');
                         }
@@ -283,11 +285,12 @@ namespace Stellar
                         // -------------------------
                         // Compare
                         // -------------------------
-                        if (List_PcCores_NameDate.Count() > i) //index range check
+                        if (List_PcCores_NameDate.Count() > i && List_PcCores_NameDate.Count() != 0) //index range check
                         {
                             // If Buildbot Name+Date List Contains a PC Name
                             //
-                            if (List_BuildbotCores_Name.Any(p => p.Contains(pcArr[0])))
+                            //if (List_BuildbotCores_Name.Any(p => p.Contains(pcArr[0])))
+                            if (List_BuildbotCores_Name.Contains(pcArr[0]))
                             {
                                 if (bbArr != null && pcArr != null) // null check
                                 {

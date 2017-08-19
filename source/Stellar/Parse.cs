@@ -265,7 +265,7 @@ namespace Stellar
                 if (string.IsNullOrEmpty(buildbotCoresIndex))
                 {
                     MainWindow.ready = false;
-                    MessageBox.Show("Error: Cores list is empty or failed to donwload index-extended.");
+                    MessageBox.Show("Error: Cores list is empty or failed to download index-extended.");
                 }
 
                 // -------------------------
