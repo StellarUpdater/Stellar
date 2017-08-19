@@ -218,7 +218,7 @@ namespace Stellar
                     "\"" + Archiver.archiver + "\"",
                     "-r -y e",
                     "\"" + Paths.tempPath + Parse.stellar7z + "\"",
-                    "-o\"" + Paths.currentDir + "\"",
+                    "-o\"" + Paths.appDir + "\"",
                     "*",
                     // Delete Temp
                     "&&",
@@ -227,7 +227,7 @@ namespace Stellar
                     "del " + "\"" + Paths.tempPath + Parse.stellar7z + "\"",
                     // Relaunch Stellar
                     "&&",
-                    "\"" + Paths.currentDir + "Stellar.exe" + "\"",
+                    "\"" + Paths.appDir + "Stellar.exe" + "\"",
                     // Complete
                     "&&",
                     "echo Update Complete"
@@ -261,7 +261,7 @@ namespace Stellar
                     "-y x",
                     "\"" + Paths.tempPath + Parse.stellar7z + "\"",
                     "*",
-                    "\"" + Paths.currentDir + "\"",
+                    "\"" + Paths.appDir + "\"",
                     // Delete Temp
                     "&&",
                     "echo Deleting Temp File",
@@ -269,7 +269,7 @@ namespace Stellar
                     "del " + "\"" + Paths.tempPath + Parse.stellar7z + "\"",
                     // Relaunch Stellar
                     "&&",
-                    "\"" + Paths.currentDir + "Stellar.exe" + "\"",
+                    "\"" + Paths.appDir + "Stellar.exe" + "\"",
                     // Complete
                     "&&",
                     "echo Update Complete"
@@ -322,13 +322,13 @@ namespace Stellar
                 // Allow 0.1 seconds before Extracting Files
                 Thread.Sleep(100);
 
+                // Extract -o and Overwrite -y Selected Files -r
                 //exec7zip.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden; //use with ShellExecute
                 execExtract.StartInfo.UseShellExecute = false;
                 execExtract.StartInfo.Verb = "runas"; //use with ShellExecute for admin
                 execExtract.StartInfo.CreateNoWindow = true;
                 execExtract.StartInfo.RedirectStandardOutput = true; //set to false if using ShellExecute
                 execExtract.StartInfo.FileName = Archiver.archiver;
-                // Extract -o and Overwrite -y Selected Files -r
 
                 // -------------------------
                 // 7-Zip
@@ -482,6 +482,10 @@ namespace Stellar
                 execExtract.WaitForExit();
                 execExtract.Close();
 
+
+                // -------------------------
+                // Set File Time
+                // -------------------------
                 // Convert Local Time to Server Time
                 // This doesn't work in a Method
                 DateTime utcTime = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
@@ -553,8 +557,8 @@ namespace Stellar
             {
                 if ((string)mainwindow.comboBoxDownload.SelectedItem == "New Install")
                 {
-                    Queue.ListUpdatedCoresName = Queue.ListBuildbotCoresName;
-                    Queue.ListUpdatedCoresName.TrimExcess();
+                    Queue.List_UpdatedCores_Name = Queue.List_BuildbotCores_Name;
+                    Queue.List_UpdatedCores_Name.TrimExcess();
                 }
             });
 
@@ -562,27 +566,58 @@ namespace Stellar
             // -------------------------
             // Rejected
             // -------------------------
-            // Remove Rejected Cores from the Update List
-            Queue.ListUpdatedCoresName = Queue.ListUpdatedCoresName.Except(Queue.ListRejectedCores).ToList();
-            Queue.ListUpdatedCoresName.TrimExcess();
+            // Remove Rejected Core Names from the Update List
+            //Queue.List_UpdatedCores_Name = Queue.List_UpdatedCores_Name.Except(Queue.List_RejectedCores_Name).ToList();
+            //Queue.List_UpdatedCores_Name.TrimExcess();
+
+            //// Remove Rejected Names & Dates from the Update List
+            int updateCount = Queue.List_UpdatedCores_Name.Count();
+            for (int r = updateCount - 1; r >= 0; r--)
+            {
+                if (Queue.List_RejectedCores_Name.Contains(Queue.List_UpdatedCores_Name[r]))
+                {
+                    // Name
+                    if (Queue.List_UpdatedCores_Name.Count() > r
+                        && Queue.List_UpdatedCores_Name.Count() != 0) // null check
+                    {
+                        Queue.List_UpdatedCores_Name.RemoveAt(r);
+                        Queue.List_UpdatedCores_Name.TrimExcess();
+                    }
+
+                    // Date
+                    if (Queue.List_UpdatedCores_Date.Count() > r
+                        && Queue.List_UpdatedCores_Date.Count() != 0) // null check
+                    {
+                        Queue.List_UpdatedCores_Date.RemoveAt(r);
+                        Queue.List_UpdatedCores_Date.TrimExcess();
+                    }
+                }
+            }
+
+            //debug
+            //var messageNames = string.Join(Environment.NewLine, Queue.List_UpdatedCores_Name);
+            //MessageBox.Show(messageNames);
+            //var messageDates = string.Join(Environment.NewLine, Queue.List_UpdatedCores_Date);
+            //MessageBox.Show(messageDates);
+
 
             // -------------------------
             // Download
             // -------------------------
-            for (int i = 0; i < Queue.ListUpdatedCoresName.Count; i++) //problem core count & Parse.nightly7z
+            for (int i = 0; i < Queue.List_UpdatedCores_Name.Count; i++) //problem core count & Parse.nightly7z
             {
                 //Reset Waiter, Must be here
                 waiter.Reset();
 
-                Uri downloadUrl2 = new Uri(Parse.parseCoresUrl + Queue.ListUpdatedCoresName[i] + ".zip");
-                //Uri downloadUrl2 = new Uri("http://127.0.0.1:8888/latest/" + Queue.ListUpdatedCoresName[i] + ".zip"); //TESTING
+                Uri downloadUrl2 = new Uri(Parse.parseCoresUrl + Queue.List_UpdatedCores_Name[i] + ".zip");
+                //Uri downloadUrl2 = new Uri("http://127.0.0.1:8888/latest/" + Queue.List_UpdatedCores_Name[i] + ".zip"); //TESTING
                 //Async
                 wc2.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wc_DownloadProgressChanged);
                 wc2.DownloadFileCompleted += new AsyncCompletedEventHandler(wc_DownloadFileCompleted);
-                wc2.DownloadFileAsync(downloadUrl2, Paths.tempPath + Queue.ListUpdatedCoresName[i] + ".zip", i);
+                wc2.DownloadFileAsync(downloadUrl2, Paths.tempPath + Queue.List_UpdatedCores_Name[i] + ".zip", i);
 
                 // Progress Info
-                progressInfo = "Downloading " + Queue.ListUpdatedCoresName[i];
+                progressInfo = "Downloading " + Queue.List_UpdatedCores_Name[i];
 
                 //Wait until download is finished
                 waiter.WaitOne();
@@ -591,7 +626,7 @@ namespace Stellar
 
                 // If Last item in List
                 //
-                if (i == Queue.ListUpdatedCoresName.Count - 1)
+                if (i == Queue.List_UpdatedCores_Name.Count - 1)
                 {
                     // Cross Thread
                     mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
@@ -642,6 +677,7 @@ namespace Stellar
                     // Allow 0.1 seconds before extraction
                     Thread.Sleep(100);
 
+                    // Extract -o and Overwrite -y Selected Files -r
                     //exec7zip.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden; //use with ShellExecute
                     execExtract.StartInfo.UseShellExecute = false;
                     execExtract.StartInfo.Verb = "runas"; //use with ShellExecute for admin
@@ -649,7 +685,6 @@ namespace Stellar
                     execExtract.StartInfo.RedirectStandardOutput = true; //set to false if using ShellExecute
                     execExtract.StartInfo.FileName = Archiver.archiver;
 
-                    // Extract -o and Overwrite -y Selected Files -r
                     // -------------------------
                     // 7-Zip
                     // -------------------------
@@ -657,7 +692,7 @@ namespace Stellar
                     {
                         List<string> extractArgs = new List<string>() {
                                 "-y e",
-                                "\"" + Paths.tempPath + Queue.ListUpdatedCoresName[i] + ".zip" + "\"",
+                                "\"" + Paths.tempPath + Queue.List_UpdatedCores_Name[i] + ".zip" + "\"",
                                 "-o\"" + Paths.coresPath + "\"",
                             };
 
@@ -671,7 +706,7 @@ namespace Stellar
                     {
                         List<string> extractArgs = new List<string>() {
                                 "-y x",
-                                "\"" + Paths.tempPath + Queue.ListUpdatedCoresName[i] + ".zip" + "\"",
+                                "\"" + Paths.tempPath + Queue.List_UpdatedCores_Name[i] + ".zip" + "\"",
                                 "\"" + Paths.coresPath + "\"",
                             };
 
@@ -683,17 +718,33 @@ namespace Stellar
                     execExtract.WaitForExit();
                     execExtract.Close();
 
+
+                    // -------------------------
+                    // Set File Time
+                    // -------------------------
+                    // Default UTC
+                    DateTime buildbotServerTime = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
+
+                    // Try to set to BuildBot index-extended Server Time
+                    if (Queue.List_UpdatedCores_Date.Count() > i && Queue.List_UpdatedCores_Date.Count() != 0) //index range check
+                    {
+                        if (!string.IsNullOrEmpty(Queue.List_UpdatedCores_Date[i]))
+                        {
+                            buildbotServerTime = Convert.ToDateTime(Queue.List_UpdatedCores_Date[i]);
+                        }
+                    }
+                    
                     // Convert Local Time to Server Time
                     // This doesn't work in a Method
-                    DateTime utcTime = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
+                    //DateTime utcTime = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
                     //TimeZoneInfo tzi = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
                     //DateTime libretroServerTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, tzi); // .AddHours(12) Needs to be 6-12 hours ahead to be more recent than server? 24 Hour AM/PM Problem?
 
                     // Set the File Date Time Stamp - Very Important! Let's file sync compare for next update.
-                    if (File.Exists(Paths.coresPath + Queue.ListUpdatedCoresName[i]))
+                    if (File.Exists(Paths.coresPath + Queue.List_UpdatedCores_Name[i]))
                     {
-                        File.SetCreationTime(Paths.coresPath + Queue.ListUpdatedCoresName[i], utcTime); // Created Date Time = Now, (used to be DateTime.Now)
-                        File.SetLastWriteTime(Paths.coresPath + Queue.ListUpdatedCoresName[i], utcTime); //maybe disable modified date?
+                        File.SetCreationTime(Paths.coresPath + Queue.List_UpdatedCores_Name[i], buildbotServerTime); // Created Date Time = Now, (used to be DateTime.Now)
+                        File.SetLastWriteTime(Paths.coresPath + Queue.List_UpdatedCores_Name[i], buildbotServerTime); //maybe disable modified date?
                     }
                 }
 
@@ -710,7 +761,7 @@ namespace Stellar
                     deleteTemp.StartInfo.CreateNoWindow = true;
                     deleteTemp.StartInfo.RedirectStandardOutput = true; //set to false if using ShellExecute
                     deleteTemp.StartInfo.FileName = "cmd.exe";
-                    deleteTemp.StartInfo.Arguments = "/c del " + "\"" + Paths.tempPath + Queue.ListUpdatedCoresName[i] + ".zip" + "\"";
+                    deleteTemp.StartInfo.Arguments = "/c del " + "\"" + Paths.tempPath + Queue.List_UpdatedCores_Name[i] + ".zip" + "\"";
                     deleteTemp.Start();
                     deleteTemp.WaitForExit();
                     deleteTemp.Close();
@@ -719,7 +770,7 @@ namespace Stellar
 
                 // If Last item in List
                 //
-                if (i == Queue.ListUpdatedCoresName.Count - 1)
+                if (i == Queue.List_UpdatedCores_Name.Count - 1)
                 {
                     // Write Log Append
                     //
@@ -733,8 +784,8 @@ namespace Stellar
 
                     // Clear Checklist Checkbox Rejected Cores
                     //
-                    Queue.ListRejectedCores.Clear();
-                    Queue.ListRejectedCores.TrimExcess();
+                    Queue.List_RejectedCores_Name.Clear();
+                    Queue.List_RejectedCores_Name.TrimExcess();
                 }
 
             } // end for loop

@@ -52,30 +52,30 @@ namespace Stellar
             this.MaxHeight = 470;
 
             // Trim List if new
-            Queue.ListUpdatedCoresName.TrimExcess();
+            Queue.List_UpdatedCores_Name.TrimExcess();
 
             // Add Updated Cores List to List Box
-            Queue.CollectionUpdatedCoresName = new ObservableCollection<string>(Queue.ListUpdatedCoresName);
+            Queue.Collection_UpdatedCores_Name = new ObservableCollection<string>(Queue.List_UpdatedCores_Name);
 
             // Add PC Cores Name+Date to List Box
-            Queue.CollectionPcCoresNameDate = new ObservableCollection<string>(Queue.ListPcCoresNameDate);
+            Queue.Collection_PcCores_NameDate = new ObservableCollection<string>(Queue.List_PcCores_NameDate);
 
             // Add Buildbot Cores Name+Date to List Box 
-            Queue.CollectionBuildbotCoresNameDate = new ObservableCollection<string>(Queue.ListBuildbotCoresNameDate);
+            Queue.Collection_BuildbotCores_NameDate = new ObservableCollection<string>(Queue.List_BuildbotCores_NameDate);
 
 
             // Add to List View
-            listViewUpdatedCores.ItemsSource = Queue.CollectionUpdatedCoresName;
+            listViewUpdatedCores.ItemsSource = Queue.Collection_UpdatedCores_Name;
             // Select All
             listViewUpdatedCores.SelectAll();
 
             // Load the Name+Date Lists
             // List Box Pc Cores Name+Date (Advanced)
-            listBoxPcCoresNameDate.ItemsSource = Queue.CollectionPcCoresNameDate;
+            listBoxPcCoresNameDate.ItemsSource = Queue.Collection_PcCores_NameDate;
             listBoxPcCoresNameDate.SelectedIndex = -1; // Deselect All at Initialize
 
             // List Box Buildbot Cores Name+Date (Advanced)
-            listBoxBuildbotCoresNameDate.ItemsSource = Queue.CollectionBuildbotCoresNameDate;
+            listBoxBuildbotCoresNameDate.ItemsSource = Queue.Collection_BuildbotCores_NameDate;
             listBoxBuildbotCoresNameDate.SelectedIndex = -1; // Deselect All at Initialize
         }
 
@@ -97,14 +97,14 @@ namespace Stellar
             // For each item in (unchecked), Add to Rejected List
             foreach (string item in e.RemovedItems)
             {
-                Queue.ListRejectedCores.Add(item);
+                Queue.List_RejectedCores_Name.Add(item);
             }
             // If Checked
             // For each item in (checked), Remove from Rejected List
             foreach (string item in e.AddedItems)
             {
-                Queue.ListRejectedCores.Remove(item);
-                Queue.ListRejectedCores.TrimExcess();
+                Queue.List_RejectedCores_Name.Remove(item);
+                Queue.List_RejectedCores_Name.TrimExcess();
             }
 
             // Save List to Settings - DISABLED FOR NOW

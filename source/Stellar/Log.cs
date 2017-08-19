@@ -41,9 +41,9 @@ namespace Stellar
                         sw.WriteLine("--------------------------------------\r\n");
 
                         // Append List
-                        for (int x = 0; x < Queue.ListUpdatedCoresName.Count; x++)
+                        for (int x = 0; x < Queue.List_UpdatedCores_Name.Count; x++)
                         {
-                            sw.WriteLine(Queue.ListUpdatedCoresName[x]);
+                            sw.WriteLine(Queue.List_UpdatedCores_Name[x]);
                         }
 
                         sw.WriteLine("\r\n");

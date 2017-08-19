@@ -19,6 +19,7 @@
     Image Credit: ESO & NASA (CC)
    ---------------------------------------------------------------------- */
 
+using System;
 using System.IO;
 
 namespace Stellar
@@ -29,7 +30,7 @@ namespace Stellar
         public static string tempPath = System.IO.Path.GetTempPath();
 
         // System Paths
-        public static string currentDir = Directory.GetCurrentDirectory().TrimEnd('\\') + @"\";
+        public static string appDir = AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\') + @"\"; // Stellar.exe directory
         public static string retroarchPath; // Location of User's RetroArch Folder
         public static string coresPath; // Location of User's cores folder
 

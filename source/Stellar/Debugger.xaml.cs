@@ -1,4 +1,7 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Windows;
 
@@ -40,7 +43,8 @@ namespace Stellar
             // Check
             // -------------------------
             if ((string)mainwindow.comboBoxDownload.SelectedItem == "RA+Cores"
-            || (string)mainwindow.comboBoxDownload.SelectedItem == "Cores")
+            || (string)mainwindow.comboBoxDownload.SelectedItem == "Cores"
+            || (string)mainwindow.comboBoxDownload.SelectedItem == "New Cores")
             {
                 // -------------------------
                 // Clear
@@ -56,24 +60,24 @@ namespace Stellar
                 // Lists
 
                 // PC Core Name+Date
-                if (Queue.ListPcCoresNameDate != null)
+                if (Queue.List_PcCores_NameDate != null)
                 {
-                    Queue.ListPcCoresNameDate.Clear();
-                    Queue.ListPcCoresNameDate.TrimExcess();
+                    Queue.List_PcCores_NameDate.Clear();
+                    Queue.List_PcCores_NameDate.TrimExcess();
                 }
 
                 // Buildbot Cores Name+Date
-                if (Queue.ListBuildbotCoresNameDate != null)
+                if (Queue.List_BuildbotCores_NameDate != null)
                 {
-                    Queue.ListBuildbotCoresNameDate.Clear();
-                    Queue.ListBuildbotCoresNameDate.TrimExcess();
+                    Queue.List_BuildbotCores_NameDate.Clear();
+                    Queue.List_BuildbotCores_NameDate.TrimExcess();
                 }
 
                 // Excluded Core Name+Date
-                if (Queue.ListExcludedCoresNameDate != null)
+                if (Queue.List_ExcludedCores_NameDate != null)
                 {
-                    Queue.ListExcludedCoresNameDate.Clear();
-                    Queue.ListExcludedCoresNameDate.TrimExcess();
+                    Queue.List_ExcludedCores_NameDate.Clear();
+                    Queue.List_ExcludedCores_NameDate.TrimExcess();
                 }
 
                 // Observable Collections
@@ -89,9 +93,9 @@ namespace Stellar
                     Queue.CollectionPcCoresDate = null;
                 }
                 // PC Core Name+Date ObservableCollection
-                if (Queue.CollectionPcCoresNameDate != null)
+                if (Queue.Collection_PcCores_NameDate != null)
                 {
-                    Queue.CollectionPcCoresNameDate = null;
+                    Queue.Collection_PcCores_NameDate = null;
                 }
                 // PC Core Unknown Name+Date ObservableCollection
                 if (Queue.CollectionPcCoresUnknownNameDate != null)
@@ -100,35 +104,35 @@ namespace Stellar
                 }
 
                 // Buildbot Core Name ObservableCollection
-                if (Queue.CollectionBuildbotCoresName != null)
+                if (Queue.Collection_BuildbotCores_Name != null)
                 {
-                    Queue.CollectionBuildbotCoresName = null;
+                    Queue.Collection_BuildbotCores_Name = null;
                 }
                 // Buildbot Core Date ObservableCollection
-                if (Queue.CollectionBuildbotCoresDate != null)
+                if (Queue.Collection_BuildbotCores_Date != null)
                 {
-                    Queue.CollectionBuildbotCoresDate = null;
+                    Queue.Collection_BuildbotCores_Date = null;
                 }
                 // Buildbot Core Name+Date ObservableCollection
-                if (Queue.CollectionBuildbotCoresNameDate != null)
+                if (Queue.Collection_BuildbotCores_NameDate != null)
                 {
-                    Queue.CollectionBuildbotCoresNameDate = null;
+                    Queue.Collection_BuildbotCores_NameDate = null;
                 }
                 // Buildbot Core New Name ObservableCollection
-                if (Queue.CollectionBuildbotCoresNewName != null)
+                if (Queue.Collection_BuildbotCores_NewName != null)
                 {
-                    Queue.CollectionBuildbotCoresNewName = null;
+                    Queue.Collection_BuildbotCores_NewName = null;
                 }
 
                 // Excluded ObservableCollection
-                if (Queue.CollectionExcludedCoresName != null)
+                if (Queue.Collection_ExcludedCores_Name != null)
                 {
-                    Queue.CollectionExcludedCoresName = null;
+                    Queue.Collection_ExcludedCores_Name = null;
                 }
                 // Updated ObservableCollection
-                if (Queue.CollectionUpdatedCoresName != null)
+                if (Queue.Collection_UpdatedCores_Name != null)
                 {
-                    Queue.CollectionUpdatedCoresName = null;
+                    Queue.Collection_UpdatedCores_Name = null;
                 }
 
 
@@ -152,7 +156,7 @@ namespace Stellar
 
                     // New Cores List - Debugger Only
                     // Subtract PC List from Buildbot List
-                    Queue.ListBuildbotCoresNewName = Queue.ListBuildbotCoresName.Except(Queue.ListPcCoresName).ToList();
+                    Queue.List_BuildbotCores_NewName = Queue.List_BuildbotCores_Name.Except(Queue.List_PcCores_Name).ToList();
 
                     // Get Updated Cores
                     Queue.UpdatedCores(mainwindow);
@@ -166,36 +170,36 @@ namespace Stellar
                 // -------------------------
                 // Display
                 // -------------------------
-                if (Queue.ListUpdatedCoresName.Count != 0)
+                if (Queue.List_UpdatedCores_Name.Count != 0)
                 {
                     // Trim List if new
-                    Queue.ListUpdatedCoresName.TrimExcess();
+                    Queue.List_UpdatedCores_Name.TrimExcess();
 
                     // -------------------------
                     // Add List to Obvservable Collection
                     // -------------------------
                     // PC Name
-                    Queue.CollectionPcCoresName = new ObservableCollection<string>(Queue.ListPcCoresName);
+                    Queue.CollectionPcCoresName = new ObservableCollection<string>(Queue.List_PcCores_Name);
                     // PC Date
-                    Queue.CollectionPcCoresDate = new ObservableCollection<string>(Queue.ListPcCoresDate);
+                    Queue.CollectionPcCoresDate = new ObservableCollection<string>(Queue.List_PcCores_Date);
                     // PC Name+Date
-                    Queue.CollectionPcCoresNameDate = new ObservableCollection<string>(Queue.ListPcCoresNameDate);
+                    Queue.Collection_PcCores_NameDate = new ObservableCollection<string>(Queue.List_PcCores_NameDate);
                     // PC Unknown Name+Date
-                    Queue.CollectionPcCoresUnknownNameDate = new ObservableCollection<string>(Queue.ListPcCoresUnknownName);
+                    Queue.CollectionPcCoresUnknownNameDate = new ObservableCollection<string>(Queue.List_PcCores_UnknownName);
 
                     // Buildbot Name
-                    Queue.CollectionBuildbotCoresName = new ObservableCollection<string>(Queue.ListBuildbotCoresName);
+                    Queue.Collection_BuildbotCores_Name = new ObservableCollection<string>(Queue.List_BuildbotCores_Name);
                     // Buildbot Date
-                    Queue.CollectionBuildbotCoresDate = new ObservableCollection<string>(Queue.ListBuildbotCoresDate);
+                    Queue.Collection_BuildbotCores_Date = new ObservableCollection<string>(Queue.List_BuildbotCores_Date);
                     // Buildbot Name+Date
-                    Queue.CollectionBuildbotCoresNameDate = new ObservableCollection<string>(Queue.ListBuildbotCoresNameDate);
+                    Queue.Collection_BuildbotCores_NameDate = new ObservableCollection<string>(Queue.List_BuildbotCores_NameDate);
                     // Buildbot New Name
-                    Queue.CollectionBuildbotCoresNewName = new ObservableCollection<string>(Queue.ListBuildbotCoresNewName);
+                    Queue.Collection_BuildbotCores_NewName = new ObservableCollection<string>(Queue.List_BuildbotCores_NewName);
 
                     // Excluded
-                    Queue.CollectionExcludedCoresName = new ObservableCollection<string>(Queue.ListExcludedCoresName);
+                    Queue.Collection_ExcludedCores_Name = new ObservableCollection<string>(Queue.List_ExcludedCores_Name);
                     // To Update
-                    Queue.CollectionUpdatedCoresName = new ObservableCollection<string>(Queue.ListUpdatedCoresName);
+                    Queue.Collection_UpdatedCores_Name = new ObservableCollection<string>(Queue.List_UpdatedCores_Name);
 
 
                     // -------------------------
@@ -206,23 +210,23 @@ namespace Stellar
                     // PC Date
                     listBoxPcDate.ItemsSource = Queue.CollectionPcCoresDate;
                     // PC Name+Date
-                    listBoxPcNameDate.ItemsSource = Queue.CollectionPcCoresNameDate;
+                    listBoxPcNameDate.ItemsSource = Queue.Collection_PcCores_NameDate;
                     // PC Unknown Name Date
                     listBoxPcUnknown.ItemsSource = Queue.CollectionPcCoresUnknownNameDate;
 
                     // Buildbot Name
-                    listBoxBuildbotName.ItemsSource = Queue.CollectionBuildbotCoresName;
+                    listBoxBuildbotName.ItemsSource = Queue.Collection_BuildbotCores_Name;
                     // Buildbot Date
-                    listBoxBuildbotDate.ItemsSource = Queue.CollectionBuildbotCoresDate;
+                    listBoxBuildbotDate.ItemsSource = Queue.Collection_BuildbotCores_Date;
                     // Buildbot Name+Date
-                    listBoxBuildbotNameDate.ItemsSource = Queue.CollectionBuildbotCoresNameDate;
+                    listBoxBuildbotNameDate.ItemsSource = Queue.Collection_BuildbotCores_NameDate;
                     // Buildbot New Cores Name
-                    listBoxBuildbotNew.ItemsSource = Queue.CollectionBuildbotCoresNewName;
+                    listBoxBuildbotNew.ItemsSource = Queue.Collection_BuildbotCores_NewName;
 
                     // Excluded
-                    listBoxExcluded.ItemsSource = Queue.CollectionExcludedCoresName;
+                    listBoxExcluded.ItemsSource = Queue.Collection_ExcludedCores_Name;
                     // To Update
-                    listBoxUpdate.ItemsSource = Queue.CollectionUpdatedCoresName;
+                    listBoxUpdate.ItemsSource = Queue.Collection_UpdatedCores_Name;
 
 
                     // -------------------------
@@ -231,38 +235,58 @@ namespace Stellar
                     int count = 0;
 
                     // PC Name
-                    count = (from x in Queue.ListPcCoresName select x).Count();
+                    count = (from x in Queue.List_PcCores_Name select x).Count();
                     labelPcNameCount.Content = count.ToString();
                     // PC Date
-                    count = (from x in Queue.ListPcCoresDate select x).Count();
+                    count = (from x in Queue.List_PcCores_Date select x).Count();
                     labelPcDateCount.Content = count.ToString();
                     // PC Name+Date
-                    count = (from x in Queue.ListPcCoresNameDate select x).Count();
+                    count = (from x in Queue.List_PcCores_NameDate select x).Count();
                     labelPcNameDateCount.Content = count.ToString();
                     // PC Unknown Name+Date
-                    count = (from x in Queue.ListPcCoresUnknownName select x).Count();
+                    count = (from x in Queue.List_PcCores_UnknownName select x).Count();
                     labelPcUnknownCount.Content = count.ToString();
 
                     //// Buildbot Name
-                    count = (from x in Queue.ListBuildbotCoresName select x).Count();
+                    count = (from x in Queue.List_BuildbotCores_Name select x).Count();
                     labelBuildbotNameCount.Content = count.ToString();
                     // Buildbot Date
-                    count = (from x in Queue.ListBuildbotCoresDate select x).Count();
+                    count = (from x in Queue.List_BuildbotCores_Date select x).Count();
                     labelBuildbotDateCount.Content = count.ToString();
                     // Buildbot Name+Date
-                    count = (from x in Queue.ListBuildbotCoresNameDate select x).Count();
+                    count = (from x in Queue.List_BuildbotCores_NameDate select x).Count();
                     labelBuildbotNameDateCount.Content = count.ToString();
                     // Buildbot New Name
-                    count = (from x in Queue.ListBuildbotCoresNewName select x).Count();
+                    count = (from x in Queue.List_BuildbotCores_NewName select x).Count();
                     labelBuildbotNewCount.Content = count.ToString();
 
                     // Excluded
-                    count = (from x in Queue.ListExcludedCoresName select x).Count();
+                    count = (from x in Queue.List_ExcludedCores_Name select x).Count();
                     labelExcludedCount.Content = count.ToString();
                     // Update
-                    count = (from x in Queue.ListUpdatedCoresName select x).Count();
+                    count = (from x in Queue.List_UpdatedCores_Name select x).Count();
                     labelUpdateCount.Content = count.ToString();
                 }
+
+                //using (FileStream fs = new FileStream(Paths.appDir + "List_PcCores_NameDate.txt", FileMode.Append, FileAccess.Write))
+                //using (StreamWriter sw = new StreamWriter(fs))
+                //{
+                //    for (int x = 0; x < Queue.List_PcCores_NameDate.Count; x++)
+                //    {
+                //        sw.WriteLine(Queue.List_PcCores_NameDate[x]);
+                //    }
+                //    sw.Close();
+                //}
+
+                //using (FileStream fs = new FileStream(Paths.appDir + "List_BuildbotCores_NameDate.txt", FileMode.Append, FileAccess.Write))
+                //using (StreamWriter sw = new StreamWriter(fs))
+                //{
+                //    for (int x = 0; x < Queue.List_BuildbotCores_NameDate.Count; x++)
+                //    {
+                //        sw.WriteLine(Queue.List_BuildbotCores_NameDate[x]);
+                //    }
+                //    sw.Close();
+                //}
 
                 // Clear as to not interfere with Check/Update after closing out of Debug
                 MainWindow.ClearRetroArchVars();
@@ -275,10 +299,20 @@ namespace Stellar
             // -------------------------
             else
             {
-                System.Windows.MessageBox.Show("For use with RA+Cores or Cores menu option only.");
+                System.Windows.MessageBox.Show("For use with RA+Cores, Cores or New Cores menu option only.");
             }
         }
 
 
+        // -----------------------------------------------
+        // Compare Name Button
+        // -----------------------------------------------
+        private void buttonCompareName_Click(object sender, RoutedEventArgs e)
+        {
+            //var compareNames = Queue.List_PcCores_Name.Intersect(Queue.List_BuildbotCores_Name);
+
+            //var message = string.Join(Environment.NewLine, compareNames);
+            //MessageBox.Show(message);
+        }
     }
 }

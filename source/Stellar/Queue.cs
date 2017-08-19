@@ -37,22 +37,22 @@ namespace Stellar
         public static List<string> NightliesList = new List<string>();
 
         // List Count Comparison
-        public static int? largestList = null;
+        public static int largestList = 0;
 
         // -----------------------------------------------
         // PC Cores
         // -----------------------------------------------
         // Name
-        public static List<string> ListPcCoresName = new List<string>();
+        public static List<string> List_PcCores_Name = new List<string>();
         public static ObservableCollection<string> CollectionPcCoresName;
         // Date
-        public static List<string> ListPcCoresDate = new List<string>();
+        public static List<string> List_PcCores_Date = new List<string>();
         public static ObservableCollection<string> CollectionPcCoresDate;
         // Name+Date
-        public static List<string> ListPcCoresNameDate = new List<string>();
-        public static ObservableCollection<string> CollectionPcCoresNameDate; 
+        public static List<string> List_PcCores_NameDate = new List<string>();
+        public static ObservableCollection<string> Collection_PcCores_NameDate; 
         // Unknown Name
-        public static List<string> ListPcCoresUnknownName = new List<string>();
+        public static HashSet<string> List_PcCores_UnknownName = new HashSet<string>();
         public static ObservableCollection<string> CollectionPcCoresUnknownNameDate;
 
         // Array for Name/Date Sublists
@@ -62,19 +62,19 @@ namespace Stellar
         // Buildbot Cores
         // -----------------------------------------------
         // Name
-        public static List<string> ListBuildbotCoresName = new List<string>();
-        public static ObservableCollection<string> CollectionBuildbotCoresName;
+        public static List<string> List_BuildbotCores_Name = new List<string>();
+        public static ObservableCollection<string> Collection_BuildbotCores_Name;
         // Date
-        public static List<string> ListBuildbotCoresDate = new List<string>();
-        public static ObservableCollection<string> CollectionBuildbotCoresDate;
+        public static List<string> List_BuildbotCores_Date = new List<string>();
+        public static ObservableCollection<string> Collection_BuildbotCores_Date;
         // ID
         //public static List<string> ListBuildbotID = new List<string>();
         // Name+Date
-        public static List<string> ListBuildbotCoresNameDate = new List<string>();
-        public static ObservableCollection<string> CollectionBuildbotCoresNameDate; 
+        public static List<string> List_BuildbotCores_NameDate = new List<string>();
+        public static ObservableCollection<string> Collection_BuildbotCores_NameDate; 
         // New Name (Debugger)
-        public static List<string> ListBuildbotCoresNewName = new List<string>();
-        public static ObservableCollection<string> CollectionBuildbotCoresNewName;
+        public static List<string> List_BuildbotCores_NewName = new List<string>();
+        public static ObservableCollection<string> Collection_BuildbotCores_NewName;
 
         // Array for Name/Date Sublists
         public static string[] bbArr = null;
@@ -83,23 +83,25 @@ namespace Stellar
         // Excluded Cores (Already Up To Date or Mismatched/Unknown)
         // -----------------------------------------------
         // Name
-        public static List<string> ListExcludedCoresName = new List<string>();
-        public static ObservableCollection<string> CollectionExcludedCoresName;
+        public static HashSet<string> List_ExcludedCores_Name = new HashSet<string>();
+        public static ObservableCollection<string> Collection_ExcludedCores_Name;
         // Name+Date
-        public static List<string> ListExcludedCoresNameDate = new List<string>();
+        public static HashSet<string> List_ExcludedCores_NameDate = new HashSet<string>();
 
         // -----------------------------------------------
         // Rejected Cores (Checkbox)
         // -----------------------------------------------
         // Name
-        public static List<string> ListRejectedCores = new List<string>();
+        public static HashSet<string> List_RejectedCores_Name = new HashSet<string>();
 
         // -----------------------------------------------
         // Updated Cores to Download
         // -----------------------------------------------
         // Name
-        public static List<string> ListUpdatedCoresName = new List<string>();
-        public static ObservableCollection<string> CollectionUpdatedCoresName;
+        public static List<string> List_UpdatedCores_Name = new List<string>();
+        public static ObservableCollection<string> Collection_UpdatedCores_Name;
+        // Date
+        public static List<string> List_UpdatedCores_Date = new List<string>();
 
 
 
@@ -108,48 +110,56 @@ namespace Stellar
         // -----------------------------------------------
         public static void RemovePCUnknownCores()
         {
-            // Always use Largest List as Loop Counter
-            largestList = Math.Max(ListBuildbotCoresNameDate.Count(), ListPcCoresNameDate.Count());
-
-            for (int i = 0; i < largestList; i++)
+            try
             {
-                if (Queue.ListPcCoresNameDate.Count() > i && Queue.ListPcCoresNameDate.Count() != 0) //index range check
+                // Always use Largest List as Loop Counter
+                //largestList = Math.Max(List_BuildbotCores_NameDate.Count(), List_PcCores_NameDate.Count());
+
+                // Remove in reverse
+                //for (int i = largestList - 1; i >= 0; i--)
+                for (int i = List_PcCores_NameDate.Count() - 1; i >= 0; --i)
                 {
-                    string[] pcArr = Convert.ToString(Queue.ListPcCoresNameDate[i]).Split(' ');
-
-                    // If Buildbot List Does NOT Contain a PC Core Name
-                    if (!Queue.ListBuildbotCoresName.Contains(pcArr[0]))
+                    if (List_PcCores_NameDate.Count() > i && List_PcCores_NameDate.Count() != 0) //index range check
                     {
-                        // Name
-                        if (Queue.ListPcCoresName.Count() > i
-                            && Queue.ListPcCoresName.Count() != 0) // null check
-                        {
-                            Queue.ListPcCoresName.RemoveAt(i);
-                            Queue.ListPcCoresName.TrimExcess();
-                        }
-                        // Date
-                        if (Queue.ListPcCoresDate.Count() > i
-                            && Queue.ListPcCoresDate.Count() != 0) // null check
-                        {
-                            Queue.ListPcCoresDate.RemoveAt(i);
-                            Queue.ListPcCoresDate.TrimExcess();
-                        }
-                        // Name+Date
-                        if (Queue.ListPcCoresNameDate.Count() > i
-                            && Queue.ListPcCoresNameDate.Count() != 0) // null check
-                        {
-                            Queue.ListPcCoresNameDate.RemoveAt(i);
-                            Queue.ListPcCoresNameDate.TrimExcess();
-                        }
+                        pcArr = Convert.ToString(List_PcCores_NameDate[i]).Split(' ');
 
-                        // PC Unknown Name
-                        // Check if List already contains Core
-                        if (!ListPcCoresUnknownName.Contains(pcArr[0]))
+                        // If Buildbot List Does NOT Contain a PC Core Name
+                        if (!List_BuildbotCores_Name.Contains(pcArr[0]))
                         {
-                            Queue.ListPcCoresUnknownName.Add(pcArr[0]);
+                            // Name
+                            if (List_PcCores_Name.Count() > i && List_PcCores_Name.Count() != 0) // null check
+                            {
+                                List_PcCores_Name.RemoveAt(i);
+                            }
+                            // Date
+                            if (List_PcCores_Date.Count() > i && List_PcCores_Date.Count() != 0) // null check
+                            {
+                                List_PcCores_Date.RemoveAt(i);
+                            }
+                            // Name+Date
+                            if (List_PcCores_NameDate.Count() > i && List_PcCores_NameDate.Count() != 0) // null check
+                            {
+                                List_PcCores_NameDate.RemoveAt(i);
+                            }
+
+                            // PC Unknown Name
+                            // Check if List already contains Core
+                            if (!List_PcCores_UnknownName.Contains(pcArr[0]))
+                            {
+                                List_PcCores_UnknownName.Add(pcArr[0]);
+                            }
                         }
                     }
-                }
+
+                } //end loop
+
+                List_PcCores_Name.TrimExcess();
+                List_PcCores_Date.TrimExcess();
+                List_PcCores_NameDate.TrimExcess();
+            }
+            catch
+            {
+                MessageBox.Show("Error: Problem removing Unknown PC Cores from list.");
             }
         }
 
@@ -159,51 +169,57 @@ namespace Stellar
         // -----------------------------------------------
         public static void RemoveBuildbotMissingCores()
         {
-            // Always use Largest List as Loop Counter
-            largestList = Math.Max(ListBuildbotCoresNameDate.Count(), ListPcCoresNameDate.Count());
-
-            for (int i = 0; i < largestList; i++)
+            try
             {
-                if (Queue.ListBuildbotCoresName.Count() > i && Queue.ListBuildbotCoresName.Count() != 0) //index range check
+                // Always use Largest List as Loop Counter
+                //largestList = Math.Max(List_BuildbotCores_NameDate.Count(), List_PcCores_NameDate.Count());
+
+                // Remove in reverse
+                //for (int i = largestList - 1; i >= 0; i--)
+                for (int i = List_BuildbotCores_NameDate.Count() - 1; i >= 0; --i)
                 {
-                    Queue.bbArr = Convert.ToString(Queue.ListBuildbotCoresName[i]).Split(' ');
-
-
-                    // If PC List Does NOT Contain a Buildbot Core Name
-                    if (!Queue.ListPcCoresName.Contains(bbArr[0]))
+                    if (List_BuildbotCores_Name.Count() > i && List_BuildbotCores_Name.Count() != 0) //index range check
                     {
-                        // Name
-                        if (Queue.ListBuildbotCoresName.Count() > i
-                            && Queue.ListBuildbotCoresName.Count() != 0) // null check
-                        {
-                            Queue.ListBuildbotCoresName.RemoveAt(i);
-                            Queue.ListBuildbotCoresName.TrimExcess();
-                        }
-                        // Date
-                        if (Queue.ListBuildbotCoresDate.Count() > i
-                            && Queue.ListBuildbotCoresDate.Count() != 0) // null check
-                        {
-                            Queue.ListBuildbotCoresDate.RemoveAt(i);
-                            Queue.ListBuildbotCoresDate.TrimExcess();
-                        }
-                        // Name+Date
-                        if (Queue.ListBuildbotCoresNameDate.Count() > i
-                            && Queue.ListBuildbotCoresNameDate.Count() != 0) // null check
-                        {
-                            Queue.ListBuildbotCoresNameDate.RemoveAt(i);
-                            Queue.ListBuildbotCoresNameDate.TrimExcess();
-                        }
+                        bbArr = Convert.ToString(List_BuildbotCores_Name[i]).Split(' ');
 
-                        // Buildbot Excluded Name
-                        // Check if List already contains Core
-                        if (!ListExcludedCoresName.Contains(bbArr[0]))
+                        // If PC List Does NOT Contain a Buildbot Core Name
+                        if (!List_PcCores_Name.Contains(bbArr[0]))
                         {
-                            Queue.ListExcludedCoresName.Add(bbArr[0]);
+                            // Name
+                            if (List_BuildbotCores_Name.Count() > i && List_BuildbotCores_Name.Count() != 0) // null check
+                            {
+                                List_BuildbotCores_Name.RemoveAt(i);
+                            }
+                            // Date
+                            if (List_BuildbotCores_Date.Count() > i && List_BuildbotCores_Date.Count() != 0) // null check
+                            {
+                                List_BuildbotCores_Date.RemoveAt(i);
+                            }
+                            // Name+Date
+                            if (List_BuildbotCores_NameDate.Count() > i && List_BuildbotCores_NameDate.Count() != 0) // null check
+                            {
+                                List_BuildbotCores_NameDate.RemoveAt(i);
+                            }
+
+                            // Buildbot Excluded Name
+                            // Check if List already contains Core
+                            if (!List_ExcludedCores_Name.Contains(bbArr[0]))
+                            {
+                                List_ExcludedCores_Name.Add(bbArr[0]);
+                            }
                         }
                     }
-                }
+                } //end loop
+
+                List_BuildbotCores_Name.TrimExcess();
+                List_BuildbotCores_Date.TrimExcess();
+                List_BuildbotCores_NameDate.TrimExcess();
             }
-            
+            catch
+            {
+                MessageBox.Show("Error: Problem removing Missing Buildbot Cores from list.");
+            }
+
         }
 
 
@@ -221,7 +237,7 @@ namespace Stellar
                 // Make a List of All Buildbot Cores
                 // Make a List of All PC Cores
                 // Subtract PC List from Buildbot List
-                ListUpdatedCoresName = ListBuildbotCoresName.Except(ListPcCoresName).ToList();
+                List_UpdatedCores_Name = List_BuildbotCores_Name.Except(List_PcCores_Name).ToList();
             }
 
             // -------------------------
@@ -230,56 +246,16 @@ namespace Stellar
             else
             {
                 // -------------------------
-                // Remove PC Unknown Cores
-                // -------------------------
-                try
-                {
-                    // Remove Cores until both Lists are equal
-                    int i = 0;
-                    while (Queue.ListPcCoresNameDate.Count() > Queue.ListBuildbotCoresName.Count())
-                    {
-                        RemovePCUnknownCores();
-
-                        // exit if stuck in loop
-                        i++;
-
-                        if (i > 300) 
-                        {
-                            break;
-                        }
-                    }
-                }
-                catch
-                {
-                    MessageBox.Show("Error: Problem removing Unknown PC Cores from list.");
-                }
-
-
-                // -------------------------
                 // Remove Buildbot Missing Cores
                 // -------------------------
-                try
-                {
-                    // Remove Cores until both Lists are equal
-                    int i = 0;
-                    while (Queue.ListBuildbotCoresName.Count() > Queue.ListPcCoresNameDate.Count())
-                    {
-                        RemoveBuildbotMissingCores();
+                // Remove Cores until both Lists are equal
+                RemoveBuildbotMissingCores();
 
-                        // exit if stuck in loop
-                        i++;
-
-                        if (i > 300)
-                        {
-                            break;
-                        }
-                    }
-                }
-                catch
-                {
-                    MessageBox.Show("Error: Problem removing Missing Buildbot Cores from list.");
-                }
-                
+                // -------------------------
+                // Remove PC Unknown Cores
+                // -------------------------
+                // Remove Cores until both Lists are equal
+                RemovePCUnknownCores();
 
 
                 // -------------------------
@@ -288,30 +264,30 @@ namespace Stellar
                 try
                 {
                     // Always use Largest List as Loop Counter
-                    largestList = Math.Max(ListBuildbotCoresNameDate.Count(), ListPcCoresNameDate.Count());
+                    largestList = Math.Max(List_BuildbotCores_NameDate.Count(), List_PcCores_NameDate.Count());
 
                     for (int i = 0; i < largestList; i++)
                     {
                         // Buildbot
-                        if (ListBuildbotCoresNameDate.Count() > i) //index range check
+                        if (List_BuildbotCores_NameDate.Count() > i) //index range check
                         {
-                            bbArr = Convert.ToString(ListBuildbotCoresNameDate[i]).Split(' ');
+                            bbArr = Convert.ToString(List_BuildbotCores_NameDate[i]).Split(' ');
                         }
 
                         // PC
-                        if (ListPcCoresNameDate.Count() > i) //index range check
+                        if (List_PcCores_NameDate.Count() > i) //index range check
                         {
-                            pcArr = Convert.ToString(ListPcCoresNameDate[i]).Split(' ');
+                            pcArr = Convert.ToString(List_PcCores_NameDate[i]).Split(' ');
                         }
 
                         // -------------------------
                         // Compare
                         // -------------------------
-                        if (ListPcCoresNameDate.Count() > i) //index range check
+                        if (List_PcCores_NameDate.Count() > i) //index range check
                         {
                             // If Buildbot Name+Date List Contains a PC Name
                             //
-                            if (ListBuildbotCoresName.Any(p => p.Contains(pcArr[0])))
+                            if (List_BuildbotCores_Name.Any(p => p.Contains(pcArr[0])))
                             {
                                 if (bbArr != null && pcArr != null) // null check
                                 {
@@ -319,20 +295,20 @@ namespace Stellar
                                     if (DateTime.Parse(bbArr[1]) > DateTime.Parse(pcArr[1]))
                                     {
                                         // Add Core to Updated
-                                        ListUpdatedCoresName.Add(bbArr[0]);
-
-                                        // Debug
-                                        //MessageBox.Show(Convert.ToString(bbArr[0] + " " + bbArr[1] + " > " + pcArr[0] + " " + pcArr[1]));
+                                        // Name
+                                        List_UpdatedCores_Name.Add(bbArr[0]);
+                                        // Date
+                                        List_UpdatedCores_Date.Add(bbArr[1]);
                                     }
 
                                     // Excluded Cores
                                     else
                                     {
                                         // Check if Excluded already contains Core
-                                        if (!ListExcludedCoresName.Contains(bbArr[0]))
+                                        if (!List_ExcludedCores_Name.Contains(bbArr[0]))
                                         {
                                             // Add Core to Excluded
-                                            ListExcludedCoresName.Add(bbArr[0]);
+                                            List_ExcludedCores_Name.Add(bbArr[0]);
                                         }
                                     }
                                 }
@@ -343,9 +319,9 @@ namespace Stellar
                             else
                             {
                                 // PC Unknown Name
-                                ListPcCoresUnknownName.Add(pcArr[0]);
+                                List_PcCores_UnknownName.Add(pcArr[0]);
                                 // Buildbot Excluded Name
-                                ListExcludedCoresName.Add(pcArr[0]);
+                                List_ExcludedCores_Name.Add(pcArr[0]);
                             }
                         }
                     }
@@ -359,15 +335,15 @@ namespace Stellar
                 // -------------------------
                 // Sort Unknown & Excluded
                 // -------------------------
-                Queue.ListExcludedCoresName.Sort();
-                Queue.ListExcludedCoresName.TrimExcess();
-                Queue.ListPcCoresUnknownName.Sort();
-                Queue.ListPcCoresUnknownName.TrimExcess();
+                //List_ExcludedCores_Name.Sort();
+                List_ExcludedCores_Name.TrimExcess();
+                //List_PcCores_UnknownName.Sort();
+                List_PcCores_UnknownName.TrimExcess();
 
                 // -------------------------
                 // Create Update List
                 // -------------------------
-                ListUpdatedCoresName = ListUpdatedCoresName.Except(ListExcludedCoresName).ToList();
+                List_UpdatedCores_Name = List_UpdatedCores_Name.Except(List_ExcludedCores_Name).ToList();
 
             }
 
@@ -384,8 +360,8 @@ namespace Stellar
             // Cores - Already Up to Date
             // -------------------------
             // Update List is empty, but PC Cores have been found and scanned
-            if (ListUpdatedCoresName.Count == 0 
-                && ListPcCoresName.Count != 0 
+            if (List_UpdatedCores_Name.Count == 0 
+                && List_PcCores_Name.Count != 0 
                 && (string)mainwindow.comboBoxDownload.SelectedItem != "New Cores")
             {
                 MessageBox.Show("Cores already lastest version.");
@@ -403,7 +379,7 @@ namespace Stellar
             // -------------------------
             // Updat List is Empty
             if ((string)mainwindow.comboBoxDownload.SelectedItem == "New Cores" 
-                && ListUpdatedCoresName.Count == 0)
+                && List_UpdatedCores_Name.Count == 0)
             {
                 MessageBox.Show("No New Cores available.");
 

@@ -28,7 +28,7 @@
 
         Title="Configure Settings" 
         Height="200" Width="450" 
-        Icon="logo.ico"
+        Icon="Resources/Images/Icons/configure.ico"
         ResizeMode="CanMinimize" 
         UseLayoutRounding="True" 
         Background="Black"

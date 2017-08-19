@@ -34,6 +34,7 @@ namespace Stellar
     /// </summary>
     public partial class Configure : Window
     {
+        private MainWindow mainwindow;
         public static Debugger debugger; // Debug Window
 
         public static string sevenZipPath; // 7-Zip Config Settings Path
@@ -45,9 +46,11 @@ namespace Stellar
         public static string theme; // Background Theme Image
 
 
-        public Configure()
+        public Configure(MainWindow mainwindow)
         {
             InitializeComponent();
+
+            this.mainwindow = mainwindow;
 
             this.MinWidth = 450;
             this.MinHeight = 200;
@@ -651,7 +654,18 @@ namespace Stellar
             textBoxLogConfig.Text = string.Empty;
             logPath = string.Empty;
 
-            Properties.Settings.Default.Reset();
+            // Save Current Window Location
+            // Prevents MainWindow from moving to Top 0 Left 0 while running
+            double left = mainwindow.Left;
+            double top = mainwindow.Top;
+
+            // Reset AppData Settings
+            Settings.Default.Reset();
+            Settings.Default.Reload();
+
+            // Set Window Location
+            mainwindow.Left = left;
+            mainwindow.Top = top;
         }
 
         // -----------------------------------------------

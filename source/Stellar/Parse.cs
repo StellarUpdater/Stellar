@@ -283,44 +283,44 @@ namespace Stellar
                 foreach (string line in lines)
                 {
                     string[] arr = line.Split(' ');
-                    Queue.ListBuildbotCoresDate.Add(arr[0]);
-                    Queue.ListBuildbotCoresDate.TrimExcess();
+                    Queue.List_BuildbotCores_Date.Add(arr[0]);
+                    Queue.List_BuildbotCores_Date.TrimExcess();
 
                     //Queue.ListBuildbotID.Add(arr[1]);
                     //Queue.ListBuildbotID.TrimExcess();
 
-                    Queue.ListBuildbotCoresName.Add(arr[2]);
-                    Queue.ListBuildbotCoresName.TrimExcess();
+                    Queue.List_BuildbotCores_Name.Add(arr[2]);
+                    Queue.List_BuildbotCores_Name.TrimExcess();
                 }
 
                 // -------------------------
                 // Modify
                 // -------------------------
                 // Remove from the List all that do not contain .dll.zip (filters out unwanted)
-                Queue.ListBuildbotCoresName.RemoveAll(u => !u.Contains(".dll.zip"));
-                Queue.ListBuildbotCoresName.TrimExcess();
+                Queue.List_BuildbotCores_Name.RemoveAll(u => !u.Contains(".dll.zip"));
+                Queue.List_BuildbotCores_Name.TrimExcess();
 
                 // Remove .zip from all in List
-                for (int i = 0; i < Queue.ListBuildbotCoresName.Count; i++)
+                for (int i = 0; i < Queue.List_BuildbotCores_Name.Count; i++)
                 {
-                    if (Queue.ListBuildbotCoresName[i].Contains(".zip"))
-                        Queue.ListBuildbotCoresName[i] = Queue.ListBuildbotCoresName[i].Replace(".zip", "");
+                    if (Queue.List_BuildbotCores_Name[i].Contains(".zip"))
+                        Queue.List_BuildbotCores_Name[i] = Queue.List_BuildbotCores_Name[i].Replace(".zip", "");
                 }
 
                 // -------------------------
                 // Combine
                 // -------------------------
                 // Join Lists Name & Date
-                for (int i = 0; i < Queue.ListBuildbotCoresName.Count; i++)
+                for (int i = 0; i < Queue.List_BuildbotCores_Name.Count; i++)
                 {
-                    Queue.ListBuildbotCoresNameDate.Add(Queue.ListBuildbotCoresName[i] + " " + Queue.ListBuildbotCoresDate[i]);
+                    Queue.List_BuildbotCores_NameDate.Add(Queue.List_BuildbotCores_Name[i] + " " + Queue.List_BuildbotCores_Date[i]);
                 }
 
                 // -------------------------
                 // Sort Correction
                 // -------------------------
-                Queue.ListBuildbotCoresNameDate.Sort();
-                Queue.ListBuildbotCoresNameDate.TrimExcess();
+                Queue.List_BuildbotCores_NameDate.Sort();
+                Queue.List_BuildbotCores_NameDate.TrimExcess();
             }
             catch
             {
@@ -345,14 +345,14 @@ namespace Stellar
             {
                 // Add Core Name to List
                 //
-                Queue.ListPcCoresName = Directory.GetFiles(Paths.coresPath, "*_libretro.dll") //match ending of a core name //Try EnumerateFiles
+                Queue.List_PcCores_Name = Directory.GetFiles(Paths.coresPath, "*_libretro.dll") //match ending of a core name //Try EnumerateFiles
                         .Select(System.IO.Path.GetFileName)
                         .ToList();
 
                 // Add Core Modified Dates to List
                 // Extracts original File Modified Date when overwriting
                 //
-                Queue.ListPcCoresDate = Directory.GetFiles(Paths.coresPath, "*_libretro.dll") //match ending of a core name
+                Queue.List_PcCores_Date = Directory.GetFiles(Paths.coresPath, "*_libretro.dll") //match ending of a core name
                         .Select(p => File.GetLastWriteTime(p)
                         .ToString("yyyy-MM-dd"))
                         .ToList();
@@ -364,7 +364,7 @@ namespace Stellar
             }
 
             // Popup Error Message if PC Cores Name List has no items 0
-            if (Queue.ListPcCoresName.Count == 0
+            if (Queue.List_PcCores_Name.Count == 0
                 && (string)mainwindow.comboBoxDownload.SelectedItem != "New Install" // Ignore
                 && (string)mainwindow.comboBoxDownload.SelectedItem != "New Cores") // Ignore
             {
@@ -376,16 +376,16 @@ namespace Stellar
             // PC Cores Join Name + Date List
             // -------------------------
             // Join Lists PC Name + PC Date (Formatted)
-            for (int i = 0; i < Queue.ListPcCoresName.Count; i++)
+            for (int i = 0; i < Queue.List_PcCores_Name.Count; i++)
             {
-                Queue.ListPcCoresNameDate.Add(Queue.ListPcCoresName[i] + " " + Queue.ListPcCoresDate[i]);
+                Queue.List_PcCores_NameDate.Add(Queue.List_PcCores_Name[i] + " " + Queue.List_PcCores_Date[i]);
             }
 
             // -------------------------
             // Sort Correction
             // -------------------------
-            Queue.ListPcCoresNameDate.Sort();
-            Queue.ListPcCoresNameDate.TrimExcess();
+            Queue.List_PcCores_NameDate.Sort();
+            //Queue.List_PcCores_NameDate.TrimExcess();
         }
 
     }

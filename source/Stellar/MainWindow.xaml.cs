@@ -217,9 +217,7 @@ namespace Stellar
 
             Parse.stellar7z = string.Empty;
             Parse.stellarUrl = string.Empty;
-            //Parse.stellarLatestVersion = string.Empty;
             Parse.latestVersion = null;
-            //Parse.currentVer = null;
         }
 
         // -----------------------------------------------
@@ -246,45 +244,45 @@ namespace Stellar
             }
 
             // Larget List Compre
-            Queue.largestList = null;
+            Queue.largestList = 0;
 
             // PC & Buildbot Core Sublists
             Queue.pcArr = null;
             Queue.bbArr = null;
 
             // PC Core Name
-            if (Queue.ListPcCoresName != null)
+            if (Queue.List_PcCores_Name != null)
             {
-                Queue.ListPcCoresName.Clear();
-                Queue.ListPcCoresName.TrimExcess();
+                Queue.List_PcCores_Name.Clear();
+                Queue.List_PcCores_Name.TrimExcess();
             }
             // PC Core Date
-            if (Queue.ListPcCoresDate != null)
+            if (Queue.List_PcCores_Date != null)
             {
-                Queue.ListPcCoresDate.Clear();
-                Queue.ListPcCoresDate.TrimExcess();
+                Queue.List_PcCores_Date.Clear();
+                Queue.List_PcCores_Date.TrimExcess();
             }
             // PC Cores Name+Date
-            if (Queue.ListPcCoresNameDate != null)
+            if (Queue.List_PcCores_NameDate != null)
             {
-                Queue.ListPcCoresNameDate.Clear();
-                Queue.ListPcCoresNameDate.TrimExcess();
+                Queue.List_PcCores_NameDate.Clear();
+                Queue.List_PcCores_NameDate.TrimExcess();
             }
             // PC Cores Name+Date Collection
-            if (Queue.CollectionPcCoresNameDate != null)
+            if (Queue.Collection_PcCores_NameDate != null)
             {
-                Queue.CollectionPcCoresNameDate = null;
+                Queue.Collection_PcCores_NameDate = null;
             }
             // PC Unknown Name+Date
-            if (Queue.ListPcCoresUnknownName != null)
+            if (Queue.List_PcCores_UnknownName != null)
             {
-                Queue.ListPcCoresUnknownName.Clear();
-                Queue.ListPcCoresUnknownName.TrimExcess();
+                Queue.List_PcCores_UnknownName.Clear();
+                Queue.List_PcCores_UnknownName.TrimExcess();
             }
             // PC Cores Unknown Name+Date
-            if (Queue.ListPcCoresUnknownName != null)
+            if (Queue.List_PcCores_UnknownName != null)
             {
-                Queue.ListPcCoresUnknownName.Clear();
+                Queue.List_PcCores_UnknownName.Clear();
             }
             // PC Cores Unknown Name+Date Collection
             if (Queue.CollectionPcCoresUnknownNameDate != null)
@@ -294,33 +292,33 @@ namespace Stellar
 
 
             // Buildbot Core Name
-            if (Queue.ListBuildbotCoresName != null)
+            if (Queue.List_BuildbotCores_Name != null)
             {
-                Queue.ListBuildbotCoresName.Clear();
-                Queue.ListBuildbotCoresName.TrimExcess();
+                Queue.List_BuildbotCores_Name.Clear();
+                Queue.List_BuildbotCores_Name.TrimExcess();
             }
             // Buildbot Core Date
-            if (Queue.ListBuildbotCoresDate != null)
+            if (Queue.List_BuildbotCores_Date != null)
             {
-                Queue.ListBuildbotCoresDate.Clear();
-                Queue.ListBuildbotCoresDate.TrimExcess();
+                Queue.List_BuildbotCores_Date.Clear();
+                Queue.List_BuildbotCores_Date.TrimExcess();
             }
             // Buildbot Cores Name+Date
-            if (Queue.ListBuildbotCoresNameDate != null)
+            if (Queue.List_BuildbotCores_NameDate != null)
             {
-                Queue.ListBuildbotCoresNameDate.Clear();
-                Queue.ListBuildbotCoresNameDate.TrimExcess();
+                Queue.List_BuildbotCores_NameDate.Clear();
+                Queue.List_BuildbotCores_NameDate.TrimExcess();
             }
             // Buildbot Cores Name+Date Collection
-            if (Queue.CollectionBuildbotCoresNameDate != null)
+            if (Queue.Collection_BuildbotCores_NameDate != null)
             {
-                Queue.CollectionBuildbotCoresNameDate = null;
+                Queue.Collection_BuildbotCores_NameDate = null;
             }
             // Buildbot Core New Name
-            if (Queue.ListBuildbotCoresNewName != null)
+            if (Queue.List_BuildbotCores_NewName != null)
             {
-                Queue.ListBuildbotCoresNewName.Clear();
-                Queue.ListBuildbotCoresNewName.TrimExcess();
+                Queue.List_BuildbotCores_NewName.Clear();
+                Queue.List_BuildbotCores_NewName.TrimExcess();
             }
             // Buildbot Core ID
             //if (Queue.ListBuildbotID != null)
@@ -331,40 +329,46 @@ namespace Stellar
 
 
             // Excluded Core Name
-            if (Queue.ListExcludedCoresName != null)
+            if (Queue.List_ExcludedCores_Name != null)
             {
-                Queue.ListExcludedCoresName.Clear();
-                Queue.ListExcludedCoresName.TrimExcess();
+                Queue.List_ExcludedCores_Name.Clear();
+                Queue.List_ExcludedCores_Name.TrimExcess();
             }
             // Excluded Core Name ObservableCollection
-            if (Queue.CollectionExcludedCoresName != null)
+            if (Queue.Collection_ExcludedCores_Name != null)
             {
-                Queue.CollectionExcludedCoresName = null;
+                Queue.Collection_ExcludedCores_Name = null;
             }
             // Excluded Core Name+Date
-            if (Queue.ListExcludedCoresNameDate != null)
+            if (Queue.List_ExcludedCores_NameDate != null)
             {
-                Queue.ListExcludedCoresNameDate.Clear();
-                Queue.ListExcludedCoresNameDate.TrimExcess();
+                Queue.List_ExcludedCores_NameDate.Clear();
+                Queue.List_ExcludedCores_NameDate.TrimExcess();
             }
 
 
             // Updated Cores Name
-            if (Queue.ListUpdatedCoresName != null)
+            if (Queue.List_UpdatedCores_Name != null)
             {
-                Queue.ListUpdatedCoresName.Clear();
-                Queue.ListUpdatedCoresName.TrimExcess();
+                Queue.List_UpdatedCores_Name.Clear();
+                Queue.List_UpdatedCores_Name.TrimExcess();
+            }
+            // Updated Cores Date
+            if (Queue.List_UpdatedCores_Date != null)
+            {
+                Queue.List_UpdatedCores_Date.Clear();
+                Queue.List_UpdatedCores_Date.TrimExcess();
             }
             // Updated Cores Name Collection
-            if (Queue.CollectionUpdatedCoresName != null)
+            if (Queue.Collection_UpdatedCores_Name != null)
             {
-                Queue.CollectionUpdatedCoresName = null;
+                Queue.Collection_UpdatedCores_Name = null;
             }
 
 
             // Do Not Clear
             //
-            // ListRejectedCores
+            // List_RejectedCores_Name
         }
 
 
@@ -442,7 +446,7 @@ namespace Stellar
             var thisScreen = allScreens.SingleOrDefault(s => this.Left >= s.WorkingArea.Left && this.Left < s.WorkingArea.Right);
 
             // Open Configure Window
-            configure = new Configure();
+            configure = new Configure(this);
 
             // Position Relative to MainWindow
             // Keep from going off screen
@@ -733,7 +737,7 @@ namespace Stellar
                 // Window Checklist Popup
                 // -------------------------
                 // If Update List greater than 0, Popup Checklist
-                if (Queue.ListUpdatedCoresName.Count != 0)
+                if (Queue.List_UpdatedCores_Name.Count != 0)
                 {
                     // Detect which screen we're on
                     var allScreens = System.Windows.Forms.Screen.AllScreens.ToList();

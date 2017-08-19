@@ -65,5 +65,8 @@
         <!-- Test Button -->
         <Button x:Name="btnTest" Content="Test" HorizontalAlignment="Left" Margin="646,544,0,0" VerticalAlignment="Top" Width="75" Click="btnTest_Click"/>
 
+        <!-- Compare Names Button
+        <Button x:Name="buttonCompareName" Content="Compare" HorizontalAlignment="Left" Margin="103,544,0,0" VerticalAlignment="Top" Width="75" Click="buttonCompareName_Click"/> -->
+
     </Grid>
 </Window>
