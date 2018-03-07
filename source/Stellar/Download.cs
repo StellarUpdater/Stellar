@@ -342,7 +342,7 @@ namespace Stellar
             // -------------------------
             //mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
             //{
-                //waiter = new ManualResetEvent(false); //start a new waiter for next pass (clicking update again)
+            //waiter = new ManualResetEvent(false); //start a new waiter for next pass (clicking update again)
             //});
 
             ServicePointManager.Expect100Continue = true;
@@ -352,6 +352,8 @@ namespace Stellar
             //Uri downloadUrl = new Uri("http://127.0.0.1:8888/RetroArch.7z"); // TESTING Virtual Server URL
 
             //Async
+            //wc.Headers.Add("User-Agent: Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)");
+            wc.Headers.Add("Accept-Encoding", "gzip,deflate");
             wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wc_DownloadProgressChanged);
             wc.DownloadFileCompleted += new AsyncCompletedEventHandler(wc_DownloadFileCompleted);
             wc.DownloadFileAsync(downloadUrl, Paths.tempPath + Parse.nightly7z);
@@ -364,14 +366,13 @@ namespace Stellar
             waiter.WaitOne();
             //});
 
-
             // -------------------------
             // Extract
             // -------------------------
             // Progress Info
             //mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
             //{
-                progressInfo = "Extracting RetroArch...";
+            progressInfo = "Extracting RetroArch...";
 
             //});
 
@@ -607,7 +608,7 @@ namespace Stellar
         // -------------------------
         public static void CoresDownload(MainWindow mainwindow)
         {
-            waiter = new ManualResetEvent(false);
+            //waiter = new ManualResetEvent(false);
 
             // -------------------------
             // New Install

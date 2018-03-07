@@ -824,6 +824,9 @@ namespace Stellar
         // Launches Download and 7-Zip Extraction
         private void buttonUpdate_Click(object sender, RoutedEventArgs e)
         {
+            Download.waiter.Reset();
+            Download.waiter = new ManualResetEvent(false);
+
             // Add backslash to Location Textbox path if missing
             if (!textBoxLocation.Text.EndsWith("\\") && !string.IsNullOrWhiteSpace(textBoxLocation.Text))
             {
@@ -856,9 +859,6 @@ namespace Stellar
                 || (string)comboBoxDownload.SelectedItem == "Redist")
             {
                 Parse.ParseBuildbotPage(this);
-
-                // Prevents Threading Crash
-                Download.waiter = new ManualResetEvent(false);
             }
 
             // 3. Call checkArchiver Method

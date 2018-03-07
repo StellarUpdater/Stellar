@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows;
 
 /* ----------------------------------------------------------------------
@@ -268,6 +269,11 @@ namespace Stellar
                 // Create URL string for Uri
                 nightlyUrl = libretro_x86_64 + nightly7z;
             }
+
+
+            // Prevents Threading Crash
+            Download.waiter = new ManualResetEvent(false);
+            //Download.waiter.Reset();
         }
 
 
@@ -277,6 +283,9 @@ namespace Stellar
         // -----------------------------------------------
         public static void ParseBuildbotCoresIndex(MainWindow mainwindow)
         {
+            ServicePointManager.Expect100Continue = true;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
             // -------------------------
             // Download
             // -------------------------
@@ -285,8 +294,11 @@ namespace Stellar
 
             try
             {
+                WebClient webclient = new WebClient();
+
                 // index-extended cores text file
-                buildbotCoresIndex = Download.wc.DownloadString(indexextendedUrl);
+                //Download.webclient.Headers["Accept-Encoding"] = "gzip,deflate";
+                buildbotCoresIndex = webclient.DownloadString(indexextendedUrl);
 
                 // Trim ending linebreak
                 buildbotCoresIndex = buildbotCoresIndex.TrimEnd('\n');
@@ -415,7 +427,8 @@ namespace Stellar
                 MessageBox.Show("Error: Cores list is empty or failed to download index-extended.");
             }
 
-               
+            // Prevents Threading Crash
+            Download.waiter = new ManualResetEvent(false);
         }
 
 
