@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Windows.Forms;
+using System.Windows.Threading;
 
 /* ----------------------------------------------------------------------
     Stellar ~ RetroArch Nightly Updater by wyzrd
@@ -34,6 +35,10 @@ namespace Stellar
     public partial class Download
     {
         private static MainWindow mainwindow = ((MainWindow)System.Windows.Application.Current.MainWindow);
+        //private static MainWindow mainwindow;
+
+        // Thread
+        //public static Thread worker = null;
 
         // Web Downloads
         public static WebClient wc = new WebClient();
@@ -68,6 +73,8 @@ namespace Stellar
                 double percentage = bytesIn / totalBytes * 100;
                 mainwindow.progressBar.Value = int.Parse(Math.Truncate(percentage).ToString());
             });
+
+            //DownloadProgressChanged(mainwindow, e);
         }
 
         // -------------------------
@@ -79,12 +86,46 @@ namespace Stellar
             // Must be here
             waiter.Set();
 
-            //Progress Info
+            // Progress Info
             mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
             {
                 mainwindow.textBlockProgressInfo.Text = progressInfo;
             });
+
+            //DownloadComplete(mainwindow);
         }
+
+
+        // -------------------------
+        // Progress Changed (Method)
+        // -------------------------
+        //public static void DownloadProgressChanged(MainWindow mainwindow, DownloadProgressChangedEventArgs e)
+        //{
+        //    mainwindow.Dispatcher.Invoke(new Action(delegate
+        //    {
+        //        mainwindow.textBlockProgressInfo.Text = progressInfo;
+        //    }));
+
+        //    // Progress Bar
+        //    mainwindow.Dispatcher.Invoke(new Action(delegate
+        //    {
+        //        double bytesIn = double.Parse(e.BytesReceived.ToString());
+        //        double totalBytes = double.Parse(e.TotalBytesToReceive.ToString());
+        //        double percentage = bytesIn / totalBytes * 100;
+        //        mainwindow.progressBar.Value = int.Parse(Math.Truncate(percentage).ToString());
+        //    }));
+        //}
+
+        // -------------------------
+        //  Download Complete (Method)
+        // -------------------------
+        //public static void DownloadComplete(MainWindow mainwindow)
+        //{
+        //    mainwindow.Dispatcher.Invoke(new Action(delegate
+        //    {
+        //        mainwindow.textBlockProgressInfo.Text = progressInfo;
+        //    }));
+        //}
 
 
         // -----------------------------------------------
@@ -180,6 +221,9 @@ namespace Stellar
             // Download
             // -------------------------
             waiter = new ManualResetEvent(false); //start a new waiter for next pass (clicking update again)
+
+            ServicePointManager.Expect100Continue = true;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
             Uri downloadUrl = new Uri(Parse.stellarUrl); // Parse.stellarUrl = Version + Parse.stellar7z
             //Uri downloadUrl = new Uri("http://127.0.0.1:8888/Stellar.7z"); // TESTING Virtual Server URL
@@ -296,26 +340,40 @@ namespace Stellar
             // -------------------------
             // Download
             // -------------------------
-            waiter = new ManualResetEvent(false); //start a new waiter for next pass (clicking update again)
+            //mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
+            //{
+                //waiter = new ManualResetEvent(false); //start a new waiter for next pass (clicking update again)
+            //});
+
+            ServicePointManager.Expect100Continue = true;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
             Uri downloadUrl = new Uri(Parse.nightlyUrl); // Parse.nightlyUrl = x84/x86_64 + Parse.nightly7z
             //Uri downloadUrl = new Uri("http://127.0.0.1:8888/RetroArch.7z"); // TESTING Virtual Server URL
+
             //Async
             wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wc_DownloadProgressChanged);
             wc.DownloadFileCompleted += new AsyncCompletedEventHandler(wc_DownloadFileCompleted);
             wc.DownloadFileAsync(downloadUrl, Paths.tempPath + Parse.nightly7z);
 
             // Progress Info
+            //mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
+            //{
             progressInfo = "Downloading RetroArch...";
 
             waiter.WaitOne();
+            //});
 
 
             // -------------------------
             // Extract
             // -------------------------
             // Progress Info
-            progressInfo = "Extracting RetroArch...";
+            //mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
+            //{
+                progressInfo = "Extracting RetroArch...";
+
+            //});
 
             using (Process execExtract = new Process())
             {
@@ -536,7 +594,10 @@ namespace Stellar
             {
                 mainwindow.textBlockProgressInfo.Text = "RetroArch Complete";
                 MainWindow.ClearRetroArchVars();
-            }); 
+            });
+
+            // End Thread
+            //worker.Abort();
         }
 
 
@@ -616,6 +677,9 @@ namespace Stellar
             {
                 //Reset Waiter, Must be here
                 waiter.Reset();
+
+                ServicePointManager.Expect100Continue = true;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
                 Uri downloadUrl2 = new Uri(Parse.parseCoresUrl + Queue.List_UpdatedCores_Name[i] + ".zip");
                 //Uri downloadUrl2 = new Uri("http://127.0.0.1:8888/latest/" + Queue.List_UpdatedCores_Name[i] + ".zip"); //TESTING

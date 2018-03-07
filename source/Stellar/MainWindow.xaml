@@ -27,6 +27,7 @@
         xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
         xmlns:my="clr-namespace:Stellar"
         xmlns:settings="clr-namespace:Stellar.Properties"
+        mc:Ignorable="d"
         
         Title="{Binding TitleVersion, RelativeSource={RelativeSource Mode=Self}}" 
         Icon="logo.ico"

@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -101,16 +102,25 @@ namespace Stellar
                 }
             }
 
+
             // --------------------------------------------------
             // Load Saved Settings
             // --------------------------------------------------
 
+            // -------------------------
             // Window Position
-            // First time use
-            if (Convert.ToDouble(Settings.Default["Left"]) == 0 
-                || Convert.ToDouble(Settings.Default["Top"]) == 0)
+            // -------------------------
+            try {
+                // First time use
+                if (Convert.ToDouble(Settings.Default["Left"]) == 0 
+                    || Convert.ToDouble(Settings.Default["Top"]) == 0)
+                {
+                    this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                }
+            }
+            catch
             {
-                this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+
             }
 
             // Theme CombBox
@@ -441,23 +451,45 @@ namespace Stellar
         // -----------------------------------------------
         private void buttonConfigure_Click(object sender, RoutedEventArgs e)
         {
-            // Detect which screen we're on
-            var allScreens = System.Windows.Forms.Screen.AllScreens.ToList();
-            var thisScreen = allScreens.SingleOrDefault(s => this.Left >= s.WorkingArea.Left && this.Left < s.WorkingArea.Right);
+            // Prevent Monitor Resolution Window Crash
+            //
+            try
+            {
+                // Detect which screen we're on
+                var allScreens = System.Windows.Forms.Screen.AllScreens.ToList();
+                var thisScreen = allScreens.SingleOrDefault(s => this.Left >= s.WorkingArea.Left && this.Left < s.WorkingArea.Right);
 
-            // Open Configure Window
-            configure = new Configure(this);
+                // Open Configure Window
+                configure = new Configure(this);
 
-            // Position Relative to MainWindow
-            // Keep from going off screen
-            configure.Left = Math.Max((this.Left + (this.Width - configure.Width) / 2), thisScreen.WorkingArea.Left);
-            configure.Top = Math.Max(this.Top - configure.Height - 12, thisScreen.WorkingArea.Top);
+                // Keep Window on Top
+                configure.Owner = Window.GetWindow(this);
 
-            // Keep Window on Top
-            configure.Owner = Window.GetWindow(this);
+                // Position Relative to MainWindow
+                // Keep from going off screen
+                configure.Left = Math.Max((this.Left + (this.Width - configure.Width) / 2), thisScreen.WorkingArea.Left);
+                configure.Top = Math.Max(this.Top - configure.Height - 12, thisScreen.WorkingArea.Top);
 
-            // Open Winndow
-            configure.ShowDialog();
+                // Open Winndow
+                configure.ShowDialog();
+            }
+            // Simplified
+            catch
+            {
+                // Open Configure Window
+                configure = new Configure(this);
+
+                // Keep Window on Top
+                configure.Owner = Window.GetWindow(this);
+
+                // Position Relative to MainWindow
+                // Keep from going off screen
+                configure.Left = Math.Max((this.Left + (this.Width - configure.Width) / 2), this.Left);
+                configure.Top = Math.Max(this.Top - configure.Height - 12, this.Top);
+
+                // Open Winndow
+                configure.ShowDialog();
+            }
         }
 
         // -----------------------------------------------
@@ -739,22 +771,43 @@ namespace Stellar
                 // If Update List greater than 0, Popup Checklist
                 if (Queue.List_UpdatedCores_Name.Count != 0)
                 {
-                    // Detect which screen we're on
-                    var allScreens = System.Windows.Forms.Screen.AllScreens.ToList();
-                    var thisScreen = allScreens.SingleOrDefault(s => this.Left >= s.WorkingArea.Left && this.Left < s.WorkingArea.Right);
+                    // Prevent Monitor Resolution Window Crash
+                    //
+                    try
+                    {
+                        // Detect which screen we're on
+                        var allScreens = System.Windows.Forms.Screen.AllScreens.ToList();
+                        var thisScreen = allScreens.SingleOrDefault(s => this.Left >= s.WorkingArea.Left && this.Left < s.WorkingArea.Right);
 
-                    // Start Window
-                    checklist = new Checklist();
+                        // Start Window
+                        checklist = new Checklist();
 
-                    // Keep Window on Top
-                    checklist.Owner = Window.GetWindow(this);
+                        // Keep Window on Top
+                        checklist.Owner = Window.GetWindow(this);
 
-                    // Position Relative to MainWindow
-                    checklist.Left = Math.Max((this.Left + (this.Width - checklist.Width) / 2), thisScreen.WorkingArea.Left);
-                    checklist.Top = Math.Max((this.Top + (this.Height - checklist.Height) / 2), thisScreen.WorkingArea.Top);
+                        // Position Relative to MainWindow
+                        checklist.Left = Math.Max((this.Left + (this.Width - checklist.Width) / 2), thisScreen.WorkingArea.Left);
+                        checklist.Top = Math.Max((this.Top + (this.Height - checklist.Height) / 2), thisScreen.WorkingArea.Top);
 
-                    // Open Window
-                    checklist.ShowDialog();
+                        // Open Window
+                        checklist.ShowDialog();
+                    }
+                    // Simplified
+                    catch
+                    {
+                        // Start Window
+                        checklist = new Checklist();
+
+                        // Keep Window on Top
+                        checklist.Owner = Window.GetWindow(this);
+
+                        // Position Relative to MainWindow
+                        checklist.Left = Math.Max((this.Left + (this.Width - checklist.Width) / 2), this.Left);
+                        checklist.Top = Math.Max((this.Top + (this.Height - checklist.Height) / 2), this.Top);
+
+                        // Open Window
+                        checklist.ShowDialog();
+                    }
                 }
             }
 
@@ -796,7 +849,17 @@ namespace Stellar
             Paths.SetArchitecture(this);
 
             // 2. Call parse Page (HTML) Method
-            Parse.ParseBuildbotPage(this);
+            if ((string)comboBoxDownload.SelectedItem == "New Install"
+                || (string)comboBoxDownload.SelectedItem == "Upgrade"
+                || (string)comboBoxDownload.SelectedItem == "RA+Cores"
+                || (string)comboBoxDownload.SelectedItem == "RetroArch"
+                || (string)comboBoxDownload.SelectedItem == "Redist")
+            {
+                Parse.ParseBuildbotPage(this);
+
+                // Prevents Threading Crash
+                Download.waiter = new ManualResetEvent(false);
+            }
 
             // 3. Call checkArchiver Method
             // If Archiver exists, Set string

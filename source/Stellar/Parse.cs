@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 
@@ -43,13 +45,13 @@ namespace Stellar
         public static string nightly7z; // The Parsed Dated 7z Nightly Filename
         public static string nightlyUrl; // Download URL + Dated 7z Filename
 
-        public static string parseUrl = "https://buildbot.libretro.com/nightly/windows/x86_64/"; // Parse URL to be changed with Dropdown Combobox. Default is 64-bit.
+        public static string parseUrl = "https://raw.libretro.com/nightly/windows/x86_64/"; // Parse URL to be changed with Dropdown Combobox. Default is 64-bit.
         public static string parseGitHubUrl = "https://github.com/StellarUpdater/Stellar/releases/"; // Self-Update
         public static string indexextendedUrl = string.Empty; // index-extended Cores Text File
         public static string parseCoresUrl = string.Empty; // Buildbot Cores URL to be parsed
-        public static string libretro_x86 = "https://buildbot.libretro.com/nightly/windows/x86/"; // Download URL 32-bit
-        public static string libretro_x86_64 = "https://buildbot.libretro.com/nightly/windows/x86_64/"; // Download URL 64-bit
-        public static string libretro_x86_64_w32 = "https://buildbot.libretro.com/nightly/windows/x86_64_w32/"; // Download URL 64-bit w32
+        public static string libretro_x86 = "https://raw.libretro.com/nightly/windows/x86/"; // Download URL 32-bit
+        public static string libretro_x86_64 = "https://raw.libretro.com/nightly/windows/x86_64/"; // Download URL 64-bit
+        public static string libretro_x86_64_w32 = "https://raw.libretro.com/nightly/windows/x86_64_w32/"; // Download URL 64-bit w32
 
 
         // -------------------------
@@ -160,40 +162,68 @@ namespace Stellar
             // Try Catch Errors
 
             // -------------------------
-            // Update Selected
+            // New Install Selected
             // -------------------------
-            try
+            // RetroArch.exe
+            if ((string)mainwindow.comboBoxDownload.SelectedItem == "RetroArch"
+                || (string)mainwindow.comboBoxDownload.SelectedItem == "RA+Cores")
             {
-                // Parse the HTML Page from parseUrl
-                page = Download.wc.DownloadString(parseUrl); // HTML Page
-                element = "<a href='/nightly/windows/" + Paths.buildbotArchitecture + "/(.*?)'>"; // HTML Tag containing Dated 7z, (.*?) is the text to keep
+                ServicePointManager.Expect100Continue = true;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
-                // Add each 7z Date/Time to the Nightlies List
-                foreach (Match match in Regex.Matches(page, element))
-                    Queue.NightliesList.Add(match.Groups[1].Value);
+                // -------------------------
+                // Update Selected
+                // -------------------------
+                try
+                {
+                    // Parse the HTML Page from parseUrl
+                    HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(parseUrl);
+                    req.UserAgent = "MOZILLA/5.0 (WINDOWS NT 6.1; WOW64) APPLEWEBKIT/537.1 (KHTML, LIKE GECKO) CHROME/21.0.1180.75 SAFARI/537.1";
+                    req.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
+                    req.Headers.Add("Accept-Encoding", "gzip,deflate");
 
-                // Remove from the List all 7z files that do not contain _RetroArch.7z (filters out unwanted)
-                Queue.NightliesList.RemoveAll(u => !u.Contains("_RetroArch.7z"));
-                Queue.NightliesList.TrimExcess();
+                    GZipStream zip = new GZipStream(req.GetResponse().GetResponseStream(), CompressionMode.Decompress);
+                    var reader = new StreamReader(zip);
+                    var page = reader.ReadToEnd();
 
-                // Sort the Nighlies List, lastest 7z is first
-                Queue.NightliesList.Sort(); //do not disable this sort
+                    // HTML Tag containing Dated 7z, (.*?) is the text to keep
+                    element = "<a href=\"/nightly/windows/" + Paths.buildbotArchitecture + "/(.*?)\">";
 
+                    // Find 7z Matches in HTML tags
+                    MatchCollection matches = Regex.Matches(page, element);
 
-                // Get Lastest Element of Nightlies List 
-                nightly7z = Queue.NightliesList.Last();
-            }
-            catch
-            {
-                MainWindow.ready = false;
-                MessageBox.Show("Error: Problem creating RetroArch list from HTML.");
+                    if (matches.Count > 0)
+                        foreach (Match m in matches)
+                            Queue.NightliesList.Add(m.Groups[1].Value);
+
+                    //MessageBox.Show("Matches found: {0}", string.Join(Environment.NewLine, matches.Count)); //debug
+
+                    // Remove from the List all 7z files that do not contain _RetroArch.7z (filters out unwanted)
+                    Queue.NightliesList.RemoveAll(u => !u.Contains("_RetroArch.7z"));
+
+                    Queue.NightliesList.TrimExcess();
+
+                    //var message = string.Join(Environment.NewLine, Queue.NightliesList); //debug
+                    //MessageBox.Show(message);
+
+                    // Sort the Nighlies List, lastest 7z is first
+                    Queue.NightliesList.Sort(); //do not disable this sort
+
+                    // Get Lastest Element of Nightlies List 
+                    nightly7z = Queue.NightliesList.Last();
+                }
+                catch
+                {
+                    MainWindow.ready = false;
+                    MessageBox.Show("Error: Problem creating RetroArch list from HTML.");
+                }
             }
 
             // -------------------------
             // New Install Selected
             // -------------------------
             // RetroArch.exe
-            if ((string)mainwindow.comboBoxDownload.SelectedItem == "New Install")
+            else if ((string)mainwindow.comboBoxDownload.SelectedItem == "New Install")
             {
                 // Fetch the RetroArch + Redist (not dated)
                 nightly7z = "RetroArch.7z";
