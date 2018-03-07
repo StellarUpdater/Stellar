@@ -153,6 +153,8 @@ namespace Stellar
                 stellarUrl = "https://github.com/StellarUpdater/Stellar/releases/download/" + "v" + Convert.ToString(latestVersion) + "-" + latestBuildPhase + "/" + stellar7z;
                 // .../0.8.5.3-beta/Stellar.7z
             }
+
+            wc.Dispose();
         }
 
 
@@ -188,6 +190,10 @@ namespace Stellar
                     GZipStream zip = new GZipStream(req.GetResponse().GetResponseStream(), CompressionMode.Decompress);
                     var reader = new StreamReader(zip);
                     var page = reader.ReadToEnd();
+
+                    req.Abort();
+                    zip.Dispose();
+                    reader.Dispose();
 
                     // HTML Tag containing Dated 7z, (.*?) is the text to keep
                     element = "<a href=\"/nightly/windows/" + Paths.buildbotArchitecture + "/(.*?)\">";
@@ -434,6 +440,8 @@ namespace Stellar
 
             // Prevents Threading Crash
             Download.waiter = new ManualResetEvent(false);
+
+            wc.Dispose();
         }
 
 

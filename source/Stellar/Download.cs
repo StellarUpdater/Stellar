@@ -334,6 +334,8 @@ namespace Stellar
                 // Close Stellar before updating exe
                 Environment.Exit(0);
             }
+
+            wc.Dispose();
         }
 
 
@@ -609,6 +611,8 @@ namespace Stellar
 
             // End Thread
             //worker.Abort();
+
+            wc.Dispose();
         }
 
 
@@ -672,7 +676,7 @@ namespace Stellar
             {
                 MessageBox.Show("Error: Problem Excluding cores from Update List.");
             }
-            
+
 
             //debug
             //var messageNames = string.Join(Environment.NewLine, Queue.List_UpdatedCores_Name);
@@ -680,14 +684,13 @@ namespace Stellar
             //var messageDates = string.Join(Environment.NewLine, Queue.List_UpdatedCores_Date);
             //MessageBox.Show(messageDates);
 
+            WebClient wc = new WebClient();
 
             // -------------------------
             // Download
             // -------------------------
             for (int i = 0; i < Queue.List_UpdatedCores_Name.Count; i++) //problem core count & Parse.nightly7z
             {
-                WebClient wc = new WebClient();
-
                 //Reset Waiter, Must be here
                 waiter.Reset();
 
@@ -752,6 +755,8 @@ namespace Stellar
                             mainwindow.textBlockProgressInfo.Text = progressInfo;
                         }
                     });
+
+                    wc.Dispose();
                 }
 
                 // -------------------------
