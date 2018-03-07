@@ -87,6 +87,8 @@ namespace Stellar
             // GitHub ./version file
             // Stellar Website Download Links
 
+            WebClient wc = new WebClient();
+
             // -------------------------
             // Update Selected
             // -------------------------
@@ -98,7 +100,7 @@ namespace Stellar
 
                 try
                 {
-                    parseLatestVersion = Download.wc.DownloadString("https://raw.githubusercontent.com/StellarUpdater/Stellar/master/.version");
+                    parseLatestVersion = wc.DownloadString("https://raw.githubusercontent.com/StellarUpdater/Stellar/master/.version");
                 }
                 catch
                 {
@@ -194,21 +196,25 @@ namespace Stellar
                     MatchCollection matches = Regex.Matches(page, element);
 
                     if (matches.Count > 0)
+                    {
                         foreach (Match m in matches)
+                        {
                             Queue.NightliesList.Add(m.Groups[1].Value);
+                        }
 
-                    //MessageBox.Show("Matches found: {0}", string.Join(Environment.NewLine, matches.Count)); //debug
+                        //MessageBox.Show("Matches found: {0}", string.Join(Environment.NewLine, matches.Count)); //debug
 
-                    // Remove from the List all 7z files that do not contain _RetroArch.7z (filters out unwanted)
-                    Queue.NightliesList.RemoveAll(u => !u.Contains("_RetroArch.7z"));
+                        // Remove from the List all 7z files that do not contain _RetroArch.7z (filters out unwanted)
+                        Queue.NightliesList.RemoveAll(u => !u.Contains("_RetroArch.7z"));
 
-                    Queue.NightliesList.TrimExcess();
-
-                    //var message = string.Join(Environment.NewLine, Queue.NightliesList); //debug
-                    //MessageBox.Show(message);
+                        Queue.NightliesList.TrimExcess();
+                    }
 
                     // Sort the Nighlies List, lastest 7z is first
                     Queue.NightliesList.Sort(); //do not disable this sort
+
+                    //var message = string.Join(Environment.NewLine, Queue.NightliesList); //debug
+                    //MessageBox.Show(message);
 
                     // Get Lastest Element of Nightlies List 
                     nightly7z = Queue.NightliesList.Last();
@@ -273,7 +279,6 @@ namespace Stellar
 
             // Prevents Threading Crash
             Download.waiter = new ManualResetEvent(false);
-            //Download.waiter.Reset();
         }
 
 
@@ -283,7 +288,9 @@ namespace Stellar
         // -----------------------------------------------
         public static void ParseBuildbotCoresIndex(MainWindow mainwindow)
         {
-            ServicePointManager.Expect100Continue = true;
+            WebClient wc = new WebClient();
+
+            //ServicePointManager.Expect100Continue = true;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
             // -------------------------
@@ -294,11 +301,9 @@ namespace Stellar
 
             try
             {
-                WebClient webclient = new WebClient();
-
                 // index-extended cores text file
                 //Download.webclient.Headers["Accept-Encoding"] = "gzip,deflate";
-                buildbotCoresIndex = webclient.DownloadString(indexextendedUrl);
+                buildbotCoresIndex = wc.DownloadString(indexextendedUrl);
 
                 // Trim ending linebreak
                 buildbotCoresIndex = buildbotCoresIndex.TrimEnd('\n');

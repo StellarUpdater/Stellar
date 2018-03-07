@@ -683,6 +683,10 @@ namespace Stellar
         // -----------------------------------------------
         private void buttonCheck_Click(object sender, RoutedEventArgs e)
         {
+            //Download.waiter.Reset();
+            //Download.waiter = new ManualResetEvent(false);
+
+
             // Progress Info
             textBlockProgressInfo.Text = "Checking...";
 
@@ -858,6 +862,9 @@ namespace Stellar
                 || (string)comboBoxDownload.SelectedItem == "RetroArch"
                 || (string)comboBoxDownload.SelectedItem == "Redist")
             {
+                // Progress Info
+                textBlockProgressInfo.Text = "Fetching RetroArch List...";
+
                 Parse.ParseBuildbotPage(this);
             }
 
@@ -947,6 +954,9 @@ namespace Stellar
                 || (string)comboBoxDownload.SelectedItem == "Cores" 
                 || (string)comboBoxDownload.SelectedItem == "New Cores")
             {
+                // Progress Info
+                textBlockProgressInfo.Text = "Fetching Cores List...";
+
                 // Create Builtbot Cores List
                 Parse.ParseBuildbotCoresIndex(this);
 

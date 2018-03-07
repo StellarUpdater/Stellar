@@ -41,8 +41,8 @@ namespace Stellar
         //public static Thread worker = null;
 
         // Web Downloads
-        public static WebClient wc = new WebClient();
-        public static WebClient wc2 = new WebClient();
+        //public static WebClient wc = new WebClient();
+        //public static WebClient wc2 = new WebClient();
         public static ManualResetEvent waiter = new ManualResetEvent(false); // Download one at a time
                                                                              
         public static string progressInfo; // Progress Label Info
@@ -150,6 +150,8 @@ namespace Stellar
                 {
                     RetroArchDownload(mainwindow);
                 });
+                worker.IsBackground = true;
+                
 
                 // Start Download Thread
                 //
@@ -170,6 +172,7 @@ namespace Stellar
 
                     CoresDownload(mainwindow);
                 });
+                worker.IsBackground = true;
 
                 // Start Download Thread
                 //
@@ -187,6 +190,7 @@ namespace Stellar
                 {
                     CoresDownload(mainwindow);
                 });
+                worker.IsBackground = true;
 
                 // Start Download Thread
                 //
@@ -217,6 +221,8 @@ namespace Stellar
         // -------------------------
         public static void StellarDownload(MainWindow mainwindow)
         {
+            WebClient wc = new WebClient();
+
             // -------------------------
             // Download
             // -------------------------
@@ -337,6 +343,8 @@ namespace Stellar
         // -------------------------
         public static void RetroArchDownload(MainWindow mainwindow)
         {
+            WebClient wc = new WebClient();
+
             // -------------------------
             // Download
             // -------------------------
@@ -345,15 +353,17 @@ namespace Stellar
             //waiter = new ManualResetEvent(false); //start a new waiter for next pass (clicking update again)
             //});
 
-            ServicePointManager.Expect100Continue = true;
+            //ServicePointManager.Expect100Continue = true;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+            progressInfo = "Preparing Download...";
 
             Uri downloadUrl = new Uri(Parse.nightlyUrl); // Parse.nightlyUrl = x84/x86_64 + Parse.nightly7z
             //Uri downloadUrl = new Uri("http://127.0.0.1:8888/RetroArch.7z"); // TESTING Virtual Server URL
 
             //Async
             //wc.Headers.Add("User-Agent: Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)");
-            wc.Headers.Add("Accept-Encoding", "gzip,deflate");
+            //wc.Headers.Add("Accept-Encoding", "gzip,deflate");
             wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wc_DownloadProgressChanged);
             wc.DownloadFileCompleted += new AsyncCompletedEventHandler(wc_DownloadFileCompleted);
             wc.DownloadFileAsync(downloadUrl, Paths.tempPath + Parse.nightly7z);
@@ -676,18 +686,20 @@ namespace Stellar
             // -------------------------
             for (int i = 0; i < Queue.List_UpdatedCores_Name.Count; i++) //problem core count & Parse.nightly7z
             {
+                WebClient wc = new WebClient();
+
                 //Reset Waiter, Must be here
                 waiter.Reset();
 
-                ServicePointManager.Expect100Continue = true;
+                //ServicePointManager.Expect100Continue = true;
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
                 Uri downloadUrl2 = new Uri(Parse.parseCoresUrl + Queue.List_UpdatedCores_Name[i] + ".zip");
                 //Uri downloadUrl2 = new Uri("http://127.0.0.1:8888/latest/" + Queue.List_UpdatedCores_Name[i] + ".zip"); //TESTING
                 //Async
-                wc2.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wc_DownloadProgressChanged);
-                wc2.DownloadFileCompleted += new AsyncCompletedEventHandler(wc_DownloadFileCompleted);
-                wc2.DownloadFileAsync(downloadUrl2, Paths.tempPath + Queue.List_UpdatedCores_Name[i] + ".zip", i);
+                wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wc_DownloadProgressChanged);
+                wc.DownloadFileCompleted += new AsyncCompletedEventHandler(wc_DownloadFileCompleted);
+                wc.DownloadFileAsync(downloadUrl2, Paths.tempPath + Queue.List_UpdatedCores_Name[i] + ".zip", i);
 
                 // Progress Info
                 progressInfo = "Downloading " + Queue.List_UpdatedCores_Name[i];
