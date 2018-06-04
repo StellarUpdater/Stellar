@@ -41,7 +41,7 @@ namespace Stellar
         //public static Thread worker = null;
 
         // Web Downloads
-        //public static WebClient wc = new WebClient();
+        //public static WebClient webclient = new WebClient();
         //public static WebClient wc2 = new WebClient();
         public static ManualResetEvent waiter = new ManualResetEvent(false); // Download one at a time
                                                                              
@@ -360,6 +360,7 @@ namespace Stellar
 
             progressInfo = "Preparing Download...";
 
+            //MessageBox.Show(Parse.nightlyUrl); //debug
             Uri downloadUrl = new Uri(Parse.nightlyUrl); // Parse.nightlyUrl = x84/x86_64 + Parse.nightly7z
             //Uri downloadUrl = new Uri("http://127.0.0.1:8888/RetroArch.7z"); // TESTING Virtual Server URL
 

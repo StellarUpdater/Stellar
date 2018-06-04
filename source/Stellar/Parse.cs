@@ -159,6 +159,88 @@ namespace Stellar
 
 
         // -----------------------------------------------
+        // Download Server Page
+        // -----------------------------------------------
+        public static void DownloadServerPage(MainWindow mainwindow)
+        {
+            ServicePointManager.Expect100Continue = true;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+            // -------------------------
+            // If GZip disabled, switch to Uncomprssed
+            // -------------------------
+            //try
+            //{
+            //    // -------------------------
+            //    // GZip
+            //    // -------------------------
+
+            //    //MessageBox.Show(parseUrl); //debug
+
+            //    // Parse the HTML Page from parseUrl
+            //    HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(parseUrl);
+            //    req.UserAgent = "MOZILLA/5.0 (WINDOWS NT 6.1; WOW64) APPLEWEBKIT/537.1 (KHTML, LIKE GECKO) CHROME/21.0.1180.75 SAFARI/537.1";
+            //    req.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
+            //    req.Headers.Add("Accept-Encoding", "gzip,deflate");
+
+            //    GZipStream zip = new GZipStream(req.GetResponse().GetResponseStream(), CompressionMode.Decompress);
+            //    //zip.Position = 0;
+            //    StreamReader reader = new StreamReader(zip);
+
+            //    //MessageBox.Show("Using GZip"); //debug
+            //    mainwindow.textBlockProgressInfo.Text = "Using GZip";
+
+            //    page = reader.ReadToEnd(); // Error here if uncompressed, triggers catch
+
+            //    // Close
+            //    req.Abort();
+            //    zip.Dispose();
+            //    reader.Dispose();
+
+            //    //MessageBox.Show("complete"); //debug
+            //}
+
+            //// GZip Disabled
+            //catch
+            //{
+                //MessageBox.Show("Page Reader Error Detected"); //debug
+
+                // -------------------------
+                // Uncompressed
+                // -------------------------
+
+                //MessageBox.Show("Using Uncompressed"); //debug
+                //mainwindow.textBlockProgressInfo.Text = "Using Uncompressed";
+
+                // Switch to Uncompressed download method
+                //WebClient wc = new WebClient();
+                //wc.Headers[HttpRequestHeader.UserAgent] = "MOZILLA/5.0 (WINDOWS NT 6.1; WOW64) APPLEWEBKIT/537.1 (KHTML, LIKE GECKO) CHROME/21.0.1180.75 SAFARI/537.1";
+                //page = wc.DownloadString(parseUrl);
+                //wc.Dispose();
+
+                //MessageBox.Show("complete"); //debug
+
+
+
+                // Parse the HTML Page from parseUrl
+                HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(parseUrl);
+                req.UserAgent = "MOZILLA/5.0 (WINDOWS NT 6.1; WOW64) APPLEWEBKIT/537.1 (KHTML, LIKE GECKO) CHROME/21.0.1180.75 SAFARI/537.1";
+                req.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
+                //req.Headers.Add("Accept-Encoding", "gzip,deflate");
+
+                HttpWebResponse response = (HttpWebResponse)req.GetResponse();
+
+                using (StreamReader sr = new StreamReader(response.GetResponseStream()))
+                {
+                    page = sr.ReadToEnd();
+                }
+
+                //MessageBox.Show(page); //debug
+            //}
+        }
+
+
+        // -----------------------------------------------
         // Parse Builbot Page HTML
         // -----------------------------------------------
         public static void ParseBuildbotPage(MainWindow mainwindow)
@@ -173,33 +255,37 @@ namespace Stellar
             if ((string)mainwindow.comboBoxDownload.SelectedItem == "RetroArch"
                 || (string)mainwindow.comboBoxDownload.SelectedItem == "RA+Cores")
             {
-                ServicePointManager.Expect100Continue = true;
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                // Clear RetroArch Nightlies List
+                if (Queue.NightliesList != null)
+                {
+                    Queue.NightliesList.Clear();
+                    Queue.NightliesList.TrimExcess();
+                }
+
+                //var message = string.Join(Environment.NewLine, Queue.NightliesList); //debug
+                //MessageBox.Show(message); //debug
 
                 // -------------------------
                 // Update Selected
                 // -------------------------
                 try
                 {
+                    // Default Server to Raw
+                    libretro_x86 = "https://raw.libretro.com/nightly/windows/x86/"; // Download URL 32-bit
+                    libretro_x86_64 = "https://raw.libretro.com/nightly/windows/x86_64/"; // Download URL 64-bit
+                    libretro_x86_64_w32 = "https://raw.libretro.com/nightly/windows/x86_64_w32/"; // Download URL 64-bit w32
+
                     // Parse the HTML Page from parseUrl
-                    HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(parseUrl);
-                    req.UserAgent = "MOZILLA/5.0 (WINDOWS NT 6.1; WOW64) APPLEWEBKIT/537.1 (KHTML, LIKE GECKO) CHROME/21.0.1180.75 SAFARI/537.1";
-                    req.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
-                    req.Headers.Add("Accept-Encoding", "gzip,deflate");
-
-                    GZipStream zip = new GZipStream(req.GetResponse().GetResponseStream(), CompressionMode.Decompress);
-                    var reader = new StreamReader(zip);
-                    var page = reader.ReadToEnd();
-
-                    req.Abort();
-                    zip.Dispose();
-                    reader.Dispose();
+                    DownloadServerPage(mainwindow);
 
                     // HTML Tag containing Dated 7z, (.*?) is the text to keep
                     element = "<a href=\"/nightly/windows/" + Paths.buildbotArchitecture + "/(.*?)\">";
 
                     // Find 7z Matches in HTML tags
                     MatchCollection matches = Regex.Matches(page, element);
+
+                    //var message = string.Join(Environment.NewLine, Queue.NightliesList); //debug
+                    //MessageBox.Show(message); //debug
 
                     if (matches.Count > 0)
                     {
@@ -216,20 +302,125 @@ namespace Stellar
                         Queue.NightliesList.TrimExcess();
                     }
 
-                    // Sort the Nighlies List, lastest 7z is first
-                    Queue.NightliesList.Sort(); //do not disable this sort
+                // Clear RetroArch Nightlies List
+                if (Queue.NightliesList != null)
+                {
+                    Queue.NightliesList.Clear();
+                    Queue.NightliesList.TrimExcess();
+                }
 
-                    //var message = string.Join(Environment.NewLine, Queue.NightliesList); //debug
-                    //MessageBox.Show(message);
+                //message = string.Join(Environment.NewLine, Queue.NightliesList); //debug
+                //MessageBox.Show(message); //debug
 
-                    // Get Lastest Element of Nightlies List 
-                    nightly7z = Queue.NightliesList.Last();
+                // Switch Raw to Buildbot if no matches found
+                //
+                // -------------------------
+                // Raw Server
+                // -------------------------
+                if (Queue.NightliesList.Count > 0)
+                    {
+                        MessageBox.Show("Using Raw"); //debug
+                        mainwindow.textBlockProgressInfo.Text = "Using Raw";
+
+                        try
+                        {
+                            // Sort the Nighlies List, lastest 7z is first
+                            Queue.NightliesList.Sort(); //do not disable this sort
+
+                            //var message = string.Join(Environment.NewLine, Queue.NightliesList); //debug
+                            //MessageBox.Show(message); //debug
+
+                            // Get Lastest Element of Nightlies List 
+                            nightly7z = Queue.NightliesList.Last();
+
+                            if (Queue.NightliesList != null)
+                            {
+                                Queue.NightliesList.Clear();
+                                Queue.NightliesList.TrimExcess();
+                            }
+                        }
+                        catch
+                        {
+                            MainWindow.ready = false;
+                            MessageBox.Show("Error: Problem creating RetroArch list from HTML.");
+                        }
+
+                    }
+
+                    // -------------------------
+                    // Buildbot Server (Backup)
+                    // -------------------------
+                    else
+                    {
+                        //MessageBox.Show("Using Buildbot"); //debug
+                        mainwindow.textBlockProgressInfo.Text = "Using Buildbot";
+
+                        // Change Server to Buildbot
+                        libretro_x86 = "https://buildbot.libretro.com/nightly/windows/x86/"; // Download URL 32-bit
+                        libretro_x86_64 = "https://buildbot.libretro.com/nightly/windows/x86_64/"; // Download URL 64-bit
+                        libretro_x86_64_w32 = "https://buildbot.libretro.com/nightly/windows/x86_64_w32/"; // Download URL 64-bit w32
+   
+                        // Reset Achitecture
+                        Paths.SetArchitecture(mainwindow);
+                        // Show URL in Textbox
+                        Paths.SetUrls(mainwindow);
+
+                        // Parse the HTML Page from parseUrl
+                        DownloadServerPage(mainwindow);
+
+                        // HTML Tag containing Dated 7z, (.*?) is the text to keep
+                        element = "<a href=\"/nightly/windows/" + Paths.buildbotArchitecture + "/(.*?)\">";
+
+                        // Find 7z Matches in HTML tags
+                        matches = Regex.Matches(page, element);
+
+                        if (matches.Count > 0)
+                        {
+                            foreach (Match m in matches)
+                            {
+                                Queue.NightliesList.Add(m.Groups[1].Value);
+                            }
+
+                            //MessageBox.Show("Matches found: {0}", string.Join(Environment.NewLine, matches.Count)); //debug
+
+                            // Remove from the List all 7z files that do not contain _RetroArch.7z (filters out unwanted)
+                            Queue.NightliesList.RemoveAll(u => !u.Contains("_RetroArch.7z"));
+
+                            Queue.NightliesList.TrimExcess();
+                        }
+
+                        //var message = string.Join(Environment.NewLine, Queue.NightliesList); //debug
+                        //MessageBox.Show(message); //debug
+
+
+                        try
+                        {
+                            // Sort the Nighlies List, lastest 7z is first
+                            Queue.NightliesList.Sort(); //do not disable this sort
+
+                            // Get Lastest Element of Nightlies List 
+                            nightly7z = Queue.NightliesList.Last();
+
+                            if (Queue.NightliesList != null)
+                            {
+                                Queue.NightliesList.Clear();
+                                Queue.NightliesList.TrimExcess();
+                            }
+                        }
+                        catch
+                        {
+                            MainWindow.ready = false;
+                            MessageBox.Show("Error: Problem creating RetroArch list from HTML.");
+                        }
+                    }
+
                 }
                 catch
                 {
                     MainWindow.ready = false;
-                    MessageBox.Show("Error: Problem creating RetroArch list from HTML.");
+                    MessageBox.Show("Error: Problem connecting to Network.");
                 }
+
             }
 
             // -------------------------
@@ -280,6 +471,10 @@ namespace Stellar
             {
                 // Create URL string for Uri
                 nightlyUrl = libretro_x86_64 + nightly7z;
+
+                //MessageBox.Show(libretro_x86_64); //debug
+                //MessageBox.Show(nightly7z); //debug
+                //MessageBox.Show(nightlyUrl); //debug
             }
 
 

@@ -222,7 +222,10 @@ namespace Stellar
         public static void ClearRetroArchVars()
         {
             Parse.parseUrl = string.Empty;
+            Parse.page = string.Empty;
+            Parse.element = string.Empty;
             Parse.nightly7z = string.Empty;
+            Parse.nightlyUrl = string.Empty;
             Download.extractArgs = string.Empty;
 
             Parse.stellar7z = string.Empty;
@@ -686,6 +689,15 @@ namespace Stellar
             //Download.waiter.Reset();
             //Download.waiter = new ManualResetEvent(false);
 
+            // Clear RetroArch Nightlies List before each run
+            if (Queue.NightliesList != null)
+            {
+                Queue.NightliesList.Clear();
+                Queue.NightliesList.TrimExcess();
+            }
+
+            //var message = string.Join(Environment.NewLine, Queue.NightliesList); //debug
+            //MessageBox.Show(message); //debug
 
             // Progress Info
             textBlockProgressInfo.Text = "Checking...";
@@ -828,8 +840,18 @@ namespace Stellar
         // Launches Download and 7-Zip Extraction
         private void buttonUpdate_Click(object sender, RoutedEventArgs e)
         {
-            Download.waiter.Reset();
-            Download.waiter = new ManualResetEvent(false);
+            //Download.waiter.Reset();
+            //Download.waiter = new ManualResetEvent(false);
+
+            // Clear RetroArch Nightlies List before each run
+            if (Queue.NightliesList != null)
+            {
+                Queue.NightliesList.Clear();
+                Queue.NightliesList.TrimExcess();
+            }
+
+            //var message = string.Join(Environment.NewLine, Queue.NightliesList); //debug
+            //MessageBox.Show(message); //debug
 
             // Add backslash to Location Textbox path if missing
             if (!textBoxLocation.Text.EndsWith("\\") && !string.IsNullOrWhiteSpace(textBoxLocation.Text))
@@ -946,9 +968,8 @@ namespace Stellar
 
 
             // -----------------------------------------------
-            // If RetroArch+Cores or Cores Only Update
+            // RetroArch+Cores or Cores Only Update
             // -----------------------------------------------
-            // RA+Cores or Cores Selected
             if ((string)comboBoxDownload.SelectedItem == "New Install"
                 || (string)comboBoxDownload.SelectedItem == "RA+Cores" 
                 || (string)comboBoxDownload.SelectedItem == "Cores" 
