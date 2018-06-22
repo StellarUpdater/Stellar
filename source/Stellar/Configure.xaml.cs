@@ -5,6 +5,7 @@ using System.Windows.Input;
 using System.IO;
 using Stellar.Properties;
 using System.Configuration;
+using System.Diagnostics;
 
 /* ----------------------------------------------------------------------
     Stellar ~ RetroArch Nightly Updater by wyzrd
@@ -641,31 +642,75 @@ namespace Stellar
         // -----------------------------------------------
         private void buttonClearAllSavedSettings_Click(object sender, RoutedEventArgs e)
         {
-            // Revert 7-Zip
-            textBox7zipConfig.Text = "<auto>";
-            sevenZipPath = textBox7zipConfig.Text;
+            string userProfile = Environment.ExpandEnvironmentVariables(@"%USERPROFILE%");
+            string appDataPath = "\\AppData\\Local\\Stellar";
 
-            // Revert WinRAR
-            textBoxWinRARConfig.Text = "<auto>";
-            winRARPath = textBoxWinRARConfig.Text;
+            // Check if Directory Exists
+            if (Directory.Exists(userProfile + appDataPath))
+            {
+                // Show Yes No Window
+                System.Windows.Forms.DialogResult dialogResult = System.Windows.Forms.MessageBox.Show(
+                    "Delete " + userProfile + appDataPath, "Delete Directory Confirm", System.Windows.Forms.MessageBoxButtons.YesNo);
+                // Yes
+                if (dialogResult == System.Windows.Forms.DialogResult.Yes)
+                {
+                    // Delete leftover 2 Pass Logs in Program's folder and Input Files folder
+                    using (Process delete = new Process())
+                    {
+                        delete.StartInfo.UseShellExecute = false;
+                        delete.StartInfo.CreateNoWindow = false;
+                        delete.StartInfo.RedirectStandardOutput = true;
+                        delete.StartInfo.FileName = "cmd.exe";
+                        delete.StartInfo.Arguments = "/c RD /Q /S " + "\"" + userProfile + appDataPath;
+                        delete.Start();
+                        delete.WaitForExit();
+                        //delete.Close();
+                    }
 
-            // Revert Log
-            checkBoxLogConfig.IsChecked = false;
-            textBoxLogConfig.Text = string.Empty;
-            logPath = string.Empty;
+                    // Restart Program
+                    Process.Start(Application.ResourceAssembly.Location);
+                    Application.Current.Shutdown();
+                }
+                // No
+                else if (dialogResult == System.Windows.Forms.DialogResult.No)
+                {
+                    //do nothing
+                }
+            }
+            // If Stellar Folder Not Found
+            else
+            {
+                MessageBox.Show("No Previous Settings Found.",
+                                "Notice",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Information);
+            }
 
-            // Save Current Window Location
-            // Prevents MainWindow from moving to Top 0 Left 0 while running
-            double left = mainwindow.Left;
-            double top = mainwindow.Top;
+            //// Revert 7-Zip
+            //textBox7zipConfig.Text = "<auto>";
+            //sevenZipPath = textBox7zipConfig.Text;
 
-            // Reset AppData Settings
-            Settings.Default.Reset();
-            Settings.Default.Reload();
+            //// Revert WinRAR
+            //textBoxWinRARConfig.Text = "<auto>";
+            //winRARPath = textBoxWinRARConfig.Text;
 
-            // Set Window Location
-            mainwindow.Left = left;
-            mainwindow.Top = top;
+            //// Revert Log
+            //checkBoxLogConfig.IsChecked = false;
+            //textBoxLogConfig.Text = string.Empty;
+            //logPath = string.Empty;
+
+            //// Save Current Window Location
+            //// Prevents MainWindow from moving to Top 0 Left 0 while running
+            //double left = mainwindow.Left;
+            //double top = mainwindow.Top;
+
+            //// Reset AppData Settings
+            //Settings.Default.Reset();
+            //Settings.Default.Reload();
+
+            //// Set Window Location
+            //mainwindow.Left = left;
+            //mainwindow.Top = top;
         }
 
         // -----------------------------------------------

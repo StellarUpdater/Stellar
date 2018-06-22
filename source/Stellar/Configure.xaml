@@ -737,7 +737,7 @@
         <ComboBox x:Name="comboBoxThemeConfig" 
                   ItemContainerStyle="{DynamicResource ComboBoxItemCustom}"
                   HorizontalAlignment="Left" 
-                  Margin="95,120,0,0" 
+                  Margin="69,120,0,0" 
                   VerticalAlignment="Top" 
                   Width="100" 
                   Foreground="White"
@@ -757,7 +757,6 @@
             <System:String>Dark Nebula</System:String>
             <System:String>Star Dust</System:String>
             <System:String>Chaos</System:String>
-            <System:String>Cosmic Web</System:String>
         </ComboBox>
 
         <!-- Clear Saved Settigns Button -->

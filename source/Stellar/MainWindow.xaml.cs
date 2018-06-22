@@ -467,7 +467,7 @@ namespace Stellar
                 + "\nNASA, Solar Flare" 
                 + "\nNASA, Rho Ophiuchi, Dark Nebula" 
                 + "\nNASA, N159, Star Dust" 
-                + "\nNASA, NGC 6357, Chaos" 
+                + "\nNASA, NGC 6357, Chaos"
                 + "\n\nThis software comes with no warranty, express or implied, and the author makes no representation of warranties." 
                 + "The author claims no responsibility for damages resulting from any use or misuse of the software.");
         }
