@@ -1,13 +1,4 @@
-﻿using System;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.IO;
-using Stellar.Properties;
-using System.Configuration;
-using System.Diagnostics;
-
-/* ----------------------------------------------------------------------
+﻿/* ----------------------------------------------------------------------
     Stellar ~ RetroArch Nightly Updater by wyzrd
     https://stellarupdater.github.io
     https://forums.libretro.com/users/wyzrd
@@ -27,6 +18,15 @@ using System.Diagnostics;
 
     Image Credit: ESO & NASA (CC)
    ---------------------------------------------------------------------- */
+
+using System;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.IO;
+using Stellar.Properties;
+using System.Configuration;
+using System.Diagnostics;
 
 namespace Stellar
 {

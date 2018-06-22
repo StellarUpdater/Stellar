@@ -1,15 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Threading;
-using System.Windows.Forms;
-using System.Windows.Threading;
-
-/* ----------------------------------------------------------------------
+﻿/* ----------------------------------------------------------------------
     Stellar ~ RetroArch Nightly Updater by wyzrd
     https://stellarupdater.github.io
     https://forums.libretro.com/users/wyzrd
@@ -30,19 +19,27 @@ using System.Windows.Threading;
     Image Credit: ESO & NASA (CC)
    ---------------------------------------------------------------------- */
 
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Threading;
+using System.Windows.Forms;
+using System.Windows.Threading;
+
 namespace Stellar
 {
     public partial class Download
     {
         private static MainWindow mainwindow = ((MainWindow)System.Windows.Application.Current.MainWindow);
-        //private static MainWindow mainwindow;
 
         // Thread
         //public static Thread worker = null;
 
         // Web Downloads
-        //public static WebClient webclient = new WebClient();
-        //public static WebClient wc2 = new WebClient();
         public static ManualResetEvent waiter = new ManualResetEvent(false); // Download one at a time
                                                                              
         public static string progressInfo; // Progress Label Info
@@ -94,38 +91,6 @@ namespace Stellar
 
             //DownloadComplete(mainwindow);
         }
-
-
-        // -------------------------
-        // Progress Changed (Method)
-        // -------------------------
-        //public static void DownloadProgressChanged(MainWindow mainwindow, DownloadProgressChangedEventArgs e)
-        //{
-        //    mainwindow.Dispatcher.Invoke(new Action(delegate
-        //    {
-        //        mainwindow.textBlockProgressInfo.Text = progressInfo;
-        //    }));
-
-        //    // Progress Bar
-        //    mainwindow.Dispatcher.Invoke(new Action(delegate
-        //    {
-        //        double bytesIn = double.Parse(e.BytesReceived.ToString());
-        //        double totalBytes = double.Parse(e.TotalBytesToReceive.ToString());
-        //        double percentage = bytesIn / totalBytes * 100;
-        //        mainwindow.progressBar.Value = int.Parse(Math.Truncate(percentage).ToString());
-        //    }));
-        //}
-
-        // -------------------------
-        //  Download Complete (Method)
-        // -------------------------
-        //public static void DownloadComplete(MainWindow mainwindow)
-        //{
-        //    mainwindow.Dispatcher.Invoke(new Action(delegate
-        //    {
-        //        mainwindow.textBlockProgressInfo.Text = progressInfo;
-        //    }));
-        //}
 
 
         // -----------------------------------------------

@@ -1,14 +1,4 @@
-﻿using System;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Windows;
-
-/* ----------------------------------------------------------------------
+﻿/* ----------------------------------------------------------------------
     Stellar ~ RetroArch Nightly Updater by wyzrd
     https://stellarupdater.github.io
     https://forums.libretro.com/users/wyzrd
@@ -28,6 +18,16 @@ using System.Windows;
 
     Image Credit: ESO & NASA (CC)
    ---------------------------------------------------------------------- */
+
+using System;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Windows;
 
 namespace Stellar
 {
@@ -50,9 +50,9 @@ namespace Stellar
         public static string parseGitHubUrl = "https://github.com/StellarUpdater/Stellar/releases/"; // Self-Update
         public static string indexextendedUrl = string.Empty; // index-extended Cores Text File
         public static string parseCoresUrl = string.Empty; // Buildbot Cores URL to be parsed
-        public static string libretro_x86 = "https://raw.libretro.com/nightly/windows/x86/"; // Download URL 32-bit
-        public static string libretro_x86_64 = "https://raw.libretro.com/nightly/windows/x86_64/"; // Download URL 64-bit
-        public static string libretro_x86_64_w32 = "https://raw.libretro.com/nightly/windows/x86_64_w32/"; // Download URL 64-bit w32
+        public static string libretro_x86; // Download URL 32-bit
+        public static string libretro_x86_64; // Download URL 64-bit
+        public static string libretro_x86_64_w32; // Download URL 64-bit w32
 
 
         // -------------------------
@@ -329,12 +329,6 @@ namespace Stellar
 
                     // Get Lastest Element of Nightlies List 
                     nightly7z = Queue.NightliesList.Last();
-
-                    //if (Queue.NightliesList != null)
-                    //{
-                    //    Queue.NightliesList.Clear();
-                    //    Queue.NightliesList.TrimExcess();
-                    //}
                 }
                 catch
                 {
@@ -352,13 +346,6 @@ namespace Stellar
 
                     return;
                 }
-
-                // Clear RetroArch Nightlies List
-                //if (Queue.NightliesList != null)
-                //{
-                //    Queue.NightliesList.Clear();
-                //    Queue.NightliesList.TrimExcess();
-                //}
             }
             catch
             {
@@ -421,12 +408,8 @@ namespace Stellar
                     // -------------------------
                     if (Queue.NightliesList.Count == 0)
                     {
-                        // Clear RetroArch Nightlies List
-                        //if (Queue.NightliesList != null)
-                        //{
-                        //    Queue.NightliesList.Clear();
-                        //    Queue.NightliesList.TrimExcess();
-                        //}
+                        Download.waiter.Reset();
+                        Download.waiter = new ManualResetEvent(false);
 
                         // Switch Server
                         mainwindow.cboServer.SelectedItem = "buildbot";

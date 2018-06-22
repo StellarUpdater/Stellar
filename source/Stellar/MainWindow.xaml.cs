@@ -1,16 +1,4 @@
-﻿using Stellar.Properties;
-using System;
-using System.Configuration;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Threading;
-
-/* ----------------------------------------------------------------------
+﻿/* ----------------------------------------------------------------------
     Stellar ~ RetroArch Nightly Updater by wyzrd
     https://stellarupdater.github.io
     https://forums.libretro.com/users/wyzrd
@@ -30,6 +18,18 @@ using System.Windows.Threading;
 
     Image Credit: ESO & NASA (CC)
    ---------------------------------------------------------------------- */
+
+using Stellar.Properties;
+using System;
+using System.Configuration;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace Stellar
 {
@@ -113,7 +113,7 @@ namespace Stellar
             try {
                 // First time use
                 if (Convert.ToDouble(Settings.Default["Left"]) == 0 
-                    || Convert.ToDouble(Settings.Default["Top"]) == 0)
+                    && Convert.ToDouble(Settings.Default["Top"]) == 0)
                 {
                     this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
                 }
@@ -431,7 +431,7 @@ namespace Stellar
                     // Save RetroArch path for next launch
                     Settings.Default["retroarchPath"] = textBoxLocation.Text;
                     Settings.Default.Save();
-                    Settings.Default.Reload();
+                    //Settings.Default.Reload();
                 }
                 catch
                 {
@@ -587,9 +587,9 @@ namespace Stellar
             try
             {
                 // Save Selected Arhitecture
-                Settings.Default["architecture"] = comboBoxArchitecture.SelectedItem;
+                Settings.Default["architecture"] = comboBoxArchitecture.SelectedItem.ToString();
                 Settings.Default.Save();
-                Settings.Default.Reload();
+                //Settings.Default.Reload();
             }
             catch
             {
@@ -626,9 +626,9 @@ namespace Stellar
             buttonUpdateTextBlock.Text = "Update";
 
             // Save Download Combobox Settings for next launch
-            Settings.Default["download"] = comboBoxDownload.SelectedItem;
+            Settings.Default["download"] = comboBoxDownload.SelectedItem.ToString();
             Settings.Default.Save();
-            Settings.Default.Reload();
+            //Settings.Default.Reload();
 
 
             // Stellar Self-Update Selected, Disable Architecture ComboBox
@@ -662,7 +662,7 @@ namespace Stellar
                     // Save Download Combobox Settings back to RA+Cores instead of New Install for next launch
                     Settings.Default["download"] = "RA+Cores";
                     Settings.Default.Save();
-                    Settings.Default.Reload();
+                    //Settings.Default.Reload();
                 }
 
                 // Upgrade
@@ -697,7 +697,7 @@ namespace Stellar
                     // Save Download Combobox Settings back to RA+Cores instead of New Cores for next launch
                     Settings.Default["download"] = "RA+Cores";
                     Settings.Default.Save();
-                    Settings.Default.Reload();
+                    //Settings.Default.Reload();
                 }
             });
 
@@ -723,7 +723,7 @@ namespace Stellar
             // Save RetroArch Path for next launch
             Settings.Default["retroarchPath"] = textBoxLocation.Text;
             Settings.Default.Save();
-            Settings.Default.Reload();
+            //Settings.Default.Reload();
         }
 
 
@@ -737,6 +737,9 @@ namespace Stellar
 
             // Set URLs
             Paths.SetUrls(this);
+
+            Settings.Default["downloadServer"] = cboServer.SelectedItem.ToString();
+            Settings.Default.Save();
         }
 
 

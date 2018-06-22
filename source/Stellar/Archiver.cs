@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-/* ----------------------------------------------------------------------
+﻿/* ----------------------------------------------------------------------
     Stellar ~ RetroArch Nightly Updater by wyzrd
     https://stellarupdater.github.io
     https://forums.libretro.com/users/wyzrd
@@ -21,6 +19,9 @@
     Image Credit: ESO & NASA (CC)
    ---------------------------------------------------------------------- */
 
+using System.IO;
+using System.Windows;
+
 namespace Stellar
 {
     public partial class Archiver
@@ -39,14 +40,20 @@ namespace Stellar
             if (string.IsNullOrEmpty(Configure.sevenZipPath))
             {
                 MainWindow.ready = false;
-                System.Windows.MessageBox.Show("Please set 7-Zip Path in Settings.");
+                MessageBox.Show("Please set 7-Zip Path in Settings.",
+                                "Notice",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Warning);
             }
 
             // Null Checker
             if (string.IsNullOrEmpty(Configure.winRARPath))
             {
                 MainWindow.ready = false;
-                System.Windows.MessageBox.Show("Please set WinRAR Path in Settings.");
+                MessageBox.Show("Please set WinRAR Path in Settings.",
+                                "Notice",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Warning);
             }
 
             // -------------------------
@@ -91,7 +98,10 @@ namespace Stellar
                 else
                 {
                     MainWindow.ready = false;
-                    System.Windows.MessageBox.Show("Please install 7-Zip or WinRAR to extract files.\n\nOr set Path in Configure Window.");
+                    MessageBox.Show("Please install 7-Zip or WinRAR to extract files.\n\nOr set Path in Configure Window.",
+                                    "Notice",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Warning);
                 }
             }
 
@@ -110,7 +120,10 @@ namespace Stellar
                 catch
                 {
                     MainWindow.ready = false;
-                    System.Windows.MessageBox.Show("Error: Could not load 7-Zip. Please restart the program.");
+                    MessageBox.Show("Could not load 7-Zip. Please restart the program.",
+                                    "Error",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Error);
                 }
 
                 // Path to 7-Zip
@@ -122,7 +135,7 @@ namespace Stellar
             // -------------------------
             // Not Auto
             // -------------------------
-            // If WinRAR Path is (Not Auto) and is Configure Settings <User Selected Path> ####################
+            // If WinRAR Path is (Not Auto) and is Configure Settings <User Selected Path>
             else if (Configure.winRARPath != "<auto>" && !string.IsNullOrEmpty(Configure.winRARPath)) // Check null again
             {
                 try
@@ -133,7 +146,10 @@ namespace Stellar
                 catch
                 {
                     MainWindow.ready = false;
-                    System.Windows.MessageBox.Show("Error: Could not load WinRAR. Please restart the program.");
+                    MessageBox.Show("Could not load WinRAR. Please restart the program.",
+                                    "Error",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Error);
                 }
 
                 // Path to WinRAR

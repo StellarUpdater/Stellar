@@ -35,8 +35,7 @@ namespace Stellar
         public static string coresPath; // Location of User's cores folder
 
         // Buildbot
-        // string buildbotCoresPage = string.Empty; //Parse.parseUrl + "latest/"
-        public static string buildbotArchitecture; //x86 or x86_64\
+        public static string buildbotArchitecture; //x86 or x86_64
         public static string buildbotArchitectureCores; //Used with latest/ element url. Used to fix w32.
 
 

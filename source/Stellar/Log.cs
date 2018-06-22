@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-/* ----------------------------------------------------------------------
+﻿/* ----------------------------------------------------------------------
     Stellar ~ RetroArch Nightly Updater by wyzrd
     https://stellarupdater.github.io
     https://forums.libretro.com/users/wyzrd
@@ -21,6 +18,10 @@ using System.IO;
 
     Image Credit: ESO & NASA (CC)
    ---------------------------------------------------------------------- */
+
+using System;
+using System.IO;
+using System.Windows;
 
 namespace Stellar
 {
@@ -53,7 +54,10 @@ namespace Stellar
                 }
                 catch
                 {
-                    System.Windows.MessageBox.Show("Error Saving Output Log to " + "\"" + Configure.logPath + "\"" + ". May require Administrator Privileges.");
+                    MessageBox.Show("Error Saving Output Log to " + "\"" + Configure.logPath + "\"" + ". May require Administrator Privileges.",
+                                    "Error",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Error);
                 }
             }
         }
