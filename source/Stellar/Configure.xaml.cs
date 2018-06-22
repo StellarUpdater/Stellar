@@ -847,6 +847,21 @@ namespace Stellar
                 // Image Credit
                 labelTheme.Content = "NASA, NGC 6357";
             }
+            // Cosmic Web
+            else if ((string)comboBoxThemeConfig.SelectedItem == "Cosmic Web")
+            {
+                theme = "CosmicWeb";
+
+                // Change Theme Resource
+                App.Current.Resources.MergedDictionaries.Clear();
+                App.Current.Resources.MergedDictionaries.Add(new ResourceDictionary()
+                {
+                    Source = new Uri("Theme" + theme + ".xaml", UriKind.RelativeOrAbsolute)
+                });
+
+                // Image Credit
+                labelTheme.Content = "Volker Springel, MPA";
+            }
 
             // -------------------------
             // Save Selected Theme

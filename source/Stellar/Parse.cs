@@ -46,7 +46,7 @@ namespace Stellar
         public static string nightly7z; // The Parsed Dated 7z Nightly Filename
         public static string nightlyUrl; // Download URL + Dated 7z Filename
 
-        public static string parseUrl = "https://raw.libretro.com/nightly/windows/x86_64/"; // Parse URL to be changed with Dropdown Combobox. Default is 64-bit.
+        public static string parseUrl;
         public static string parseGitHubUrl = "https://github.com/StellarUpdater/Stellar/releases/"; // Self-Update
         public static string indexextendedUrl = string.Empty; // index-extended Cores Text File
         public static string parseCoresUrl = string.Empty; // Buildbot Cores URL to be parsed
@@ -104,7 +104,12 @@ namespace Stellar
                 }
                 catch
                 {
-                    MessageBox.Show("GitHub version not found.");
+                    MessageBox.Show("GitHub version not found.",
+                                    "Error",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Error);
+
+                    return;
                 }
 
 
@@ -123,7 +128,12 @@ namespace Stellar
                     }
                     catch
                     {
-                        MessageBox.Show("Error reading version.");
+                        MessageBox.Show("Error reading version.",
+                                        "Error",
+                                        MessageBoxButton.OK,
+                                        MessageBoxImage.Error);
+
+                        return;
                     }
 
                     // Debug
@@ -134,13 +144,23 @@ namespace Stellar
                 // Version is Null
                 else
                 {
-                    MessageBox.Show("GitHub version returned empty.");
+                    MessageBox.Show("GitHub version returned empty.",
+                                    "Error",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Error);
+
+                    return;
                 }
             }
             else
             {
                 //MainWindow.ready = false;
-                MessageBox.Show("Could not detect Internet Connection.");
+                MessageBox.Show("Could not detect Internet Connection.",
+                                "Notice",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Warning);
+
+                return;
             }
 
 
@@ -240,6 +260,125 @@ namespace Stellar
         }
 
 
+
+        // -----------------------------------------------
+        // Create Nightlies List
+        // -----------------------------------------------
+        public static void FetchNightlyFile(MainWindow mainwindow)
+        {
+            ServicePointManager.Expect100Continue = true;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+            try
+            {
+                // Parse the HTML Page from parseUrl
+                //DownloadServerPage(mainwindow);
+
+                // -------------------------
+                // Parse the HTML Page from parseUrl
+                // -------------------------
+                HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(parseUrl);
+                req.UserAgent = "MOZILLA/5.0 (WINDOWS NT 6.1; WOW64) APPLEWEBKIT/537.1 (KHTML, LIKE GECKO) CHROME/21.0.1180.75 SAFARI/537.1";
+                req.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
+                //req.Headers.Add("Accept-Encoding", "gzip,deflate");
+
+                HttpWebResponse response = (HttpWebResponse)req.GetResponse();
+
+                using (StreamReader sr = new StreamReader(response.GetResponseStream()))
+                {
+                    //page = sr.ReadToEnd();
+
+                    while (sr.Peek() >= 0)
+                    {
+                        page = sr.ReadToEnd();
+                    }
+                }
+
+
+                // -------------------------
+                // Build Nightlies Dated Files List
+                // -------------------------
+                // HTML Tag containing Dated 7z, (.*?) is the text to keep
+                element = "<a href=\"/nightly/windows/" + Paths.buildbotArchitecture + "/(.*?)\">";
+
+                // Find 7z Matches in HTML tags
+                MatchCollection matches = Regex.Matches(page, element);
+
+                //var message = string.Join(Environment.NewLine, Queue.NightliesList); //debug
+                //MessageBox.Show(message); //debug
+
+                if (matches.Count > 0)
+                {
+                    foreach (Match m in matches)
+                    {
+                        Queue.NightliesList.Add(m.Groups[1].Value);
+                    }
+
+                    //MessageBox.Show("Matches found: {0}", string.Join(Environment.NewLine, matches.Count)); //debug
+
+                    // Remove from the List all 7z files that do not contain _RetroArch.7z (filters out unwanted)
+                    Queue.NightliesList.RemoveAll(u => !u.Contains("_RetroArch.7z"));
+
+                    Queue.NightliesList.TrimExcess();
+                }
+
+                try
+                {
+                    // Sort the Nighlies List, lastest 7z is first
+                    Queue.NightliesList.Sort(); //do not disable this sort
+
+                    // Get Lastest Element of Nightlies List 
+                    nightly7z = Queue.NightliesList.Last();
+
+                    //if (Queue.NightliesList != null)
+                    //{
+                    //    Queue.NightliesList.Clear();
+                    //    Queue.NightliesList.TrimExcess();
+                    //}
+                }
+                catch
+                {
+                    MainWindow.ready = false;
+
+                    // Ignore Error Message if Server Auto (Will display on second pass when switch turns on)
+                    if ((string)mainwindow.cboServer.SelectedItem != "auto")
+                    {
+                        MessageBox.Show("Problem creating RetroArch list from HTML. \n\nTry another server such as raw or buildbot.",
+                                        "Error",
+                                        MessageBoxButton.OK,
+                                        MessageBoxImage.Error);
+                    }
+
+
+                    return;
+                }
+
+                // Clear RetroArch Nightlies List
+                //if (Queue.NightliesList != null)
+                //{
+                //    Queue.NightliesList.Clear();
+                //    Queue.NightliesList.TrimExcess();
+                //}
+            }
+            catch
+            {
+                MainWindow.ready = false;
+
+                // Ignore Error Message if Server Auto (Will display on second pass when switch turns on)
+                if ((string)mainwindow.cboServer.SelectedItem != "auto")
+                {
+                    MessageBox.Show("Problem connecting to Network.",
+                                    "Error",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Error);
+                }
+
+                return;
+            }
+        }
+
+
+
         // -----------------------------------------------
         // Parse Builbot Page HTML
         // -----------------------------------------------
@@ -262,166 +401,69 @@ namespace Stellar
                     Queue.NightliesList.TrimExcess();
                 }
 
-                //var message = string.Join(Environment.NewLine, Queue.NightliesList); //debug
-                //MessageBox.Show(message); //debug
-
                 // -------------------------
-                // Update Selected
+                // auto Server
                 // -------------------------
-                try
+                if ((string)mainwindow.cboServer.SelectedItem == "auto")
                 {
-                    // Default Server to Raw
-                    libretro_x86 = "https://raw.libretro.com/nightly/windows/x86/"; // Download URL 32-bit
-                    libretro_x86_64 = "https://raw.libretro.com/nightly/windows/x86_64/"; // Download URL 64-bit
-                    libretro_x86_64_w32 = "https://raw.libretro.com/nightly/windows/x86_64_w32/"; // Download URL 64-bit w32
+                    // -------------------------
+                    // Default Raw
+                    // -------------------------
 
-                    // Parse the HTML Page from parseUrl
-                    DownloadServerPage(mainwindow);
+                    // Progress Info
+                    mainwindow.textBlockProgressInfo.Text = "Using raw server";
 
-                    // HTML Tag containing Dated 7z, (.*?) is the text to keep
-                    element = "<a href=\"/nightly/windows/" + Paths.buildbotArchitecture + "/(.*?)\">";
-
-                    // Find 7z Matches in HTML tags
-                    MatchCollection matches = Regex.Matches(page, element);
-
-                    //var message = string.Join(Environment.NewLine, Queue.NightliesList); //debug
-                    //MessageBox.Show(message); //debug
-
-                    if (matches.Count > 0)
-                    {
-                        foreach (Match m in matches)
-                        {
-                            Queue.NightliesList.Add(m.Groups[1].Value);
-                        }
-
-                        //MessageBox.Show("Matches found: {0}", string.Join(Environment.NewLine, matches.Count)); //debug
-
-                        // Remove from the List all 7z files that do not contain _RetroArch.7z (filters out unwanted)
-                        Queue.NightliesList.RemoveAll(u => !u.Contains("_RetroArch.7z"));
-
-                        Queue.NightliesList.TrimExcess();
-                    }
-
-                // Clear RetroArch Nightlies List
-                if (Queue.NightliesList != null)
-                {
-                    Queue.NightliesList.Clear();
-                    Queue.NightliesList.TrimExcess();
-                }
-
-                //message = string.Join(Environment.NewLine, Queue.NightliesList); //debug
-                //MessageBox.Show(message); //debug
-
-                // Switch Raw to Buildbot if no matches found
-                //
-                // -------------------------
-                // Raw Server
-                // -------------------------
-                if (Queue.NightliesList.Count > 0)
-                    {
-                        MessageBox.Show("Using Raw"); //debug
-                        mainwindow.textBlockProgressInfo.Text = "Using Raw";
-
-                        try
-                        {
-                            // Sort the Nighlies List, lastest 7z is first
-                            Queue.NightliesList.Sort(); //do not disable this sort
-
-                            //var message = string.Join(Environment.NewLine, Queue.NightliesList); //debug
-                            //MessageBox.Show(message); //debug
-
-                            // Get Lastest Element of Nightlies List 
-                            nightly7z = Queue.NightliesList.Last();
-
-                            if (Queue.NightliesList != null)
-                            {
-                                Queue.NightliesList.Clear();
-                                Queue.NightliesList.TrimExcess();
-                            }
-                        }
-                        catch
-                        {
-                            MainWindow.ready = false;
-                            MessageBox.Show("Error: Problem creating RetroArch list from HTML.");
-                        }
-
-                    }
+                    // Create List
+                    FetchNightlyFile(mainwindow);
 
                     // -------------------------
-                    // Buildbot Server (Backup)
+                    // Switch to Buildbot
                     // -------------------------
-                    else
+                    if (Queue.NightliesList.Count == 0)
                     {
-                        //MessageBox.Show("Using Buildbot"); //debug
-                        mainwindow.textBlockProgressInfo.Text = "Using Buildbot";
+                        // Clear RetroArch Nightlies List
+                        //if (Queue.NightliesList != null)
+                        //{
+                        //    Queue.NightliesList.Clear();
+                        //    Queue.NightliesList.TrimExcess();
+                        //}
 
-                        // Change Server to Buildbot
-                        libretro_x86 = "https://buildbot.libretro.com/nightly/windows/x86/"; // Download URL 32-bit
-                        libretro_x86_64 = "https://buildbot.libretro.com/nightly/windows/x86_64/"; // Download URL 64-bit
-                        libretro_x86_64_w32 = "https://buildbot.libretro.com/nightly/windows/x86_64_w32/"; // Download URL 64-bit w32
-   
-                        // Reset Achitecture
-                        Paths.SetArchitecture(mainwindow);
-                        // Show URL in Textbox
-                        Paths.SetUrls(mainwindow);
+                        // Switch Server
+                        mainwindow.cboServer.SelectedItem = "buildbot";
 
-                        // Parse the HTML Page from parseUrl
-                        DownloadServerPage(mainwindow);
+                        // Progress Info
+                        mainwindow.textBlockProgressInfo.Text = "Using buildbot server";
 
-                        // HTML Tag containing Dated 7z, (.*?) is the text to keep
-                        element = "<a href=\"/nightly/windows/" + Paths.buildbotArchitecture + "/(.*?)\">";
-
-                        // Find 7z Matches in HTML tags
-                        matches = Regex.Matches(page, element);
-
-                        if (matches.Count > 0)
-                        {
-                            foreach (Match m in matches)
-                            {
-                                Queue.NightliesList.Add(m.Groups[1].Value);
-                            }
-
-                            //MessageBox.Show("Matches found: {0}", string.Join(Environment.NewLine, matches.Count)); //debug
-
-                            // Remove from the List all 7z files that do not contain _RetroArch.7z (filters out unwanted)
-                            Queue.NightliesList.RemoveAll(u => !u.Contains("_RetroArch.7z"));
-
-                            Queue.NightliesList.TrimExcess();
-                        }
-
-                        //var message = string.Join(Environment.NewLine, Queue.NightliesList); //debug
-                        //MessageBox.Show(message); //debug
-
-
-                        try
-                        {
-                            // Sort the Nighlies List, lastest 7z is first
-                            Queue.NightliesList.Sort(); //do not disable this sort
-
-                            // Get Lastest Element of Nightlies List 
-                            nightly7z = Queue.NightliesList.Last();
-
-                            if (Queue.NightliesList != null)
-                            {
-                                Queue.NightliesList.Clear();
-                                Queue.NightliesList.TrimExcess();
-                            }
-                        }
-                        catch
-                        {
-                            MainWindow.ready = false;
-                            MessageBox.Show("Error: Problem creating RetroArch list from HTML.");
-                        }
+                        // Create List
+                        FetchNightlyFile(mainwindow);
                     }
-
                 }
-                catch
+
+                // -------------------------
+                // raw Server
+                // -------------------------
+                else if ((string)mainwindow.cboServer.SelectedItem == "raw")
                 {
-                    MainWindow.ready = false;
-                    MessageBox.Show("Error: Problem connecting to Network.");
+                    // Progress Info
+                    mainwindow.textBlockProgressInfo.Text = "Using raw server";
+
+                    // Create List
+                    FetchNightlyFile(mainwindow);
                 }
 
+                // -------------------------
+                // buildbot Server
+                // -------------------------
+                else if ((string)mainwindow.cboServer.SelectedItem == "buildbot")
+                {
+                    // Progress Info
+                    mainwindow.textBlockProgressInfo.Text = "Using buildbot server";
+
+                    // Create List
+                    FetchNightlyFile(mainwindow);
+                }
             }
+
 
             // -------------------------
             // New Install Selected
@@ -512,7 +554,10 @@ namespace Stellar
             catch
             {
                 MainWindow.ready = false;
-                MessageBox.Show("Error: Buildbot index-extended file may be offline.");
+                MessageBox.Show("Buildbot index-extended file may be offline.",
+                                "Error",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
             }
 
 
@@ -576,7 +621,10 @@ namespace Stellar
                 }
                 catch
                 {
-                    MessageBox.Show("Error: Problem sorting Buildbot Cores.");
+                    MessageBox.Show("Problem sorting Buildbot Cores.",
+                                    "Error",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Error);
                 }
 
 
@@ -598,7 +646,10 @@ namespace Stellar
                 }
                 catch
                 {
-                    MessageBox.Show("Error: Problem modifying Buildbot Cores.");
+                    MessageBox.Show("Problem modifying Buildbot Cores.",
+                                    "Error",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Error);
                 }
                 
 
@@ -615,7 +666,10 @@ namespace Stellar
                 }
                 catch
                 {
-                    MessageBox.Show("Error: Problem combining Buildbot Cores.");
+                    MessageBox.Show("Problem combining Buildbot Cores.",
+                                    "Error",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Error);
                 }
                 
 
@@ -630,7 +684,10 @@ namespace Stellar
             else
             {
                 MainWindow.ready = false;
-                MessageBox.Show("Error: Cores list is empty or failed to download index-extended.");
+                MessageBox.Show("Cores list is empty or failed to download index-extended.",
+                                "Error",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
             }
 
             // Prevents Threading Crash
@@ -670,7 +727,10 @@ namespace Stellar
             catch
             {
                 MainWindow.ready = false;
-                MessageBox.Show("Error: Problem scanning PC Cores Name & Dates.");
+                MessageBox.Show("Problem scanning PC Cores Name & Dates.",
+                                "Error",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
             }
 
             // Popup Error Message if PC Cores Name List has no items 0
@@ -679,7 +739,10 @@ namespace Stellar
                 && (string)mainwindow.comboBoxDownload.SelectedItem != "New Cores") // Ignore
             {
                 MainWindow.ready = false;
-                MessageBox.Show("Cores not found. \n\nPlease select your RetroArch main folder.");
+                MessageBox.Show("Cores not found. \n\nPlease select your RetroArch main folder.",
+                                "Notice",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Information);
             }
 
             // -------------------------

@@ -225,5 +225,17 @@ namespace Stellar.Properties {
                 this["Top"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string downloadServer {
+            get {
+                return ((string)(this["downloadServer"]));
+            }
+            set {
+                this["downloadServer"] = value;
+            }
+        }
     }
 }

@@ -757,6 +757,7 @@
             <System:String>Dark Nebula</System:String>
             <System:String>Star Dust</System:String>
             <System:String>Chaos</System:String>
+            <System:String>Cosmic Web</System:String>
         </ComboBox>
 
         <!-- Clear Saved Settigns Button -->

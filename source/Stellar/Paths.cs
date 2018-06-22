@@ -46,6 +46,38 @@ namespace Stellar
         public static void SetArchitecture(MainWindow mainwindow) // Method
         {
             // -------------------------
+            // auto Server
+            // -------------------------
+            if ((string)mainwindow.cboServer.SelectedItem == "auto")
+            {
+                Parse.libretro_x86 = "https://raw.libretro.com/nightly/windows/x86/"; // Download URL 32-bit
+                Parse.libretro_x86_64 = "https://raw.libretro.com/nightly/windows/x86_64/"; // Download URL 64-bit
+                Parse.libretro_x86_64_w32 = "https://raw.libretro.com/nightly/windows/x86_64_w32/"; // Download URL 64-bit w32
+            }
+
+            // -------------------------
+            // raw Server
+            // -------------------------
+            else if ((string)mainwindow.cboServer.SelectedItem == "raw")
+            {
+                Parse.libretro_x86 = "https://raw.libretro.com/nightly/windows/x86/"; // Download URL 32-bit
+                Parse.libretro_x86_64 = "https://raw.libretro.com/nightly/windows/x86_64/"; // Download URL 64-bit
+                Parse.libretro_x86_64_w32 = "https://raw.libretro.com/nightly/windows/x86_64_w32/"; // Download URL 64-bit w32
+            }
+
+            // -------------------------
+            // buildbot Server
+            // -------------------------
+            else if ((string)mainwindow.cboServer.SelectedItem == "buildbot")
+            {
+                // Change Server to Buildbot
+                Parse.libretro_x86 = "https://buildbot.libretro.com/nightly/windows/x86/"; // Download URL 32-bit
+                Parse.libretro_x86_64 = "https://buildbot.libretro.com/nightly/windows/x86_64/"; // Download URL 64-bit
+                Parse.libretro_x86_64_w32 = "https://buildbot.libretro.com/nightly/windows/x86_64_w32/"; // Download URL 64-bit w32
+            }
+
+
+            // -------------------------
             // If 32-bit Selected, change Download Architecture to x86
             // -------------------------
             if ((string)mainwindow.comboBoxArchitecture.SelectedItem == "32-bit")
@@ -84,38 +116,44 @@ namespace Stellar
         // Display URLs in Download Textbox
         public static void SetUrls(MainWindow mainwindow)
         {
+            // -------------------------
             // If New Install Selected, Textbox will display URL
+            // -------------------------
             //
             if ((string)mainwindow.comboBoxDownload.SelectedItem == "New Install")
             {
                 mainwindow.textBoxDownload.Text = Parse.parseUrl;
             }
 
+            // -------------------------
             // If RA+Cores or Cores Selected, Textbox will display URL
-            //
+            // -------------------------
             else if ((string)mainwindow.comboBoxDownload.SelectedItem == "RA+Cores" 
                 || (string)mainwindow.comboBoxDownload.SelectedItem == "RetroArch")
             {
                 mainwindow.textBoxDownload.Text = Parse.parseUrl;
             }
 
+            // -------------------------
             // If Cores Selected, Textbox will display URL
-            //
+            // -------------------------
             else if ((string)mainwindow.comboBoxDownload.SelectedItem == "Cores" 
                 || (string)mainwindow.comboBoxDownload.SelectedItem == "New Cores")
             {
                 mainwindow.textBoxDownload.Text = Parse.parseCoresUrl;
             }
 
+            // -------------------------
             // If Redist Selected, Textbox will display URL
-            //
+            // -------------------------
             else if ((string)mainwindow.comboBoxDownload.SelectedItem == "Redist")
             {
                 mainwindow.textBoxDownload.Text = Parse.parseUrl;
             }
 
+            // -------------------------
             // If Stellar Selected, Textbox will display URL
-            //
+            // -------------------------
             else if ((string)mainwindow.comboBoxDownload.SelectedItem == "Stellar")
             {
                 mainwindow.textBoxDownload.Text = Parse.parseGitHubUrl;

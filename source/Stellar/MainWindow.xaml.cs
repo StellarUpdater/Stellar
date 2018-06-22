@@ -197,7 +197,30 @@ namespace Stellar
             {
 
             }
-           
+
+
+            // -----------------------------------------------
+            // Load Download Server (auto, raw, buildbot)
+            // -----------------------------------------------
+            try
+            {
+                // First Time Use
+                if (string.IsNullOrEmpty(Settings.Default["downloadServer"].ToString())) // null check
+                {
+                    //cboServer.SelectedItem = "auto";
+                    cboServer.SelectedItem = "buildbot";
+                }
+                // Saved Settings
+                else
+                {
+                    cboServer.SelectedItem = Settings.Default["downloadServer"];
+                }
+            }
+            catch
+            {
+
+            }
+
         }
 
         // ----------------------------------------------------------------------------------------------
@@ -523,7 +546,10 @@ namespace Stellar
             }
             else
             {
-                MessageBox.Show("Please choose RetroArch Folder location first.");
+                MessageBox.Show("Please choose RetroArch Folder location first.",
+                                "Notice",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Information);
             }
         }
 
@@ -584,6 +610,18 @@ namespace Stellar
         // -----------------------------------------------
         private void comboBoxDownload_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            // Disable Server ComboBox
+            if ((string)comboBoxDownload.SelectedItem == "Stellar")
+            {
+                cboServer.IsEnabled = false;
+            }
+            // Enable Server ComboBox
+            else
+            {
+                cboServer.IsEnabled = true;
+            }
+
+
             // Reset Update Button Text to "Update"
             buttonUpdateTextBlock.Text = "Update";
 
@@ -616,7 +654,10 @@ namespace Stellar
                     // Warn user about New Install
                     MessageBox.Show("This will install a New Nightly RetroArch + Cores." 
                                     + "\n\nIt will overwrite any existing files/configs in the selected folder." 
-                                    + "\n\nDo not use the New Install option to Update.");
+                                    + "\n\nDo not use the New Install option to Update.",
+                                    "Notice",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Information);
 
                     // Save Download Combobox Settings back to RA+Cores instead of New Install for next launch
                     Settings.Default["download"] = "RA+Cores";
@@ -635,7 +676,10 @@ namespace Stellar
                     MessageBox.Show("Backup your configs and custom shaders! Large Download." 
                                     + "\n\nThis will fully upgrade RetroArch to the latest version."
                                     + "\nFor small updates use the \"RetroArch\" or \"RA+Cores\" menu option."
-                                    + "\n\nUpdate Cores separately using \"Cores\" menu option.");
+                                    + "\n\nUpdate Cores separately using \"Cores\" menu option.",
+                                    "Notice",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Information);
 
                     // Save Download Combobox Settings back to RA+Cores instead of Upgrade for next launch
                     Settings.Default["download"] = "RA+Cores";
@@ -667,6 +711,7 @@ namespace Stellar
             ClearLists();
         }
 
+
         // -----------------------------------------------
         // Textbox RetroArch Location (On Click Change)
         // -----------------------------------------------
@@ -680,6 +725,20 @@ namespace Stellar
             Settings.Default.Save();
             Settings.Default.Reload();
         }
+
+
+        // -----------------------------------------------
+        // Server Switch
+        // -----------------------------------------------
+        private void cboServer_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Set Architecture
+            Paths.SetArchitecture(this);
+
+            // Set URLs
+            Paths.SetUrls(this);
+        }
+
 
         // -----------------------------------------------
         // Check Button - Tests Download URL
@@ -723,11 +782,17 @@ namespace Stellar
                     }
                     else if (Parse.latestVersion <= MainWindow.currentVersion)
                     {
-                        MessageBox.Show("This version is up to date.");
+                        MessageBox.Show("This version is up to date.",
+                                "Notice",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Information);
                     }
                     else // null
                     {
-                        MessageBox.Show("Could not find download.");
+                        MessageBox.Show("Could not find download.",
+                                "Error",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
                     }
                 }
             }
@@ -752,7 +817,10 @@ namespace Stellar
                 }
                 else
                 {
-                    MessageBox.Show("Could not find download.");
+                    MessageBox.Show("Could not find download.",
+                                "Error",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
                 }
             }
 
@@ -840,8 +908,8 @@ namespace Stellar
         // Launches Download and 7-Zip Extraction
         private void buttonUpdate_Click(object sender, RoutedEventArgs e)
         {
-            //Download.waiter.Reset();
-            //Download.waiter = new ManualResetEvent(false);
+            Download.waiter.Reset();
+            Download.waiter = new ManualResetEvent(false);
 
             // Clear RetroArch Nightlies List before each run
             if (Queue.NightliesList != null)
@@ -867,7 +935,10 @@ namespace Stellar
                 && (string)comboBoxDownload.SelectedItem != "Stellar") // ignore if Stellar Self Update
             {
                 ready = false;
-                MessageBox.Show("Please select your RetroArch main folder.");
+                MessageBox.Show("Please select your RetroArch main folder.",
+                                "Notice",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Information);
             }
 
             // MUST BE IN THIS ORDER: 1. SetArchitecture -> 2. parsePage -> 3. SetArchiver  ##################
@@ -926,13 +997,19 @@ namespace Stellar
                     {
                         // Lock
                         MainWindow.ready = false;
-                        MessageBox.Show("This version is up to date.");
+                        MessageBox.Show("This version is up to date.",
+                                "Notice",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Information);
                     }
                     else // null
                     {
                         // Lock
                         MainWindow.ready = false;
-                        MessageBox.Show("Could not find download. Try updating manually.");
+                        MessageBox.Show("Could not find download. Try updating manually.",
+                                "Notice",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Warning);
                     }
                 }              
             }
