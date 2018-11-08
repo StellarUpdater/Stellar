@@ -1065,7 +1065,7 @@ namespace Stellar
             //MessageBox.Show(message); //debug
 
             // Add backslash to Location Textbox path if missing
-            if (!vm.Location_Text.EndsWith("\\") && !string.IsNullOrWhiteSpace(vm.Location_Text))
+            if (!string.IsNullOrEmpty(vm.Location_Text) && !vm.Location_Text.EndsWith("\\"))
             {
                 vm.Location_Text = vm.Location_Text + "\\";
             }
@@ -1082,6 +1082,8 @@ namespace Stellar
                                 "Notice",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Information);
+
+                return;
             }
 
             // MUST BE IN THIS ORDER: 1. SetArchitecture -> 2. parsePage -> 3. SetArchiver  ##################
