@@ -753,12 +753,14 @@ namespace Stellar
             // Disable Server ComboBox
             if (vm.Download_SelectedItem == "Stellar")
             {
-                cboServer.IsEnabled = false;
+                vm.Location_IsEnabled = false;
+                vm.Server_IsEnabled = false;
             }
             // Enable Server ComboBox
             else
             {
-                cboServer.IsEnabled = true;
+                vm.Location_IsEnabled = true;
+                vm.Server_IsEnabled = true;
             }
 
 
@@ -774,11 +776,11 @@ namespace Stellar
             // Stellar Self-Update Selected, Disable Architecture ComboBox
             if (vm.Download_SelectedItem == "Stellar")
             {
-                comboBoxArchitecture.IsEnabled = false;
+                vm.Architecture_IsEnabled = false;
             }
             else
             {
-                comboBoxArchitecture.IsEnabled = true;
+                vm.Architecture_IsEnabled = true;
             }
 
             // Cross Thread

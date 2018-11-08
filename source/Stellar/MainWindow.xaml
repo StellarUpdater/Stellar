@@ -624,6 +624,7 @@
 
         <TextBox x:Name="textBoxLocation"
                  Text="{Binding Location_Text, Mode=TwoWay}"
+                 IsEnabled="{Binding Location_IsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"                  
                  Style="{DynamicResource TextBoxStyleCustom}"
                  HorizontalAlignment="Left"
                  Height="20"

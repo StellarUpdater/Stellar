@@ -89,6 +89,23 @@ namespace Stellar
             }
         }
 
+        // Controls Enable
+        private bool _Location_IsEnabled = true;
+        public bool Location_IsEnabled
+        {
+            get { return _Location_IsEnabled; }
+            set
+            {
+                if (_Location_IsEnabled == value)
+                {
+                    return;
+                }
+
+                _Location_IsEnabled = value;
+                OnPropertyChanged("Location_IsEnabled");
+            }
+        }
+
 
         // --------------------------------------------------
         // DownloadURL - TextBox
