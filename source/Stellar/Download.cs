@@ -338,7 +338,7 @@ namespace Stellar
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
             // UserAgent Header
-            wc.Headers.Add(HttpRequestHeader.UserAgent, "Stellar Updater (https://github.com/StellarUpdater/Stellar)" + " v" + MainWindow.currentVersion + "-" + MainWindow.currentBuildPhase + " Self-Update");
+            wc.Headers.Add(HttpRequestHeader.UserAgent, "Stellar Updater (https://github.com/StellarUpdater/Stellar)" + " v" + MainWindow.currentVersion + "-" + MainWindow.currentBuildPhase);
 
             progressInfo = "Preparing Download...";
 
@@ -677,7 +677,7 @@ namespace Stellar
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
             // UserAgent Header
-            wc.Headers.Add(HttpRequestHeader.UserAgent, "Stellar Updater (https://github.com/StellarUpdater/Stellar)" + " v" + MainWindow.currentVersion + "-" + MainWindow.currentBuildPhase + " Self-Update");
+            wc.Headers.Add(HttpRequestHeader.UserAgent, "Stellar Updater (https://github.com/StellarUpdater/Stellar)" + " v" + MainWindow.currentVersion + "-" + MainWindow.currentBuildPhase);
 
             // -------------------------
             // Download
