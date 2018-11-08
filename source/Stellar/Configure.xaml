@@ -28,7 +28,7 @@
         mc:Ignorable="d"
 
         Title="Configure Settings" 
-        Height="200" Width="450" 
+        Height="235" Width="450" 
         Icon="Resources/Images/Icons/configure.ico"
         ResizeMode="CanMinimize" 
         UseLayoutRounding="True" 
@@ -570,11 +570,52 @@
             </Style.Triggers>
         </Style>
 
+
+        <!-- Toggle Button -->
+        <Style x:Key="ToggleButtonCustom" TargetType="{x:Type ToggleButton}">
+            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
+            <Setter Property="Background" Value="#FF000000"/>
+            <Setter Property="BorderBrush" Value="#FFFFFFFF"/>
+            <Setter Property="Foreground" Value="#FFFFFFFF"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                        <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="true">
+                            <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Button.IsDefaulted" Value="true">
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="Background" TargetName="border" Value="#FF000000"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="#FF7ae395"/>
+                                <Setter Property="Cursor" Value="Hand" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter Property="Background" TargetName="border" Value="#FF000000"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="#FF06b025"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="true">
+                                <Setter Property="Background" TargetName="border" Value="#FF06b025"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="#FFFFFFFF"/>
+                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="#FFFFFFFF"/>
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
     </Window.Resources>
     <Grid>
         <!-- 7-Zip Path TextBox -->
-        <Label x:Name="label7zipConfig"
-               Content="7-Zip Path" 
+        <Label Content="7-Zip Path" 
                HorizontalAlignment="Left" 
                Margin="10,12,0,0" 
                VerticalAlignment="Top" 
@@ -584,12 +625,13 @@
 
         <TextBox x:Name="textBox7zipConfig"
                  Style="{DynamicResource TextBoxStyleCustom}"
+                 Text="{Binding SevenZip_Text, Mode=TwoWay}"
                  HorizontalAlignment="Left" 
                  Height="20" 
-                 Margin="95,15,0,0" 
+                 Margin="105,15,0,0" 
                  TextWrapping="Wrap"
                  VerticalAlignment="Top"
-                 Width="297" 
+                 Width="287" 
                  IsReadOnly="True"
                  PreviewMouseDown="textBox7zipConfig_PreviewMouseDown" 
                  TextChanged="textBox7zipConfig_TextChanged" 
@@ -601,7 +643,7 @@
         <Button x:Name="button7zipAuto" 
                 Style="{DynamicResource ButtonStyleQuickBrowse}" 
                 HorizontalAlignment="Left" 
-                Margin="397,13,0,0"
+                Margin="399,13,0,0"
                 VerticalAlignment="Top" 
                 Width="23" 
                 Foreground="White" 
@@ -621,8 +663,7 @@
         </Button>
 
         <!-- WinRAR Path TextBox -->
-        <Label x:Name="labelWinRARConfig"
-               Content="WinRAR Path" 
+        <Label Content="WinRAR Path" 
                HorizontalAlignment="Left"
                Margin="10,47,0,0" 
                VerticalAlignment="Top"
@@ -632,12 +673,13 @@
 
         <TextBox x:Name="textBoxWinRARConfig" 
                  Style="{DynamicResource TextBoxStyleCustom}"
+                 Text="{Binding WinRAR_Text, Mode=TwoWay}"
                  HorizontalAlignment="Left"
                  Height="20" 
-                 Margin="95,50,0,0" 
+                 Margin="105,50,0,0" 
                  TextWrapping="Wrap"
                  VerticalAlignment="Top"
-                 Width="297" 
+                 Width="287" 
                  IsReadOnly="True"
                  PreviewMouseDown="textBoxWinRARConfig_PreviewMouseDown"
                  Foreground="White" 
@@ -648,7 +690,7 @@
         <Button x:Name="buttonWinRARAuto" 
                 Style="{DynamicResource ButtonStyleQuickBrowse}" 
                 HorizontalAlignment="Left"
-                Margin="397,48,0,0" 
+                Margin="399,48,0,0" 
                 VerticalAlignment="Top"
                 Width="23" 
                 Foreground="White"
@@ -668,8 +710,7 @@
         </Button>
 
         <!-- Log Path TextBox -->
-        <Label x:Name="labelLogConfig" 
-               Content="Log Path" 
+        <Label Content="Log Path" 
                HorizontalAlignment="Left"
                Margin="10,82,0,0" 
                VerticalAlignment="Top" 
@@ -679,12 +720,13 @@
         <TextBox x:Name="textBoxLogConfig"
                  IsEnabled="{Binding IsChecked, ElementName=checkBoxLogConfig}" 
                  Style="{DynamicResource TextBoxStyleCustom}"
+                 Text="{Binding LogPath_Text, Mode=TwoWay}"
                  HorizontalAlignment="Left" 
                  Height="20" 
-                 Margin="95,85,0,0" 
+                 Margin="105,85,0,0" 
                  TextWrapping="Wrap"
                  VerticalAlignment="Top"
-                 Width="297" 
+                 Width="287" 
                  IsReadOnly="True" 
                  PreviewMouseDown="textBoxLogConfig_PreviewMouseDown" 
                  Foreground="White" 
@@ -695,7 +737,7 @@
         <Button x:Name="buttonLogAuto"
                 Style="{DynamicResource ButtonStyleQuickBrowse}" 
                 HorizontalAlignment="Left"
-                Margin="397,83,0,0" 
+                Margin="399,83,0,0" 
                 VerticalAlignment="Top" 
                 Width="23" 
                 Foreground="White" 
@@ -715,9 +757,10 @@
 
         <!-- Log Enable/Disable Checkbox -->
         <CheckBox x:Name="checkBoxLogConfig" 
-                  Content="" 
+                  IsChecked="{Binding LogPath_IsChecked}"
+                  IsEnabled="{Binding LogPath_IsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                   HorizontalAlignment="Left"
-                  Margin="69,88,0,0"
+                  Margin="72,88,0,0"
                   VerticalAlignment="Top" 
                   ToolTip="Enable/Disable Log" 
                   Checked="checkBoxLogConfig_Checked" 
@@ -727,19 +770,23 @@
         <Label x:Name="labelTheme" 
                Content=""
                HorizontalAlignment="Left"
-               Margin="200,118,0,0" 
+               Margin="225,118,0,0" 
                VerticalAlignment="Top"
                Height="26" 
-               Width="112" 
+               Width="177" 
                Foreground="White" 
                FontSize="11"/>
 
         <ComboBox x:Name="comboBoxThemeConfig" 
                   ItemContainerStyle="{DynamicResource ComboBoxItemCustom}"
+                  ItemsSource="{Binding Theme_Items}"
+                  SelectedIndex="{Binding Theme_SelectedIndex}"
+                  SelectedItem="{Binding Theme_SelectedItem}"
+                  IsEnabled="{Binding Theme_IsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                   HorizontalAlignment="Left" 
-                  Margin="69,120,0,0" 
+                  Margin="105,120,0,0" 
                   VerticalAlignment="Top" 
-                  Width="100" 
+                  Width="110" 
                   Foreground="White"
                   Background="Black" 
                   BorderBrush="White" 
@@ -747,7 +794,7 @@
                   SelectionChanged="comboBoxThemeConfig_SelectionChanged"
                   ToolTip="Select Theme" 
                   IsSynchronizedWithCurrentItem="True" >
-            <System:String>Milky Way</System:String>
+            <!--<System:String>Milky Way</System:String>
             <System:String>Spiral Galaxy</System:String>
             <System:String>Flaming Star</System:String>
             <System:String>Spiral Nebula</System:String>
@@ -756,12 +803,38 @@
             <System:String>Solar Flare</System:String>
             <System:String>Dark Nebula</System:String>
             <System:String>Star Dust</System:String>
-            <System:String>Chaos</System:String>
+            <System:String>Chaos</System:String>-->
         </ComboBox>
 
+
+        <!-- Update Toggle  -->
+        <Label Content="Update Check" 
+               HorizontalAlignment="Left" 
+               Margin="10,154,0,0"
+               VerticalAlignment="Top" 
+               Height="26" 
+               Foreground="White" 
+               ToolTip="Path to Save Log" Width="90"/>
+        <ToggleButton x:Name="tglUpdateAutoCheck"
+                      Style="{DynamicResource ToggleButtonCustom}"
+                      IsChecked="{Binding UpdateAutoCheck_IsChecked}"
+                      IsEnabled="{Binding UpdateAutoCheck_IsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                      Cursor="Hand" 
+                      HorizontalAlignment="Left" 
+                      VerticalAlignment="Top" 
+                      ToolTip="Automatically check for updates at startup." 
+                      Width="58" 
+                      Height="22" 
+                      Checked="tglUpdateAutoCheck_Checked"
+                      Unchecked="tglUpdateAutoCheck_Unchecked" 
+                      Margin="105,158,0,0">
+            <TextBlock x:Name="tblkUpdatesAutoCheck" 
+                       Text="{Binding UpdateAutoCheck_Text, Mode=TwoWay}"
+                       Margin="0,-2,0,0" />
+        </ToggleButton>
+
         <!-- Clear Saved Settigns Button -->
-        <Label x:Name="labelThemeConfig" 
-               Content="Theme" 
+        <Label Content="Theme" 
                HorizontalAlignment="Left" 
                Margin="10,118,0,0"
                VerticalAlignment="Top" 
@@ -769,22 +842,21 @@
                Foreground="White" 
                ToolTip="Path to Save Log"/>
 
-        
         <Button x:Name="buttonClearAllSavedSettings"
                 Style="{DynamicResource ButtonCustom}"
                 HorizontalAlignment="Left"
-                Margin="317,120,0,0" 
+                Margin="262,157,0,0" 
                 VerticalAlignment="Top"
                 Width="75" 
                 Background="Black" 
                 Foreground="White" 
                 BorderBrush="White" 
                 Height="23"
-                ToolTip="Clear All Saved Settings"
+                ToolTip="Reset Saved Settings"
                 Cursor="Hand" 
                 Click="buttonClearAllSavedSettings_Click" >
             <TextBlock 
-                Text="Clear Saved" 
+                Text="Reset" 
                 Margin="0,-1,0,0"/>
         </Button>
 
@@ -792,9 +864,9 @@
         <Button x:Name="btnDebug"
             Style="{DynamicResource ButtonCustom}"
             HorizontalAlignment="Left"
-            Margin="397,120,0,0" 
+            Margin="345,157,0,0" 
             VerticalAlignment="Top"
-            Width="23" 
+            Width="75" 
             Background="Black" 
             Foreground="White" 
             BorderBrush="White" 
@@ -802,7 +874,7 @@
             Cursor="Hand" Click="btnDebug_Click" 
             ToolTip="Debugger" >
             <TextBlock 
-                Text="#" 
+                Text="Debug" 
                 Margin="0,-1,0,0"/>
         </Button>
 

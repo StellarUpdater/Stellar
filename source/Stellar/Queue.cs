@@ -228,13 +228,13 @@ namespace Stellar
         // Compare Dates
         // Add Names to Update List
         // -----------------------------------------------
-        public static void UpdatedCores(MainWindow mainwindow)
+        public static void UpdatedCores(ViewModel vm)
         {
             // -------------------------
             // New / Missing Cores
             // -------------------------
-            if ((string)mainwindow.comboBoxDownload.SelectedItem == "New Cores" 
-                || (string)mainwindow.comboBoxDownload.SelectedItem == "New Install")
+            if (vm.Download_SelectedItem == "New Cores" 
+                || vm.Download_SelectedItem == "New Install")
             {
                 // Make a List of All Buildbot Cores
                 // Make a List of All PC Cores
@@ -357,7 +357,7 @@ namespace Stellar
         // -----------------------------------------------
         // Cores Up To Date Check
         // -----------------------------------------------
-        public static void CoresUpToDateCheck(MainWindow mainwindow)
+        public static void CoresUpToDateCheck(ViewModel vm)
         {
             // -------------------------
             // Cores - Already Up to Date
@@ -365,12 +365,12 @@ namespace Stellar
             // Update List is empty, but PC Cores have been found and scanned
             if (List_UpdatedCores_Name.Count == 0 
                 && List_PcCores_Name.Count != 0 
-                && (string)mainwindow.comboBoxDownload.SelectedItem != "New Cores")
+                && vm.Download_SelectedItem != "New Cores")
             {
                 MessageBox.Show("Cores already lastest version.");
 
                 // Prevent Updated Cores from doubling up on next check
-                if((string)mainwindow.comboBoxDownload.SelectedItem != "RA+Cores") //ignore RA+Cores
+                if(vm.Download_SelectedItem != "RA+Cores") //ignore RA+Cores
                 {
                     MainWindow.ClearCoresVars();
                     MainWindow.ClearLists();
@@ -381,7 +381,7 @@ namespace Stellar
             // New Cores - Not Found
             // -------------------------
             // Updat List is Empty
-            if ((string)mainwindow.comboBoxDownload.SelectedItem == "New Cores" 
+            if (vm.Download_SelectedItem == "New Cores" 
                 && List_UpdatedCores_Name.Count == 0)
             {
                 MessageBox.Show("No New Cores available.");

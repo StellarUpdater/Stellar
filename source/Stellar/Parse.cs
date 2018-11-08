@@ -79,7 +79,7 @@ namespace Stellar
         // -----------------------------------------------
         // Parse GitHub Release Tags Page HTML
         // -----------------------------------------------
-        public static void ParseGitHubReleases(MainWindow mainwindow)
+        public static void ParseGitHubReleases(ViewModel vm)
         {
             // Update Version Number at 4 places, Format 0.0.0.0
             // MainWindow CurrentVersion
@@ -167,7 +167,7 @@ namespace Stellar
             // -------------------------
             // Stellar Selected
             // -------------------------
-            if ((string)mainwindow.comboBoxDownload.SelectedItem == "Stellar")
+            if (vm.Download_SelectedItem == "Stellar")
             {
                 stellar7z = "Stellar.7z";
                 stellarUrl = "https://github.com/StellarUpdater/Stellar/releases/download/" + "v" + Convert.ToString(latestVersion) + "-" + latestBuildPhase + "/" + stellar7z;
@@ -181,7 +181,7 @@ namespace Stellar
         // -----------------------------------------------
         // Download Server Page
         // -----------------------------------------------
-        public static void DownloadServerPage(MainWindow mainwindow)
+        public static void DownloadServerPage(ViewModel vm)
         {
             ServicePointManager.Expect100Continue = true;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
@@ -208,7 +208,7 @@ namespace Stellar
             //    StreamReader reader = new StreamReader(zip);
 
             //    //MessageBox.Show("Using GZip"); //debug
-            //    mainwindow.textBlockProgressInfo.Text = "Using GZip";
+            //    vm.ProgressInfo_Text = "Using GZip";
 
             //    page = reader.ReadToEnd(); // Error here if uncompressed, triggers catch
 
@@ -230,7 +230,7 @@ namespace Stellar
                 // -------------------------
 
                 //MessageBox.Show("Using Uncompressed"); //debug
-                //mainwindow.textBlockProgressInfo.Text = "Using Uncompressed";
+                //vm.ProgressInfo_Text = "Using Uncompressed";
 
                 // Switch to Uncompressed download method
                 //WebClient wc = new WebClient();
@@ -264,7 +264,7 @@ namespace Stellar
         // -----------------------------------------------
         // Create Nightlies List
         // -----------------------------------------------
-        public static void FetchNightlyFile(MainWindow mainwindow)
+        public static void FetchNightlyFile(ViewModel vm)
         {
             ServicePointManager.Expect100Continue = true;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
@@ -335,7 +335,7 @@ namespace Stellar
                     MainWindow.ready = false;
 
                     // Ignore Error Message if Server Auto (Will display on second pass when switch turns on)
-                    if ((string)mainwindow.cboServer.SelectedItem != "auto")
+                    if (vm.Server_SelectedItem != "auto")
                     {
                         MessageBox.Show("Problem creating RetroArch list from HTML. \n\nTry another server such as raw or buildbot.",
                                         "Error",
@@ -352,7 +352,7 @@ namespace Stellar
                 MainWindow.ready = false;
 
                 // Ignore Error Message if Server Auto (Will display on second pass when switch turns on)
-                if ((string)mainwindow.cboServer.SelectedItem != "auto")
+                if (vm.Server_SelectedItem != "auto")
                 {
                     MessageBox.Show("Problem connecting to Network.",
                                     "Error",
@@ -369,7 +369,7 @@ namespace Stellar
         // -----------------------------------------------
         // Parse Builbot Page HTML
         // -----------------------------------------------
-        public static void ParseBuildbotPage(MainWindow mainwindow)
+        public static void ParseBuildbotPage(ViewModel vm)
         {
             // If No Internet Connect, program will crash.
             // Try Catch Errors
@@ -378,8 +378,8 @@ namespace Stellar
             // New Install Selected
             // -------------------------
             // RetroArch.exe
-            if ((string)mainwindow.comboBoxDownload.SelectedItem == "RetroArch"
-                || (string)mainwindow.comboBoxDownload.SelectedItem == "RA+Cores")
+            if (vm.Download_SelectedItem == "RetroArch"
+                || vm.Download_SelectedItem == "RA+Cores")
             {
                 // Clear RetroArch Nightlies List
                 if (Queue.NightliesList != null)
@@ -391,17 +391,17 @@ namespace Stellar
                 // -------------------------
                 // auto Server
                 // -------------------------
-                if ((string)mainwindow.cboServer.SelectedItem == "auto")
+                if (vm.Server_SelectedItem == "auto")
                 {
                     // -------------------------
                     // Default Raw
                     // -------------------------
 
                     // Progress Info
-                    mainwindow.textBlockProgressInfo.Text = "Using raw server";
+                    vm.ProgressInfo_Text = "Using raw server";
 
                     // Create List
-                    FetchNightlyFile(mainwindow);
+                    FetchNightlyFile(vm);
 
                     // -------------------------
                     // Switch to Buildbot
@@ -412,38 +412,38 @@ namespace Stellar
                         Download.waiter = new ManualResetEvent(false);
 
                         // Switch Server
-                        mainwindow.cboServer.SelectedItem = "buildbot";
+                        vm.Server_SelectedItem = "buildbot";
 
                         // Progress Info
-                        mainwindow.textBlockProgressInfo.Text = "Using buildbot server";
+                        vm.ProgressInfo_Text = "Using buildbot server";
 
                         // Create List
-                        FetchNightlyFile(mainwindow);
+                        FetchNightlyFile(vm);
                     }
                 }
 
                 // -------------------------
                 // raw Server
                 // -------------------------
-                else if ((string)mainwindow.cboServer.SelectedItem == "raw")
+                else if (vm.Server_SelectedItem == "raw")
                 {
                     // Progress Info
-                    mainwindow.textBlockProgressInfo.Text = "Using raw server";
+                    vm.ProgressInfo_Text = "Using raw server";
 
                     // Create List
-                    FetchNightlyFile(mainwindow);
+                    FetchNightlyFile(vm);
                 }
 
                 // -------------------------
                 // buildbot Server
                 // -------------------------
-                else if ((string)mainwindow.cboServer.SelectedItem == "buildbot")
+                else if (vm.Server_SelectedItem == "buildbot")
                 {
                     // Progress Info
-                    mainwindow.textBlockProgressInfo.Text = "Using buildbot server";
+                    vm.ProgressInfo_Text = "Using buildbot server";
 
                     // Create List
-                    FetchNightlyFile(mainwindow);
+                    FetchNightlyFile(vm);
                 }
             }
 
@@ -452,7 +452,7 @@ namespace Stellar
             // New Install Selected
             // -------------------------
             // RetroArch.exe
-            else if ((string)mainwindow.comboBoxDownload.SelectedItem == "New Install")
+            else if (vm.Download_SelectedItem == "New Install")
             {
                 // Fetch the RetroArch + Redist (not dated)
                 nightly7z = "RetroArch.7z";
@@ -462,7 +462,7 @@ namespace Stellar
             // Upgrade Selected
             // -------------------------
             // Partial Unpack RetroArch.7z
-            else if ((string)mainwindow.comboBoxDownload.SelectedItem == "Upgrade")
+            else if (vm.Download_SelectedItem == "Upgrade")
             {
                 // Fetch the RetroArch + Redist (not dated)
                 nightly7z = "RetroArch.7z";
@@ -472,7 +472,7 @@ namespace Stellar
             // Redist Selected
             // -------------------------
             // Redistributable
-            else if ((string)mainwindow.comboBoxDownload.SelectedItem == "Redist")
+            else if (vm.Download_SelectedItem == "Redist")
             {
                 // Fetch the RetroArch + Redist (not dated)
                 nightly7z = "redist.7z";
@@ -483,7 +483,7 @@ namespace Stellar
             // -------------------------
             // If 32-bit Selected, change Download URL to x86
             //
-            if ((string)mainwindow.comboBoxArchitecture.SelectedItem == "32-bit")
+            if (vm.Architecture_SelectedItem == "32-bit")
             {
                 // Create URL string for Uri
                 nightlyUrl = libretro_x86 + nightly7z;
@@ -492,7 +492,7 @@ namespace Stellar
 
             // If 64-bit OR 64 w32 Selected, change Download URL to x86_64
             //
-            else if ((string)mainwindow.comboBoxArchitecture.SelectedItem == "64-bit")
+            else if (vm.Architecture_SelectedItem == "64-bit")
             {
                 // Create URL string for Uri
                 nightlyUrl = libretro_x86_64 + nightly7z;
@@ -512,7 +512,7 @@ namespace Stellar
         // -----------------------------------------------
         // Parse Builbot Cores Page HTML
         // -----------------------------------------------
-        public static void ParseBuildbotCoresIndex(MainWindow mainwindow)
+        public static void ParseBuildbotCoresIndex(ViewModel vm)
         {
             WebClient wc = new WebClient();
 
@@ -685,7 +685,7 @@ namespace Stellar
         // Scan PC Cores Directory
         // -----------------------------------------------
         // Creates the PC Name+Date List
-        public static void ScanPcCoresDir(MainWindow mainwindow)
+        public static void ScanPcCoresDir(ViewModel vm)
         {
             // Cores Folder
             // end with backslash RetroArch\cores\
@@ -718,8 +718,8 @@ namespace Stellar
 
             // Popup Error Message if PC Cores Name List has no items 0
             if (Queue.List_PcCores_Name.Count == 0
-                && (string)mainwindow.comboBoxDownload.SelectedItem != "New Install" // Ignore
-                && (string)mainwindow.comboBoxDownload.SelectedItem != "New Cores") // Ignore
+                && vm.Download_SelectedItem != "New Install" // Ignore
+                && vm.Download_SelectedItem != "New Cores") // Ignore
             {
                 MainWindow.ready = false;
                 MessageBox.Show("Cores not found. \n\nPlease select your RetroArch main folder.",

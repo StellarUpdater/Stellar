@@ -1,4 +1,25 @@
-﻿using System;
+﻿/* ----------------------------------------------------------------------
+    Stellar ~ RetroArch Nightly Updater by wyzrd
+    https://stellarupdater.github.io
+    https://forums.libretro.com/users/wyzrd
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.If not, see <http://www.gnu.org/licenses/>. 
+
+    Image Credit: ESO & NASA (CC)
+   ---------------------------------------------------------------------- */
+
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -39,12 +60,14 @@ namespace Stellar
         // -----------------------------------------------
         private void btnTest_Click(object sender, RoutedEventArgs e)
         {
+            ViewModel vm = mainwindow.DataContext as ViewModel;
+
             // -------------------------
             // Check
             // -------------------------
-            if ((string)mainwindow.comboBoxDownload.SelectedItem == "RA+Cores"
-            || (string)mainwindow.comboBoxDownload.SelectedItem == "Cores"
-            || (string)mainwindow.comboBoxDownload.SelectedItem == "New Cores")
+            if (vm.Download_SelectedItem == "RA+Cores"
+            || vm.Download_SelectedItem == "Cores"
+            || vm.Download_SelectedItem == "New Cores")
             {
                 // -------------------------
                 // Clear
@@ -139,31 +162,31 @@ namespace Stellar
                 // -------------------------
                 // Call SetArchitecture Method
                 // -------------------------
-                Paths.SetArchitecture(mainwindow);
+                Paths.SetArchitecture(vm);
 
                 // -------------------------
                 // If Download Combobox Cores or RA+Cores selected
                 // -------------------------
-                if ((string)mainwindow.comboBoxDownload.SelectedItem == "RA+Cores"
-                    || (string)mainwindow.comboBoxDownload.SelectedItem == "Cores"
-                    || (string)mainwindow.comboBoxDownload.SelectedItem == "New Cores")
+                if (vm.Download_SelectedItem == "RA+Cores"
+                    || vm.Download_SelectedItem == "Cores"
+                    || vm.Download_SelectedItem == "New Cores")
                 {
                     // Parse index-extended
-                    Parse.ParseBuildbotCoresIndex(mainwindow);
+                    Parse.ParseBuildbotCoresIndex(vm);
 
                     // Get PC Cores
-                    Parse.ScanPcCoresDir(mainwindow);
+                    Parse.ScanPcCoresDir(vm);
 
                     // New Cores List - Debugger Only
                     // Subtract PC List from Buildbot List
                     Queue.List_BuildbotCores_NewName = Queue.List_BuildbotCores_Name.Except(Queue.List_PcCores_Name).ToList();
 
                     // Get Updated Cores
-                    Queue.UpdatedCores(mainwindow);
+                    Queue.UpdatedCores(vm);
 
                     // Call Cores Up To Date Method
                     // If All Cores up to date, display message
-                    Queue.CoresUpToDateCheck(mainwindow);
+                    Queue.CoresUpToDateCheck(vm);
                 }
 
 
@@ -299,7 +322,7 @@ namespace Stellar
             // -------------------------
             else
             {
-                System.Windows.MessageBox.Show("For use with RA+Cores, Cores or New Cores menu option only.");
+                MessageBox.Show("For use with RA+Cores, Cores or New Cores menu option only.");
             }
         }
 

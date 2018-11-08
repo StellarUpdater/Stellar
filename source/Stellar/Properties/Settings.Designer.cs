@@ -237,5 +237,29 @@ namespace Stellar.Properties {
                 this["downloadServer"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UpdateAutoCheck {
+            get {
+                return ((bool)(this["UpdateAutoCheck"]));
+            }
+            set {
+                this["UpdateAutoCheck"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string UpdateAutoCheckLabel {
+            get {
+                return ((string)(this["UpdateAutoCheckLabel"]));
+            }
+            set {
+                this["UpdateAutoCheckLabel"] = value;
+            }
+        }
     }
 }

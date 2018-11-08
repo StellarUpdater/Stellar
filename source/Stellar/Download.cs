@@ -59,16 +59,20 @@ namespace Stellar
             // Progress Info
             mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
             {
-                mainwindow.textBlockProgressInfo.Text = progressInfo;
+                ViewModel vm = mainwindow.DataContext as ViewModel;
+                vm.ProgressInfo_Text = progressInfo;
             });
 
             // Progress Bar
             mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
             {
+                //ViewModel vm = mainwindow.DataContext as ViewModel;
+
                 double bytesIn = double.Parse(e.BytesReceived.ToString());
                 double totalBytes = double.Parse(e.TotalBytesToReceive.ToString());
                 double percentage = bytesIn / totalBytes * 100;
-                mainwindow.progressBar.Value = int.Parse(Math.Truncate(percentage).ToString());
+                mainwindow.progressBar.Value = double.Parse(Math.Truncate(percentage).ToString());
+                //vm.CurrentProgress_Value = double.Parse(Math.Truncate(percentage).ToString());
             });
 
             //DownloadProgressChanged(mainwindow, e);
@@ -79,6 +83,8 @@ namespace Stellar
         // -------------------------
         public static void wc_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
+            
+
             // Set the waiter Release
             // Must be here
             waiter.Set();
@@ -86,7 +92,8 @@ namespace Stellar
             // Progress Info
             mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
             {
-                mainwindow.textBlockProgressInfo.Text = progressInfo;
+                ViewModel vm = mainwindow.DataContext as ViewModel;
+                vm.ProgressInfo_Text = progressInfo;
             });
 
             //DownloadComplete(mainwindow);
@@ -100,20 +107,20 @@ namespace Stellar
         // -----------------------------------------------
         // Start Download (Method)
         // -----------------------------------------------
-        public static void StartDownload(MainWindow mainwindow)
+        public static void StartDownload(ViewModel vm)
         {
             // -------------------------
             // RetroArch Standalone
             // -------------------------
-            if ((string)mainwindow.comboBoxDownload.SelectedItem == "Upgrade"
-                || (string)mainwindow.comboBoxDownload.SelectedItem == "RetroArch"
-                || (string)mainwindow.comboBoxDownload.SelectedItem == "Redist")
+            if (vm.Download_SelectedItem == "Upgrade"
+                || vm.Download_SelectedItem == "RetroArch"
+                || vm.Download_SelectedItem == "Redist")
             {
                 // Start New Thread
                 //
                 Thread worker = new Thread(() =>
                 {
-                    RetroArchDownload(mainwindow);
+                    RetroArchDownload(vm);
                 });
                 worker.IsBackground = true;
                 
@@ -126,16 +133,16 @@ namespace Stellar
             // -------------------------
             // RetroArch + Cores
             // -------------------------
-            else if ((string)mainwindow.comboBoxDownload.SelectedItem == "New Install"
-                || (string)mainwindow.comboBoxDownload.SelectedItem == "RA+Cores")
+            else if (vm.Download_SelectedItem == "New Install"
+                || vm.Download_SelectedItem == "RA+Cores")
             {
                 // Start New Thread
                 //
                 Thread worker = new Thread(() =>
                 {
-                    RetroArchDownload(mainwindow);
+                    RetroArchDownload(vm);
 
-                    CoresDownload(mainwindow);
+                    CoresDownload(vm);
                 });
                 worker.IsBackground = true;
 
@@ -147,13 +154,13 @@ namespace Stellar
             // -------------------------
             // Cores Only
             // -------------------------
-            else if ((string)mainwindow.comboBoxDownload.SelectedItem == "Cores"
-                || (string)mainwindow.comboBoxDownload.SelectedItem == "New Cores")
+            else if (vm.Download_SelectedItem == "Cores"
+                || vm.Download_SelectedItem == "New Cores")
             {
                 // Start New Thread
                 Thread worker = new Thread(() =>
                 {
-                    CoresDownload(mainwindow);
+                    CoresDownload(vm);
                 });
                 worker.IsBackground = true;
 
@@ -165,12 +172,12 @@ namespace Stellar
             // -------------------------
             // Stellar Self-Update
             // -------------------------
-            else if ((string)mainwindow.comboBoxDownload.SelectedItem == "Stellar")
+            else if (vm.Download_SelectedItem == "Stellar")
             {
                 // Start New Thread
                 Thread worker = new Thread(() =>
                 {
-                    StellarDownload(mainwindow);
+                    StellarDownload(vm);
                 });
 
                 // Start Download Thread
@@ -184,17 +191,22 @@ namespace Stellar
         // -------------------------
         // Stellar Self-Update Download (Method)
         // -------------------------
-        public static void StellarDownload(MainWindow mainwindow)
+        public static void StellarDownload(ViewModel vm)
         {
             WebClient wc = new WebClient();
+
+            wc.Proxy = null;
+
+            ServicePointManager.Expect100Continue = true;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+            // UserAgent Header
+            wc.Headers.Add(HttpRequestHeader.UserAgent, "Stellar Updater (https://github.com/StellarUpdater/Stellar)" + " v" + MainWindow.currentVersion + "-" + MainWindow.currentBuildPhase + " Self-Update");
 
             // -------------------------
             // Download
             // -------------------------
             waiter = new ManualResetEvent(false); //start a new waiter for next pass (clicking update again)
-
-            ServicePointManager.Expect100Continue = true;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
             Uri downloadUrl = new Uri(Parse.stellarUrl); // Parse.stellarUrl = Version + Parse.stellar7z
             //Uri downloadUrl = new Uri("http://127.0.0.1:8888/Stellar.7z"); // TESTING Virtual Server URL
@@ -308,9 +320,11 @@ namespace Stellar
         // -------------------------
         // RetroArch Download (Method)
         // -------------------------
-        public static void RetroArchDownload(MainWindow mainwindow)
+        public static void RetroArchDownload(ViewModel vm)
         {
             WebClient wc = new WebClient();
+
+            wc.Proxy = null;
 
             // -------------------------
             // Download
@@ -323,15 +337,20 @@ namespace Stellar
             //ServicePointManager.Expect100Continue = true;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
+            // UserAgent Header
+            wc.Headers.Add(HttpRequestHeader.UserAgent, "Stellar Updater (https://github.com/StellarUpdater/Stellar)" + " v" + MainWindow.currentVersion + "-" + MainWindow.currentBuildPhase + " Self-Update");
+
             progressInfo = "Preparing Download...";
 
             //MessageBox.Show(Parse.nightlyUrl); //debug
             Uri downloadUrl = new Uri(Parse.nightlyUrl); // Parse.nightlyUrl = x84/x86_64 + Parse.nightly7z
+
             //Uri downloadUrl = new Uri("http://127.0.0.1:8888/RetroArch.7z"); // TESTING Virtual Server URL
 
             //Async
             //wc.Headers.Add("User-Agent: Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)");
             //wc.Headers.Add("Accept-Encoding", "gzip,deflate");
+
             wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wc_DownloadProgressChanged);
             wc.DownloadFileCompleted += new AsyncCompletedEventHandler(wc_DownloadFileCompleted);
             wc.DownloadFileAsync(downloadUrl, Paths.tempPath + Parse.nightly7z);
@@ -375,7 +394,7 @@ namespace Stellar
                     // -------------------------
                     // New Install
                     // -------------------------
-                    if ((string)mainwindow.comboBoxDownload.Dispatcher.Invoke((() => { return mainwindow.comboBoxDownload.SelectedItem; })) == "New Install")
+                    if (vm.Download_SelectedItem == "New Install")
                     {
                         // Extract All Files
                         List<string> extractArgs = new List<string>() {
@@ -392,7 +411,7 @@ namespace Stellar
                     // -------------------------
                     // Upgrade
                     // -------------------------
-                    else if ((string)mainwindow.comboBoxDownload.Dispatcher.Invoke((() => { return mainwindow.comboBoxDownload.SelectedItem; })) == "Upgrade")
+                    else if (vm.Download_SelectedItem == "Upgrade")
                     {
                         // Extract All Files, Exclude Configs
                         List<string> extractArgs = new List<string>() {
@@ -409,8 +428,8 @@ namespace Stellar
                     // -------------------------
                     // Update
                     // -------------------------
-                    else if ((string)mainwindow.comboBoxDownload.Dispatcher.Invoke((() => { return mainwindow.comboBoxDownload.SelectedItem; })) == "RetroArch" 
-                            || (string)mainwindow.comboBoxDownload.Dispatcher.Invoke((() => { return mainwindow.comboBoxDownload.SelectedItem; })) == "RA+Cores")
+                    else if (vm.Download_SelectedItem == "RetroArch" 
+                            || vm.Download_SelectedItem == "RA+Cores")
                     {
                         // Extract only retroarch.exe & retroarch_debug.exe
                         List<string> extractArgs = new List<string>() {
@@ -426,7 +445,7 @@ namespace Stellar
                     // -------------------------
                     // Redist
                     // -------------------------
-                    else if ((string)mainwindow.comboBoxDownload.Dispatcher.Invoke((() => { return mainwindow.comboBoxDownload.SelectedItem; })) == "Redist")
+                    else if (vm.Download_SelectedItem == "Redist")
                     {
                         // Extract All Files
                         List<string> extractArgs = new List<string>() {
@@ -449,7 +468,7 @@ namespace Stellar
                     // -------------------------
                     // New Install
                     // -------------------------
-                    if ((string)mainwindow.comboBoxDownload.Dispatcher.Invoke((() => { return mainwindow.comboBoxDownload.SelectedItem; })) == "New Install")
+                    if (vm.Download_SelectedItem == "New Install")
                     {
                         // Extract All Files
                         List<string> extractArgs = new List<string>() {
@@ -465,7 +484,7 @@ namespace Stellar
                     // -------------------------
                     // Upgrade
                     // -------------------------
-                    else if ((string)mainwindow.comboBoxDownload.Dispatcher.Invoke((() => { return mainwindow.comboBoxDownload.SelectedItem; })) == "Upgrade")
+                    else if (vm.Download_SelectedItem == "Upgrade")
                     {
                         // Extract All Files, Exclude Configs
                         List<string> extractArgs = new List<string>() {
@@ -482,8 +501,8 @@ namespace Stellar
                     // -------------------------
                     // Update
                     // -------------------------
-                    else if ((string)mainwindow.comboBoxDownload.Dispatcher.Invoke((() => { return mainwindow.comboBoxDownload.SelectedItem; })) == "RetroArch"
-                            || (string)mainwindow.comboBoxDownload.Dispatcher.Invoke((() => { return mainwindow.comboBoxDownload.SelectedItem; })) == "RA+Cores")
+                    else if (vm.Download_SelectedItem == "RetroArch"
+                            || vm.Download_SelectedItem == "RA+Cores")
                     {
                         // Extract only retroarch.exe & retroarch_debug.exe
                         List<string> extractArgs = new List<string>() {
@@ -499,7 +518,7 @@ namespace Stellar
                     // -------------------------
                     // Redist
                     // -------------------------
-                    else if ((string)mainwindow.comboBoxDownload.Dispatcher.Invoke((() => { return mainwindow.comboBoxDownload.SelectedItem; })) == "Redist")
+                    else if (vm.Download_SelectedItem == "Redist")
                     {
                         // Extract only retroarch.exe & retroarch_debug.exe
                         List<string> extractArgs = new List<string>() {
@@ -571,7 +590,7 @@ namespace Stellar
             // Cross Thread
             mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
             {
-                mainwindow.textBlockProgressInfo.Text = "RetroArch Complete";
+                vm.ProgressInfo_Text = "RetroArch Complete";
                 MainWindow.ClearRetroArchVars();
             });
 
@@ -586,7 +605,7 @@ namespace Stellar
         // -------------------------
         // Cores Download (Method)
         // -------------------------
-        public static void CoresDownload(MainWindow mainwindow)
+        public static void CoresDownload(ViewModel vm)
         {
             //waiter = new ManualResetEvent(false);
 
@@ -597,7 +616,7 @@ namespace Stellar
             // Cross Thread
             mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
             {
-                if ((string)mainwindow.comboBoxDownload.SelectedItem == "New Install")
+                if (vm.Download_SelectedItem == "New Install")
                 {
                     Queue.List_UpdatedCores_Name = Queue.List_BuildbotCores_Name;
                     Queue.List_UpdatedCores_Name.TrimExcess();
@@ -652,6 +671,14 @@ namespace Stellar
 
             WebClient wc = new WebClient();
 
+            wc.Proxy = null;
+
+            //ServicePointManager.Expect100Continue = true;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+            // UserAgent Header
+            wc.Headers.Add(HttpRequestHeader.UserAgent, "Stellar Updater (https://github.com/StellarUpdater/Stellar)" + " v" + MainWindow.currentVersion + "-" + MainWindow.currentBuildPhase + " Self-Update");
+
             // -------------------------
             // Download
             // -------------------------
@@ -659,9 +686,6 @@ namespace Stellar
             {
                 //Reset Waiter, Must be here
                 waiter.Reset();
-
-                //ServicePointManager.Expect100Continue = true;
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
                 Uri downloadUrl2 = new Uri(Parse.parseCoresUrl + Queue.List_UpdatedCores_Name[i] + ".zip");
                 //Uri downloadUrl2 = new Uri("http://127.0.0.1:8888/latest/" + Queue.List_UpdatedCores_Name[i] + ".zip"); //TESTING
@@ -687,38 +711,38 @@ namespace Stellar
                     {
                         // New Install
                         //
-                        if ((string)mainwindow.comboBoxDownload.SelectedItem == "New Install")
+                        if (vm.Download_SelectedItem == "New Install")
                         {
                             // Progress Info
                             progressInfo = "RetroArch + Cores Install Complete";
-                            mainwindow.textBlockProgressInfo.Text = progressInfo;
+                            vm.ProgressInfo_Text = progressInfo;
                         }
 
                         // RA+Cores
                         //
-                        else if ((string)mainwindow.comboBoxDownload.SelectedItem == "RA+Cores")
+                        else if (vm.Download_SelectedItem == "RA+Cores")
                         {
                             // Progress Info
                             progressInfo = "RetroArch + Cores Update Complete";
-                            mainwindow.textBlockProgressInfo.Text = progressInfo;
+                            vm.ProgressInfo_Text = progressInfo;
                         }
 
                         // Cores
                         //
-                        else if ((string)mainwindow.comboBoxDownload.SelectedItem == "Cores")
+                        else if (vm.Download_SelectedItem == "Cores")
                         {
                             // Progress Info
                             progressInfo = "Cores Update Complete";
-                            mainwindow.textBlockProgressInfo.Text = progressInfo;
+                            vm.ProgressInfo_Text = progressInfo;
                         }
 
                         // New Cores
                         //
-                        else if ((string)mainwindow.comboBoxDownload.SelectedItem == "New Cores")
+                        else if (vm.Download_SelectedItem == "New Cores")
                         {
                             // Progress Info
                             progressInfo = "Cores Install Complete";
-                            mainwindow.textBlockProgressInfo.Text = progressInfo;
+                            vm.ProgressInfo_Text = progressInfo;
                         }
                     });
 
@@ -849,4 +873,5 @@ namespace Stellar
 
 
     }
+
 }

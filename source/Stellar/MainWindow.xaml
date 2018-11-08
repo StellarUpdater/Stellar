@@ -29,8 +29,12 @@
         xmlns:settings="clr-namespace:Stellar.Properties"
         mc:Ignorable="d"
         
+        Loaded="Window_Loaded" 
+        Closing="Window_Closing" 
+        
         Title="{Binding TitleVersion, RelativeSource={RelativeSource Mode=Self}}" 
         Icon="logo.ico"
+        
         Height="225" Width="500"
         Top="{Binding Top, Source={x:Static settings:Settings.Default}, Mode=TwoWay}"
         Left="{Binding Left, Source={x:Static settings:Settings.Default}, Mode=TwoWay}"
@@ -38,7 +42,7 @@
         UseLayoutRounding="True"
         SnapsToDevicePixels="True"
         RenderOptions.BitmapScalingMode="Fant"
-        Closing="Window_Closing" 
+      
         Style="{DynamicResource WindowStyleTheme}"
         >
     <Window.Resources>
@@ -619,6 +623,7 @@
                ToolTip="Click and Select your RetroArch Folder Path." />
 
         <TextBox x:Name="textBoxLocation"
+                 Text="{Binding Location_Text, Mode=TwoWay}"
                  Style="{DynamicResource TextBoxStyleCustom}"
                  HorizontalAlignment="Left"
                  Height="20"
@@ -644,6 +649,7 @@
                ToolTip="File to be fetched."/>
 
         <TextBox x:Name="textBoxDownload" 
+                 Text="{Binding DownloadURL_Text, Mode=TwoWay}"
                  Style="{DynamicResource TextBoxStyleCustom}"
                  HorizontalAlignment="Left"
                  Height="20" 
@@ -706,17 +712,19 @@
 
         <!-- Progres Info -->
         <TextBlock x:Name="textBlockProgressInfo" 
-               HorizontalAlignment="Left" 
-               VerticalAlignment="Top"
-               TextAlignment="Center"
-               Height="22" 
-               Margin="12,80,0,0" 
-               Width="459" 
-               Foreground="White"
-               Background="Transparent"/>
+                   Text="{Binding ProgressInfo_Text, Mode=TwoWay}"
+                   HorizontalAlignment="Left" 
+                   VerticalAlignment="Top"
+                   TextAlignment="Center"
+                   Height="22" 
+                   Margin="12,80,0,0" 
+                   Width="459" 
+                   Foreground="White"
+                   Background="Transparent"/>
 
         <!-- Progres Bar -->
         <ProgressBar x:Name="progressBar" 
+                     Minimum="0" Maximum="100"                   
                      HorizontalAlignment="Left" 
                      Height="23" 
                      Margin="12,105,0,0" 
@@ -817,6 +825,10 @@
 
         <!-- Download ComboBox -->
         <ComboBox x:Name="comboBoxDownload"
+                  ItemsSource="{Binding Download_Items}"
+                  SelectedIndex="{Binding Download_SelectedIndex}"
+                  SelectedItem="{Binding Download_SelectedItem}"
+                  IsEnabled="{Binding Download_IsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"                  
                   ItemContainerStyle="{DynamicResource ComboBoxItemCustom}" 
                   Foreground="White"
                   HorizontalAlignment="Left" 
@@ -828,18 +840,22 @@
                   BorderBrush="White" 
                   SelectionChanged="comboBoxDownload_SelectionChanged"
                   ToolTip="Select Download"  >
-            <System:String>New Install</System:String>
+            <!--<System:String>New Install</System:String>
             <System:String>Upgrade</System:String>
             <System:String>RetroArch</System:String>
             <System:String>RA+Cores</System:String>
             <System:String>Cores</System:String>
             <System:String>New Cores</System:String>
             <System:String>Redist</System:String>
-            <System:String>Stellar</System:String>
+            <System:String>Stellar</System:String>-->
         </ComboBox>
 
         <!-- Architecture ComboBox -->
         <ComboBox x:Name="comboBoxArchitecture" 
+                  ItemsSource="{Binding Architecture_Items}"
+                  SelectedIndex="{Binding Architecture_SelectedIndex}"
+                  SelectedItem="{Binding Architecture_SelectedItem}"
+                  IsEnabled="{Binding Architecture_IsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                   ItemContainerStyle="{DynamicResource ComboBoxItemCustom}"
                   HorizontalAlignment="Left"
                   Margin="237,150,0,0" 
@@ -850,9 +866,8 @@
                   BorderBrush="White"
                   SelectionChanged="comboBoxArchitecture_SelectionChanged" 
                   ToolTip="Architecture Type">
-            <System:String>32-bit</System:String>
-            <System:String>64-bit</System:String>
-            <!--<System:String>64 w32</System:String>-->
+            <!--<System:String>32-bit</System:String>
+            <System:String>64-bit</System:String>-->
         </ComboBox>
 
         <!-- Check Button -->
@@ -891,22 +906,27 @@
                 Cursor="Hand" 
                 Click="buttonUpdate_Click" >
             <TextBlock x:Name="buttonUpdateTextBlock"
-                       Text="Update" 
+                       Text="{Binding Update_Text, Mode=TwoWay}"
                        Margin="0,-1,0,0"/>
         </Button>
 
         <ComboBox x:Name="cboServer" 
                   ItemContainerStyle="{DynamicResource ComboBoxItemCustom}"
+                  ItemsSource="{Binding Server_Items}"
+                  SelectedIndex="{Binding Server_SelectedIndex}"
+                  SelectedItem="{Binding Server_SelectedItem}"
+                  IsEnabled="{Binding Server_IsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                   HorizontalAlignment="Left"
                   Margin="377,50,0,0" 
                   VerticalAlignment="Top"
                   Width="69" 
                   Height="20" 
                   FontSize="11"
-                  ToolTip="Download Server" SelectionChanged="cboServer_SelectionChanged">
+                  ToolTip="Download Server" 
+                  SelectionChanged="cboServer_SelectionChanged">
             <!--<System:String>auto</System:String>-->
-            <System:String>buildbot</System:String>
-            <System:String>raw</System:String>
+            <!--<System:String>buildbot</System:String>
+            <System:String>raw</System:String>-->
         </ComboBox>
 
     </Grid>
