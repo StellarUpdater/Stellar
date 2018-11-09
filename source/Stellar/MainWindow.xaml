@@ -25,6 +25,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:System="clr-namespace:System;assembly=mscorlib" 
         xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
+        xmlns:Themes1="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2" 
         xmlns:my="clr-namespace:Stellar"
         xmlns:settings="clr-namespace:Stellar.Properties"
         mc:Ignorable="d"
@@ -547,8 +548,9 @@
                                 <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource Button.Pressed.Border}"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Background" TargetName="border" Value="{StaticResource Button.Disabled.Background}"/>
-                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource Button.Disabled.Border}"/>
+                                <Setter Property="Background" TargetName="border" Value="Transparent"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="Transparent"/>
+                                <Setter Property="Opacity" TargetName="border" Value="50"/>
                                 <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource Button.Disabled.Foreground}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
@@ -613,12 +615,14 @@
         <!-- Location TextBox -->
         <Label x:Name="labelLocation" 
                Content="RA Folder"
+               IsEnabled="{Binding Location_IsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                HorizontalAlignment="Left"
                Height="24"
                Margin="8,11,0,0"
                VerticalAlignment="Top"
                Width="65" 
                Foreground="White" 
+               Cursor="Hand"
                PreviewMouseDown="labelLocation_PreviewMouseDown"
                ToolTip="Click and Select your RetroArch Folder Path." />
 
@@ -668,6 +672,7 @@
         <!-- Location Open Button -->
         <Button x:Name="buttonRetroArchExplorer" 
                 Style="{DynamicResource ButtonStyleQuickBrowse}"
+                IsEnabled="{Binding Location_IsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 HorizontalAlignment="Left"
                 Margin="451,13,0,0"
                 VerticalAlignment="Top" 

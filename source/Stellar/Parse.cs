@@ -343,7 +343,6 @@ namespace Stellar
                                         MessageBoxImage.Error);
                     }
 
-
                     return;
                 }
             }
@@ -608,6 +607,8 @@ namespace Stellar
                                     "Error",
                                     MessageBoxButton.OK,
                                     MessageBoxImage.Error);
+
+                    return;
                 }
 
 
@@ -633,6 +634,8 @@ namespace Stellar
                                     "Error",
                                     MessageBoxButton.OK,
                                     MessageBoxImage.Error);
+
+                    return;
                 }
                 
 
@@ -653,6 +656,8 @@ namespace Stellar
                                     "Error",
                                     MessageBoxButton.OK,
                                     MessageBoxImage.Error);
+
+                    return;
                 }
                 
 
@@ -710,10 +715,12 @@ namespace Stellar
             catch
             {
                 MainWindow.ready = false;
-                MessageBox.Show("Problem scanning PC Cores Name & Dates.",
+                MessageBox.Show("Problem scanning PC Cores Name & Dates. \n\nCheck if RetroArch main folder is selected.",
                                 "Error",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Error);
+
+                return;
             }
 
             // Popup Error Message if PC Cores Name List has no items 0
@@ -726,6 +733,8 @@ namespace Stellar
                                 "Notice",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Information);
+
+                return;
             }
 
             // -------------------------

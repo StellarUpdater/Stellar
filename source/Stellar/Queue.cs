@@ -159,7 +159,12 @@ namespace Stellar
             }
             catch
             {
-                MessageBox.Show("Error: Problem removing Unknown PC Cores from list.");
+                MessageBox.Show("Problem removing Unknown PC Cores from list.",
+                                "Error",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
+
+                return;
             }
         }
 
@@ -217,7 +222,12 @@ namespace Stellar
             }
             catch
             {
-                MessageBox.Show("Error: Problem removing Missing Buildbot Cores from list.");
+                MessageBox.Show("Problem removing Missing Buildbot Cores from list.",                                        
+                                "Error",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
+
+                return;
             }
 
         }
@@ -331,7 +341,12 @@ namespace Stellar
                 }
                 catch
                 {
-                    MessageBox.Show("Error: Problem creating Update & Exclusion list.");
+                    MessageBox.Show("Problem creating Update & Exclusion list.",
+                                    "Error",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Error);
+
+                    return;
                 }
 
 
