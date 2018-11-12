@@ -612,10 +612,10 @@
             <ImageBrush/>
         </Grid.Background>
 
-        <!-- Location TextBox -->
-        <Label x:Name="labelLocation" 
+        <!-- RetroArch Path TextBox -->
+        <Label x:Name="labelRetroArchPath" 
                Content="RA Folder"
-               IsEnabled="{Binding Location_IsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+               IsEnabled="{Binding RetroArchPath_IsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                HorizontalAlignment="Left"
                Height="24"
                Margin="8,11,0,0"
@@ -623,12 +623,12 @@
                Width="65" 
                Foreground="White" 
                Cursor="Hand"
-               PreviewMouseDown="labelLocation_PreviewMouseDown"
+               PreviewMouseDown="labelRetroArchPath_PreviewMouseDown"
                ToolTip="Click and Select your RetroArch Folder Path." />
 
-        <TextBox x:Name="tbxLocation"
-                 Text="{Binding Location_Text, Mode=TwoWay}"
-                 IsEnabled="{Binding Location_IsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"                  
+        <TextBox x:Name="tbxRetroArchPath"
+                 Text="{Binding RetroArchPath_Text, Mode=TwoWay}"
+                 IsEnabled="{Binding RetroArchPath_IsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"                  
                  Style="{DynamicResource TextBoxStyleCustom}"
                  HorizontalAlignment="Left"
                  Height="20"
@@ -637,8 +637,8 @@
                  Width="369" 
                  Background="Black" 
                  Foreground="White" 
-                 PreviewMouseDown="tbxLocation_PreviewMouseDown" 
-                 TextChanged="tbxLocation_TextChanged" 
+                 PreviewMouseDown="tbxRetroArchPath_PreviewMouseDown" 
+                 TextChanged="tbxRetroArchPath_TextChanged" 
                  ToolTip="Click and Select your RetroArch Folder Path." />
 
 
@@ -669,10 +669,10 @@
                  ToolTip="File to be fetched." />
 
 
-        <!-- Location Open Button -->
+        <!-- RetroArch Path Open Button -->
         <Button x:Name="buttonRetroArchExplorer" 
                 Style="{DynamicResource ButtonStyleQuickBrowse}"
-                IsEnabled="{Binding Location_IsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                IsEnabled="{Binding RetroArchPath_IsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 HorizontalAlignment="Left"
                 Margin="451,13,0,0"
                 VerticalAlignment="Top" 

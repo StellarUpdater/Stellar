@@ -120,7 +120,7 @@ namespace Stellar
             // Main Window
             mainwindow.Top = 0;
             mainwindow.Left = 0;
-            vm.Location_Text = string.Empty;
+            vm.RetroArchPath_Text = string.Empty;
             vm.Download_SelectedItem = "RetroArch";
             vm.Architecture_SelectedItem = "64-bit";
             vm.Server_SelectedItem = "buildbot";
@@ -643,8 +643,8 @@ namespace Stellar
                 // Window Position Left
                 inif.Write("Main Window", "Position_Left", Convert.ToString(mainwindow.Left));
 
-                // Location
-                inif.Write("Main Window", "Location_Text", vm.Location_Text);
+                // RetroArch Path
+                inif.Write("Main Window", "RetroArchPath_Text", vm.RetroArchPath_Text);
 
                 // Server
                 inif.Write("Main Window", "Server_SelectedItem", vm.Server_SelectedItem);
@@ -710,8 +710,8 @@ namespace Stellar
                     mainwindow.Left = Convert.ToDouble(inif.Read("Main Window", "Position_Left"));
                 }
 
-                // Location
-                vm.Location_Text = inif.Read("Main Window", "Location_Text");
+                // RetroArch Path
+                vm.RetroArchPath_Text = inif.Read("Main Window", "RetroArchPath_Text");
 
                 // Server
                 string server = inif.Read("Main Window", "Server_SelectedItem");

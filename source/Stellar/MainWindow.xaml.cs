@@ -204,7 +204,7 @@ namespace Stellar
                 if (// Main Window
                     this.Top != top ||
                     this.Left != left ||
-                    vm.Location_Text != inif.Read("Main Window", "Location_Text") ||
+                    vm.RetroArchPath_Text != inif.Read("Main Window", "RetroArchPath_Text") ||
                     vm.Server_SelectedItem != inif.Read("Main Window", "Server_SelectedItem") ||
                     vm.Download_SelectedItem != inif.Read("Main Window", "Download_SelectedItem") ||
                     vm.Architecture_SelectedItem != inif.Read("Main Window", "Architecture_SelectedItem") ||
@@ -515,10 +515,10 @@ namespace Stellar
             if (result == System.Windows.Forms.DialogResult.OK)
             {
                 // Display Folder Path in Textbox
-                vm.Location_Text = folderBrowserDialog.SelectedPath.TrimEnd('\\') + @"\";
+                vm.RetroArchPath_Text = folderBrowserDialog.SelectedPath.TrimEnd('\\') + @"\";
 
                 // Set the Paths.retroarchPath string
-                Paths.retroarchPath = vm.Location_Text;
+                Paths.retroarchPath = vm.RetroArchPath_Text;
             }
         }
 
@@ -647,7 +647,7 @@ namespace Stellar
         // -----------------------------------------------
         // Location RetroArch Label (On Click)
         // -----------------------------------------------
-        private void labelLocation_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        private void labelRetroArchPath_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             // Call Folder Browser Popup
             FolderBrowser();
@@ -656,7 +656,7 @@ namespace Stellar
         // -----------------------------------------------
         // Location RetroArch TextBox (On Click/Mouse Down)
         // -----------------------------------------------
-        private void tbxLocation_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        private void tbxRetroArchPath_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             FolderBrowser();
         }
@@ -683,13 +683,13 @@ namespace Stellar
             // Disable Server ComboBox
             if (vm.Download_SelectedItem == "Stellar")
             {
-                vm.Location_IsEnabled = false;
+                vm.RetroArchPath_IsEnabled = false;
                 vm.Server_IsEnabled = false;
             }
             // Enable Server ComboBox
             else
             {
-                vm.Location_IsEnabled = true;
+                vm.RetroArchPath_IsEnabled = true;
                 vm.Server_IsEnabled = true;
             }
 
@@ -767,10 +767,10 @@ namespace Stellar
         // -----------------------------------------------
         // Textbox RetroArch Location (On Click Change)
         // -----------------------------------------------
-        private void tbxLocation_TextChanged(object sender, TextChangedEventArgs e)
+        private void tbxRetroArchPath_TextChanged(object sender, TextChangedEventArgs e)
         {
             // Set the Paths.retroarchPath string
-            Paths.retroarchPath = vm.Location_Text; //end with backslash
+            Paths.retroarchPath = vm.RetroArchPath_Text; //end with backslash
         }
 
 
@@ -969,12 +969,12 @@ namespace Stellar
             //MessageBox.Show(message); //debug
 
             // Add backslash to Location Textbox path if missing
-            if (!string.IsNullOrEmpty(vm.Location_Text) && !vm.Location_Text.EndsWith("\\"))
+            if (!string.IsNullOrEmpty(vm.RetroArchPath_Text) && !vm.RetroArchPath_Text.EndsWith("\\"))
             {
-                vm.Location_Text = vm.Location_Text + "\\";
+                vm.RetroArchPath_Text = vm.RetroArchPath_Text + "\\";
             }
             // Load the User's RetroArch Location from Text Box / Saved Settings
-            Paths.retroarchPath = vm.Location_Text; //end with backslash
+            Paths.retroarchPath = vm.RetroArchPath_Text; //end with backslash
 
 
             // If RetroArch Path is empty, halt progress

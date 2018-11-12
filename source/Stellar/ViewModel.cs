@@ -60,39 +60,39 @@ namespace Stellar
         // ----------------------------------------------------------------------------------------------------
 
         // --------------------------------------------------
-        // Location - TextBox
+        // RetroArch Path - TextBox
         // --------------------------------------------------
         // Text
-        private string _Location_Text;
-        public string Location_Text
+        private string _RetroArchPath_Text;
+        public string RetroArchPath_Text
         {
-            get { return _Location_Text; }
+            get { return _RetroArchPath_Text; }
             set
             {
-                if (_Location_Text == value)
+                if (_RetroArchPath_Text == value)
                 {
                     return;
                 }
 
-                _Location_Text = value;
-                OnPropertyChanged("Location_Text");
+                _RetroArchPath_Text = value;
+                OnPropertyChanged("RetroArchPath_Text");
             }
         }
 
         // Controls Enable
-        private bool _Location_IsEnabled = true;
-        public bool Location_IsEnabled
+        private bool _RetroArchPath_IsEnabled = true;
+        public bool RetroArchPath_IsEnabled
         {
-            get { return _Location_IsEnabled; }
+            get { return _RetroArchPath_IsEnabled; }
             set
             {
-                if (_Location_IsEnabled == value)
+                if (_RetroArchPath_IsEnabled == value)
                 {
                     return;
                 }
 
-                _Location_IsEnabled = value;
-                OnPropertyChanged("Location_IsEnabled");
+                _RetroArchPath_IsEnabled = value;
+                OnPropertyChanged("RetroArchPath_IsEnabled");
             }
         }
 
