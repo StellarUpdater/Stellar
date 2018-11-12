@@ -75,6 +75,9 @@
       <DependentUpon>Debugger.xaml</DependentUpon>
     </Compile>
     <Compile Include="Download.cs" />
+    <Compile Include="FailedImportWindow.xaml.cs">
+      <DependentUpon>FailedImportWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Log.cs" />
     <Compile Include="Queue.cs" />
     <Compile Include="ViewModel.cs" />
@@ -87,6 +90,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Debugger.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FailedImportWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

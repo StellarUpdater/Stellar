@@ -626,7 +626,7 @@
 
         <TextBox x:Name="textBox7zipConfig"
                  Style="{DynamicResource TextBoxStyleCustom}"
-                 Text="{Binding SevenZip_Text, Mode=TwoWay}"
+                 Text="{Binding SevenZipPath_Text, Mode=TwoWay}"
                  HorizontalAlignment="Left" 
                  Height="20" 
                  Margin="105,15,0,0" 
@@ -674,7 +674,7 @@
 
         <TextBox x:Name="textBoxWinRARConfig" 
                  Style="{DynamicResource TextBoxStyleCustom}"
-                 Text="{Binding WinRAR_Text, Mode=TwoWay}"
+                 Text="{Binding WinRARPath_Text, Mode=TwoWay}"
                  HorizontalAlignment="Left"
                  Height="20" 
                  Margin="105,50,0,0" 

@@ -26,6 +26,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -71,7 +72,6 @@ namespace Stellar
         // Ready Check
         public static bool ready = true; // If 0 halt progress
 
-
         // -----------------------------------------------
         // Window Defaults
         // -----------------------------------------------
@@ -101,149 +101,69 @@ namespace Stellar
             // -----------------------------------------------------------------
             DataContext = vm;
 
-            // -----------------------------------------------
-            // Prevent Loading Corrupt App.Config
-            // -----------------------------------------------
-            try
-            {
-                ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal);
-            }
-            catch (ConfigurationErrorsException ex)
-            {
-                string filename = ex.Filename;
-
-                if (File.Exists(filename) == true)
-                {
-                    File.Delete(filename);
-                    Properties.Settings.Default.Upgrade();
-                    // Properties.Settings.Default.Reload();
-                }
-                else
-                {
-
-                }
-            }
-
 
             // --------------------------------------------------
             // Load Saved Settings
             // --------------------------------------------------
 
             // -------------------------
+            // Import Config INI
+            // -------------------------
+            // config.ini settings
+            if (File.Exists(Paths.configFile) == true)
+            {
+                Configure.ImportConfig(this, vm, Paths.configFile);
+            }
+            // Defaults
+            else
+            {
+                Configure.LoadDefaults(this, vm);
+            }
+
+            // -------------------------
             // Window Position
             // -------------------------
-            try {
-                // First time use
-                if (Convert.ToDouble(Settings.Default.Left) == 0 
-                    && Convert.ToDouble(Settings.Default.Top) == 0)
-                {
-                    WindowStartupLocation = WindowStartupLocation.CenterScreen;
-                }
-            }
-            catch
+            if (this.Top == 0 && 
+                this.Left == 0)
             {
-
+                WindowStartupLocation = WindowStartupLocation.CenterScreen;
             }
 
-            // Theme CombBox
-            Configure.ConfigTheme(configure, vm);
+            // -------------------------
+            // Load MainWindow Defaults
+            // -------------------------
+            if (vm.Download_SelectedItem == "New Install" ||
+                vm.Download_SelectedItem == "Upgrade" ||
+                vm.Download_SelectedItem == "Redist" ||
+                vm.Download_SelectedItem == "Stellar")
+            {
+                vm.Download_SelectedItem = "RetroArch";
+            }
 
-            // 7-Zip Path
-            Configure.Config7zipPath(configure, vm);
+            // -------------------------
+            // Load Configure Defaults
+            // -------------------------
+            Configure.sevenZipPath = vm.SevenZipPath_Text;
+            Configure.winRARPath = vm.WinRARPath_Text;
 
-            // WinRAR Path
-            Configure.ConfigWinRARPath(configure, vm);
-
-            // Log CheckBox
-            Configure.ConfigLogToggle(configure, vm);
-
-            // Log Path
-            Configure.ConfigLogPath(configure, vm);
-
-            // Update Auto Check
-            Configure.UpdateAutoCheck(configure, vm);
-
-
-            // -----------------------------------------------
-            // Load RetroArch Path
-            // -----------------------------------------------
+            // -------------------------
+            // Load Theme
+            // -------------------------
             try
             {
-                if (!string.IsNullOrEmpty(Settings.Default.retroarchPath.ToString()))
+                Configure.theme = vm.Theme_SelectedItem.Replace(" ", string.Empty);
+                App.Current.Resources.MergedDictionaries.Clear();
+                App.Current.Resources.MergedDictionaries.Add(new ResourceDictionary()
                 {
-                    vm.Location_Text = Settings.Default.retroarchPath.ToString();
-                    Paths.retroarchPath = Settings.Default.retroarchPath.ToString();
-                }
+                    Source = new Uri("Theme" + Configure.theme + ".xaml", UriKind.RelativeOrAbsolute)
+                });
             }
             catch
             {
-
-            }
-
-            // -----------------------------------------------
-            // Load Dropdown Combobox Downloads (RA+Cores, RetroArch, Cores)
-            // -----------------------------------------------
-            try
-            {
-                // First Time Use
-                if (string.IsNullOrEmpty(Settings.Default.download.ToString())) // null check
-                {
-                    vm.Download_SelectedItem = "RA+Cores";
-                }
-                // Saved Settings
-                else
-                {
-                    vm.Download_SelectedItem = Settings.Default.download;
-                }
-            }
-            catch
-            {
-
-            }
-
-            // -----------------------------------------------
-            // Load Dropdown Combobox Architecture (32-bit, 64-bit, 64 w32)
-            // -----------------------------------------------
-            // If Dropdown Combobox Architecture is Empty, set Default to 64-bit
-            try
-            {
-                // First Time Use
-                if (string.IsNullOrEmpty(Settings.Default.architecture.ToString())) // null check
-                {
-                    vm.Architecture_SelectedItem = "64-bit";
-                }
-                // Saved Settings
-                else
-                {
-                    vm.Architecture_SelectedItem = Settings.Default.architecture;
-                }
-            }
-            catch
-            {
-
-            }
-
-
-            // -----------------------------------------------
-            // Load Download Server (auto, raw, buildbot)
-            // -----------------------------------------------
-            try
-            {
-                // First Time Use
-                if (string.IsNullOrEmpty(Settings.Default.downloadServer.ToString())) // null check
-                {
-                    //vm.Server_SelectedItem = "auto";
-                    vm.Server_SelectedItem = "buildbot";
-                }
-                // Saved Settings
-                else
-                {
-                    vm.Server_SelectedItem = Settings.Default.downloadServer;
-                }
-            }
-            catch
-            {
-
+                MessageBox.Show("Could not load theme.",
+                                "Error",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
             }
 
         }
@@ -270,8 +190,44 @@ namespace Stellar
         // -----------------------------------------------
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            Settings.Default.Save();
+            // -------------------------
+            // Export Config INI
+            // -------------------------
+            // Overwrite only if changes made
+            if (File.Exists(Paths.configFile) == true)
+            {
+                Configure.INIFile inif = new Configure.INIFile(Paths.configFile);
 
+                double? top = Convert.ToDouble(inif.Read("Main Window", "Position_Top"));
+                double? left = Convert.ToDouble(inif.Read("Main Window", "Position_Left"));
+
+                if (// Main Window
+                    this.Top != top ||
+                    this.Left != left ||
+                    vm.Location_Text != inif.Read("Main Window", "Location_Text") ||
+                    vm.Server_SelectedItem != inif.Read("Main Window", "Server_SelectedItem") ||
+                    vm.Download_SelectedItem != inif.Read("Main Window", "Download_SelectedItem") ||
+                    vm.Architecture_SelectedItem != inif.Read("Main Window", "Architecture_SelectedItem") ||
+                    // Configure Window
+                    vm.SevenZipPath_Text != inif.Read("Configure Window", "SevenZipPath_Text") ||
+                    vm.WinRARPath_Text != inif.Read("Configure Window", "WinRARPath_Text") ||
+                    vm.LogPath_IsChecked != Convert.ToBoolean(inif.Read("Configure Window", "LogPath_IsChecked").ToLower()) ||
+                    vm.LogPath_Text != inif.Read("Configure Window", "LogPath_Text") ||
+                    vm.Theme_SelectedItem != inif.Read("Configure Window", "Theme_SelectedItem") ||
+                    vm.UpdateAutoCheck_IsChecked != Convert.ToBoolean(inif.Read("Configure Window", "UpdateAutoCheck_IsChecked").ToLower())
+                    )
+                {
+                    Configure.ExportConfig(this, vm, Paths.configFile);
+                }
+            }
+
+            // Export Defaults & Currently Selected
+            else if (File.Exists(Paths.configFile) == false)
+            {
+                Configure.ExportConfig(this, vm, Paths.configFile);
+            }
+
+            // Exit
             e.Cancel = true;
             System.Windows.Forms.Application.ExitThread();
             Environment.Exit(0);
@@ -297,8 +253,6 @@ namespace Stellar
         {
             if (CheckForInternetConnection() == true)
             {
-                //if (tglUpdatesAutoCheck.IsChecked == true)
-                //if (tglUpdateAutoCheck.Dispatcher.Invoke((() => { return tglUpdateAutoCheck.IsChecked; })) == true)
                 if (vm.UpdateAutoCheck_IsChecked == true)
                 {
                     ServicePointManager.Expect100Continue = true;
@@ -565,18 +519,6 @@ namespace Stellar
 
                 // Set the Paths.retroarchPath string
                 Paths.retroarchPath = vm.Location_Text;
-
-                try
-                {
-                    // Save RetroArch path for next launch
-                    Settings.Default.retroarchPath = vm.Location_Text;
-                    Settings.Default.Save();
-                    //Settings.Default.Reload();
-                }
-                catch
-                {
-
-                }
             }
         }
 
@@ -714,7 +656,7 @@ namespace Stellar
         // -----------------------------------------------
         // Location RetroArch TextBox (On Click/Mouse Down)
         // -----------------------------------------------
-        private void textBoxLocation_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        private void tbxLocation_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             FolderBrowser();
         }
@@ -724,18 +666,6 @@ namespace Stellar
         // -----------------------------------------------
         private void comboBoxArchitecture_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            try
-            {
-                // Save Selected Arhitecture
-                Settings.Default.architecture = vm.Architecture_SelectedItem.ToString();
-                Settings.Default.Save();
-                //Settings.Default.Reload();
-            }
-            catch
-            {
-
-            }
-
             // Set Architecture to show in URL Textbox
             Paths.SetArchitecture(vm);
             // Show URL in Textbox
@@ -767,11 +697,6 @@ namespace Stellar
             // Reset Update Button Text to "Update"
             vm.Update_Text = "Update";
 
-            // Save Download Combobox Settings for next launch
-            Settings.Default.download = vm.Download_SelectedItem.ToString();
-            Settings.Default.Save();
-            //Settings.Default.Reload();
-
 
             // Stellar Self-Update Selected, Disable Architecture ComboBox
             if (vm.Download_SelectedItem == "Stellar")
@@ -800,11 +725,6 @@ namespace Stellar
                                     "Notice",
                                     MessageBoxButton.OK,
                                     MessageBoxImage.Information);
-
-                    // Save Download Combobox Settings back to RA+Cores instead of New Install for next launch
-                    Settings.Default.download = "RA+Cores";
-                    Settings.Default.Save();
-                    //Settings.Default.Reload();
                 }
 
                 // Upgrade
@@ -822,11 +742,6 @@ namespace Stellar
                                     "Notice",
                                     MessageBoxButton.OK,
                                     MessageBoxImage.Information);
-
-                    // Save Download Combobox Settings back to RA+Cores instead of Upgrade for next launch
-                    Settings.Default.download = "RA+Cores";
-                    Settings.Default.Save();
-                    Settings.Default.Reload();
                 }
 
                 // New Cores
@@ -835,11 +750,6 @@ namespace Stellar
                 {
                     // Change Update Button Text to "Upgrade"
                     vm.Update_Text = "Download";
-
-                    // Save Download Combobox Settings back to RA+Cores instead of New Cores for next launch
-                    Settings.Default.download = "RA+Cores";
-                    Settings.Default.Save();
-                    //Settings.Default.Reload();
                 }
             });
 
@@ -857,15 +767,10 @@ namespace Stellar
         // -----------------------------------------------
         // Textbox RetroArch Location (On Click Change)
         // -----------------------------------------------
-        private void textBoxLocation_TextChanged(object sender, TextChangedEventArgs e)
+        private void tbxLocation_TextChanged(object sender, TextChangedEventArgs e)
         {
             // Set the Paths.retroarchPath string
             Paths.retroarchPath = vm.Location_Text; //end with backslash
-
-            // Save RetroArch Path for next launch
-            Settings.Default.retroarchPath = vm.Location_Text;
-            Settings.Default.Save();
-            //Settings.Default.Reload();
         }
 
 
@@ -879,9 +784,6 @@ namespace Stellar
 
             // Set URLs
             Paths.SetUrls(vm);
-
-            Settings.Default.downloadServer = vm.Server_SelectedItem.ToString();
-            Settings.Default.Save();
         }
 
 

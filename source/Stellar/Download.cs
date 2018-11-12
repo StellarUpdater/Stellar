@@ -854,7 +854,7 @@ namespace Stellar
                 {
                     // Write Log Append
                     //
-                    Log.WriteLog();
+                    Log.WriteLog(vm);
 
                     // Clear list to prevent doubling up
                     //

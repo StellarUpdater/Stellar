@@ -27,15 +27,17 @@ namespace Stellar
 {
     public partial class Log
     {
-        public static void WriteLog()
+        public static void WriteLog(ViewModel vm)
         {
             // Write Log Append
-            if (Configure.logEnable == true) // Only if Log is Enabled through Config Checkbox
+            // Only if Log is Enabled through Config Checkbox
+            if (vm.LogPath_IsChecked == true && 
+                !string.IsNullOrEmpty(vm.LogPath_Text)) 
             {
                 // Check for Save Error
                 try
                 {
-                    using (FileStream fs = new FileStream(Configure.logPath + "stellar.log", FileMode.Append, FileAccess.Write))
+                    using (FileStream fs = new FileStream(vm.LogPath_Text + "stellar.log", FileMode.Append, FileAccess.Write))
                     using (StreamWriter sw = new StreamWriter(fs))
                     {
                         sw.WriteLine(DateTime.Now);
@@ -54,7 +56,7 @@ namespace Stellar
                 }
                 catch
                 {
-                    MessageBox.Show("Error Saving Output Log to " + "\"" + Configure.logPath + "\"" + ". May require Administrator Privileges.",
+                    MessageBox.Show("Error Saving Output Log to " + "\"" + vm.LogPath_Text + "\"" + ". May require Administrator Privileges.",
                                     "Error",
                                     MessageBoxButton.OK,
                                     MessageBoxImage.Error);

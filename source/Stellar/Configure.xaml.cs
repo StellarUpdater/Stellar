@@ -27,6 +27,10 @@ using System.IO;
 using Stellar.Properties;
 using System.Configuration;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Stellar
 {
@@ -45,6 +49,8 @@ namespace Stellar
         public static bool logEnable; //checkBoxLogConfig, Enable or Disable Log, true or false
 
         public static string theme; // Background Theme Image
+
+        public static string failedImportMessage;
 
 
         public Configure(MainWindow mainwindow, ViewModel vm)
@@ -67,277 +73,15 @@ namespace Stellar
             DataContext = vm;
 
             // --------------------------------------------------
-            // StartUp Defaults
+            // Load Update Auto Check Text
             // --------------------------------------------------
-            //vm.Theme_SelectedItem = "Milky Way";
-
-
-            // -----------------------------------------------
-            // Prevent Loading Corrupt App.Config
-            // -----------------------------------------------
-            try
+            if (vm.UpdateAutoCheck_IsChecked == true)
             {
-                ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal);
+                vm.UpdateAutoCheck_Text = "On";
             }
-            catch (ConfigurationErrorsException ex)
+            else if (vm.UpdateAutoCheck_IsChecked == false)
             {
-                string filename = ex.Filename;
-
-                if (File.Exists(filename) == true)
-                {
-                    File.Delete(filename);
-                    Properties.Settings.Default.Upgrade();
-                    // Properties.Settings.Default.Reload();
-                }
-                else
-                {
-
-                }
-            }
-
-            // --------------------------------------------------
-            // Load From Saved Settings
-            // --------------------------------------------------
-            // Theme CombBox
-            Configure.ConfigTheme(this, vm);
-
-            // 7-Zip Path
-            Configure.Config7zipPath(this, vm);
-
-            // WinRAR Path
-            Configure.ConfigWinRARPath(this, vm);
-
-            // Log CheckBox
-            Configure.ConfigLogToggle(this, vm);
-
-            // Log Path
-            Configure.ConfigLogPath(this, vm);
-
-            // Log Path
-            Configure.UpdateAutoCheck(this, vm);
-        }
-
-
-        /// <summary>
-        /// Load Theme
-        /// </summary>
-        public static void ConfigTheme(Configure configure, ViewModel vm)
-        {
-            // -----------------------------------------------
-            // Load Theme
-            // -----------------------------------------------
-            try
-            {
-                // First Time Use
-                if (string.IsNullOrEmpty(Settings.Default.themes.ToString())) // null check
-                {
-                    //System.Windows.MessageBox.Show("Debug");
-
-                    Configure.theme = "MilkyWay";
-
-                    // Set ComboBox if Configure Window is Open
-                    //if (configure != null)
-                    //{
-                        vm.Theme_SelectedItem = "Milky Way";
-                    //}
-
-                    // Change Theme Resource
-                    App.Current.Resources.MergedDictionaries.Clear();
-                    App.Current.Resources.MergedDictionaries.Add(new ResourceDictionary()
-                    {
-                        Source = new Uri("Theme" + Configure.theme + ".xaml", UriKind.RelativeOrAbsolute)
-                    });
-
-                    // Save Theme for next launch
-                    Settings.Default.themes = Configure.theme; // Theme
-                    Settings.Default.comboBoxThemes = "Milky Way"; // ComboBox Selected Item
-                    Settings.Default.Save();
-                    Settings.Default.Reload();
-                }
-                // Saved Settings
-                else
-                {
-                    //System.Windows.MessageBox.Show("Debug");
-
-                    Configure.theme = Settings.Default.themes.ToString();
-
-                    // Set ComboBox if Configure Window is Open
-                    //if (configure != null)
-                    //{
-                        vm.Theme_SelectedItem = Settings.Default.comboBoxThemes;
-                    //}
-
-                    // Change Theme Resource
-                    App.Current.Resources.MergedDictionaries.Clear();
-                    App.Current.Resources.MergedDictionaries.Add(new ResourceDictionary()
-                    {
-                        Source = new Uri("Theme" + Configure.theme + ".xaml", UriKind.RelativeOrAbsolute)
-                    });
-                }
-            }
-            catch
-            {
-
-            }
-        }
-
-        /// <summary>
-        /// Load 7-Zip Path
-        /// </summary>
-        public static void Config7zipPath(Configure configure, ViewModel vm)
-        {
-            // -----------------------------------------------
-            // Load 7-Zip Path from Saved Settings
-            // -----------------------------------------------
-            try
-            {
-                // First Time Use
-                if (string.IsNullOrEmpty(Settings.Default.sevenZipPath.ToString())) // null check
-                {
-                    // Load Saved Settings Override
-                    Configure.sevenZipPath = "<auto>";
-
-                    // Set ComboBox if Configure Window is Open
-                    //if (configure != null)
-                    //{
-                        vm.SevenZip_Text = Configure.sevenZipPath;
-                    //}
-                }
-                // Saved Settings
-                else
-                {
-                    Configure.sevenZipPath = Settings.Default.sevenZipPath.ToString();
-
-                    // Set ComboBox if Configure Window is Open
-                    //if (configure != null)
-                    //{
-                        vm.SevenZip_Text = Configure.sevenZipPath;
-                    //}
-                }
-            }
-            catch
-            {
-
-            }
-        }
-
-        /// <summary>
-        /// Load WinRAR Path
-        /// </summary>
-        public static void ConfigWinRARPath(Configure configure, ViewModel vm)
-        {
-            // -----------------------------------------------
-            // Load WinRAR Path from Saved Settings
-            // -----------------------------------------------
-            try
-            {
-                // First Time Use
-                if (string.IsNullOrEmpty(Settings.Default.winRARPath.ToString())) // null check
-                {
-                    // Load Saved Settings Override
-                    Configure.winRARPath = "<auto>";
-
-                    // Set ComboBox if Configure Window is Open
-                    //if (configure != null)
-                    //{
-                        vm.WinRAR_Text = Configure.winRARPath;
-                    //}
-
-                }
-                // Saved Settings
-                else
-                {
-                    Configure.winRARPath = Settings.Default.winRARPath.ToString();
-
-                    // Set ComboBox if Configure Window is Open
-                    //if (configure != null)
-                    //{
-                        vm.WinRAR_Text = Configure.winRARPath;
-                    //}
-                }
-            }
-            catch
-            {
-
-            }
-        }
-
-        /// <summary>
-        /// Load Log Toggle
-        /// </summary>
-        public static void ConfigLogToggle(Configure configure, ViewModel vm)
-        {
-            // -----------------------------------------------
-            // Load Log Enable/Disable from Saved Settings
-            // -----------------------------------------------
-            try
-            {
-                // First Time Use
-                if (string.IsNullOrEmpty(Settings.Default.logEnable.ToString())) // null check
-                {
-                    Configure.logEnable = false;
-
-                    // Set ComboBox if Configure Window is Open
-                    //if (configure != null)
-                    //{
-                        vm.LogPath_IsChecked = false;
-                    //}
-                }
-                // Saved Settings
-                else
-                {
-                    Configure.logEnable = Settings.Default.logEnable;
-
-                    // Set ComboBox if Configure Window is Open
-                    //if (configure != null)
-                    //{
-                        vm.LogPath_IsChecked = Settings.Default.checkBoxLog;
-                    //}
-                }
-            }
-            catch
-            {
-
-            }
-        }
-
-        /// <summary>
-        /// Load Log Path
-        /// </summary>
-        public static void ConfigLogPath(Configure configure, ViewModel vm)
-        {
-            // -----------------------------------------------
-            // Load Log Path from Saved Settings
-            // -----------------------------------------------
-            try
-            {
-                // First Time Use
-                if (string.IsNullOrEmpty(Settings.Default.logPath.ToString())) // null check
-                {
-                    Configure.logPath = string.Empty;
-
-                    // Set ComboBox if Configure Window is Open
-                    //if (configure != null)
-                    //{
-                        vm.LogPath_Text = Configure.logPath;
-                    //}
-                }
-                // Saved Settings
-                else
-                {
-
-                    Configure.logPath = Settings.Default.logPath.ToString();
-
-                    // Set ComboBox if Configure Window is Open
-                    //if (configure != null)
-                    //{
-                        vm.LogPath_Text = Configure.logPath;
-                    //}
-                }
-            }
-            catch
-            {
-
+                vm.UpdateAutoCheck_Text = "Off";
             }
         }
 
@@ -351,42 +95,6 @@ namespace Stellar
 
             // Update Toggle Text
             vm.UpdateAutoCheck_Text = "On";
-            Settings.Default.UpdateAutoCheckLabel = "On";
-
-            //Prevent Loading Corrupt App.Config
-            try
-            {
-                // Save Toggle Settings
-                // must be done this way or you get "convert object to bool error"
-                if (vm.UpdateAutoCheck_IsChecked == true)
-                {
-                    Settings.Default.UpdateAutoCheck = true;
-                    Settings.Default.Save();
-                    Settings.Default.Reload();
-                }
-                else if (vm.UpdateAutoCheck_IsChecked == false)
-                {
-                    Settings.Default.UpdateAutoCheck = false;
-                    Settings.Default.Save();
-                    Settings.Default.Reload();
-                }
-            }
-            catch (ConfigurationErrorsException ex)
-            {
-                // Delete Old App.Config
-                string filename = ex.Filename;
-
-                if (File.Exists(filename) == true)
-                {
-                    File.Delete(filename);
-                    Settings.Default.Upgrade();
-                    // Properties.Settings.Default.Reload();
-                }
-                else
-                {
-
-                }
-            }
         }
         /// <summary>
         ///    Updates Auto Check - Unchecked
@@ -397,85 +105,34 @@ namespace Stellar
 
             // Update Toggle Text
             vm.UpdateAutoCheck_Text = "Off";
-            Settings.Default.UpdateAutoCheckLabel = "Off";
-
-            // Prevent Loading Corrupt App.Config
-            try
-            {
-                // Save Toggle Settings
-                // must be done this way or you get "convert object to bool error"
-                if (vm.UpdateAutoCheck_IsChecked == true)
-                {
-                    Settings.Default.UpdateAutoCheck = true;
-                    Settings.Default.Save();
-                    Settings.Default.Reload();
-                }
-                else if (vm.UpdateAutoCheck_IsChecked == false)
-                {
-                    Settings.Default.UpdateAutoCheck = false;
-                    Settings.Default.Save();
-                    Settings.Default.Reload();
-                }
-            }
-            catch (ConfigurationErrorsException ex)
-            {
-                // Delete Old App.Config
-                string filename = ex.Filename;
-
-                if (File.Exists(filename) == true)
-                {
-                    File.Delete(filename);
-                    Settings.Default.Upgrade();
-                    // Properties.Settings.Default.Reload();
-                }
-                else
-                {
-
-                }
-            }
         }
 
-        /// <summary>
-        /// Updates Auto Check
-        /// </summary>
-        public static void UpdateAutoCheck(Configure configure, ViewModel vm)
-        {
-            // -----------------------------------------------
-            // Load Log Path from Saved Settings
-            // -----------------------------------------------
-            try
-            {
-                // First Time Use
-                if (string.IsNullOrEmpty(Settings.Default.UpdateAutoCheck.ToString())) // null check
-                {
-                    // Set ComboBox if Configure Window is Open
-                    //if (configure != null)
-                    //{
-                        vm.UpdateAutoCheck_IsChecked = true;
-                        vm.UpdateAutoCheck_Text = "On";
-                        Settings.Default.UpdateAutoCheckLabel = "On";
-                    //}
-                }
-                // Saved Settings
-                else
-                {
-                    // Set ComboBox if Configure Window is Open
-                    //if (configure != null)
-                    //{
-                        vm.UpdateAutoCheck_IsChecked = Settings.Default.UpdateAutoCheck;
-                        vm.UpdateAutoCheck_Text = Settings.Default.UpdateAutoCheckLabel;
-                    //}
-                }
-            }
-            catch
-            {
-
-            }
-        }
 
         // ----------------------------------------------------------------------------------------------
         // METHODS 
         // ----------------------------------------------------------------------------------------------
+
+        // -----------------------------------------------
+        // Load Control Defaults
+        // -----------------------------------------------
+        public static void LoadDefaults(MainWindow mainwindow, ViewModel vm)
+        {
+            // Main Window
+            mainwindow.Top = 0;
+            mainwindow.Left = 0;
+            vm.Location_Text = string.Empty;
+            vm.Download_SelectedItem = "RetroArch";
+            vm.Architecture_SelectedItem = "64-bit";
+            vm.Server_SelectedItem = "buildbot";
+            vm.SevenZipPath_Text = "<auto>";
+            vm.WinRARPath_Text = "<auto>";
+            vm.LogPath_IsChecked = false;
+            vm.LogPath_Text = string.Empty;
+            //vm.LogPath_IsEnabled = false;
+            vm.Theme_SelectedItem = "Milky Way";
+            vm.UpdateAutoCheck_IsChecked = true;
+            vm.Update_Text = "Update";
+        }
 
         // -----------------------------------------------
         // 7-Zip Folder Browser Popup 
@@ -489,23 +146,10 @@ namespace Stellar
             if (result == System.Windows.Forms.DialogResult.OK)
             {
                 // Display Folder Path in Textbox
-                vm.SevenZip_Text = OpenFileDialog.FileName;
+                vm.SevenZipPath_Text = OpenFileDialog.FileName;
 
                 // Set the sevenZipPath string
-                sevenZipPath = vm.SevenZip_Text;
-
-                try
-                {
-                    // Save 7-zip Path for next launch
-                    Settings.Default.sevenZipPath = vm.SevenZip_Text;
-                    Settings.Default.Save();
-                    Settings.Default.Reload();
-                }
-                catch
-                {
-
-                }
-
+                sevenZipPath = vm.SevenZipPath_Text;
             }
         }
 
@@ -521,22 +165,10 @@ namespace Stellar
             if (result == System.Windows.Forms.DialogResult.OK)
             {
                 // Display Folder Path in Textbox
-                vm.WinRAR_Text = OpenFileDialog.FileName;
+                vm.WinRARPath_Text = OpenFileDialog.FileName;
 
                 // Set the winRARPath string
-                winRARPath = vm.WinRAR_Text;
-
-                try
-                {
-                    // Save WinRAR Path for next launch
-                    Settings.Default.winRARPath = vm.WinRAR_Text;
-                    Settings.Default.Save();
-                    Settings.Default.Reload();
-                }
-                catch
-                {
-
-                }
+                winRARPath = vm.WinRARPath_Text;
             }
         }
 
@@ -556,18 +188,6 @@ namespace Stellar
 
                 // Set the winRARPath string
                 logPath = vm.LogPath_Text;
-
-                try
-                {
-                    // Save 7-zip Path for next launch
-                    Settings.Default.logPath = vm.LogPath_Text;
-                    Settings.Default.Save();
-                    Settings.Default.Reload();
-                }
-                catch
-                {
-
-                }
             }
         }
 
@@ -603,22 +223,10 @@ namespace Stellar
             ViewModel vm = mainwindow.DataContext as ViewModel;
 
             // Display Folder Path in Textbox
-            vm.SevenZip_Text = "<auto>";
+            vm.SevenZipPath_Text = "<auto>";
 
             // Set the sevenZipPath string
-            sevenZipPath = vm.SevenZip_Text; //<auto>
-
-            try
-            {
-                // Save 7-zip Path path for next launch
-                Settings.Default.sevenZipPath = vm.SevenZip_Text;
-                Settings.Default.Save();
-                Settings.Default.Reload();
-            }
-            catch
-            {
-
-            }
+            sevenZipPath = vm.SevenZipPath_Text; //<auto>
         }
 
 
@@ -641,22 +249,10 @@ namespace Stellar
             ViewModel vm = mainwindow.DataContext as ViewModel;
 
             // Display Folder Path in Textbox
-            vm.WinRAR_Text = "<auto>";
+            vm.WinRARPath_Text = "<auto>";
 
             // Set the winRARPath string
-            winRARPath = vm.WinRAR_Text; //<auto>
-
-            try
-            {
-                // Save 7-zip Path path for next launch
-                Settings.Default.winRARPath = vm.WinRAR_Text;
-                Settings.Default.Save();
-                Settings.Default.Reload();
-            }
-            catch
-            {
-
-            }
+            winRARPath = vm.WinRARPath_Text; //<auto>
         }
 
 
@@ -670,46 +266,6 @@ namespace Stellar
 
             // Enable the Log
             logEnable = true;
-
-            // must be done this way or you get "convert object to bool error"
-            if (vm.LogPath_IsChecked == true)
-            {
-                try
-                {
-                    // Save Checkbox Settings
-                    Settings.Default.checkBoxLog = true;
-                    Settings.Default.Save();
-                    Settings.Default.Reload();
-
-                    // Save Log Enable Settings
-                    Settings.Default.logEnable = true;
-                    Settings.Default.Save();
-                    Settings.Default.Reload();
-                }
-                catch
-                {
-
-                }
-            }
-            else if (vm.LogPath_IsChecked == false)
-            {
-                try
-                {
-                    // Save Checkbox Settings
-                    Settings.Default.checkBoxLog = false;
-                    Settings.Default.Save();
-                    Settings.Default.Reload();
-
-                    // Save Log Enable Settings
-                    Settings.Default.logEnable = false;
-                    Settings.Default.Save();
-                    Settings.Default.Reload();
-                }
-                catch
-                {
-
-                }
-            }
         }
 
         // -----------------------------------------------
@@ -721,46 +277,6 @@ namespace Stellar
 
             // Disable the Log
             logEnable = false;
-
-            // must be done this way or you get "convert object to bool error"
-            if (vm.LogPath_IsChecked == true)
-            {
-                try
-                {
-                    // Save Checkbox Settings
-                    Settings.Default.checkBoxLog = true;
-                    Settings.Default.Save();
-                    Settings.Default.Reload();
-
-                    // Save Log Enable Settings
-                    Settings.Default.logEnable = true;
-                    Settings.Default.Save();
-                    Settings.Default.Reload();
-                }
-                catch
-                {
-
-                }
-            }
-            else if (vm.LogPath_IsChecked == false)
-            {
-                try
-                {
-                    // Save Checkbox Settings
-                    Settings.Default.checkBoxLog = false;
-                    Settings.Default.Save();
-                    Settings.Default.Reload();
-
-                    // Save Log Enable Settings
-                    Settings.Default.logEnable = false;
-                    Settings.Default.Save();
-                    Settings.Default.Reload();
-                }
-                catch
-                {
-
-                }
-            }
         }
 
         // -----------------------------------------------
@@ -782,23 +298,13 @@ namespace Stellar
 
             // Uncheck Log Checkbox
             vm.LogPath_IsChecked = false;
+            checkBoxLogConfig.IsChecked = false;
 
             // Clear Path in Textbox
             vm.LogPath_Text = string.Empty;
 
-            // Set the sevenZipPath string
+            // Set the logPath string
             logPath = string.Empty;
-            try
-            {
-                // Save Log Path path for next launch
-                Settings.Default.logPath = string.Empty;
-                Settings.Default.Save();
-                Settings.Default.Reload();
-            }
-            catch
-            {
-
-            }
         }
 
         // -----------------------------------------------
@@ -806,75 +312,47 @@ namespace Stellar
         // -----------------------------------------------
         private void buttonClearAllSavedSettings_Click(object sender, RoutedEventArgs e)
         {
-            string userProfile = Environment.ExpandEnvironmentVariables(@"%USERPROFILE%");
-            string appDataPath = "\\AppData\\Local\\Stellar";
+            ViewModel vm = mainwindow.DataContext as ViewModel;
 
-            // Check if Directory Exists
-            if (Directory.Exists(userProfile + appDataPath))
+            // Check if config.ini Exists
+            if (File.Exists(Paths.configFile))
             {
-                // Show Yes No Window
-                System.Windows.Forms.DialogResult dialogResult = System.Windows.Forms.MessageBox.Show(
-                    "Delete " + userProfile + appDataPath, "Delete Directory Confirm", System.Windows.Forms.MessageBoxButtons.YesNo);
-                // Yes
-                if (dialogResult == System.Windows.Forms.DialogResult.Yes)
+                // Yes/No Dialog Confirmation
+                //
+                MessageBoxResult result = MessageBox.Show(
+                    "Delete: \n\n" + Paths.configFile,
+                    "Delete config.ini Confirm",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Information);
+                switch (result)
                 {
-                    // Delete leftover 2 Pass Logs in Program's folder and Input Files folder
-                    using (Process delete = new Process())
-                    {
-                        delete.StartInfo.UseShellExecute = false;
-                        delete.StartInfo.CreateNoWindow = false;
-                        delete.StartInfo.RedirectStandardOutput = true;
-                        delete.StartInfo.FileName = "cmd.exe";
-                        delete.StartInfo.Arguments = "/c RD /Q /S " + "\"" + userProfile + appDataPath;
-                        delete.Start();
-                        delete.WaitForExit();
-                        //delete.Close();
-                    }
+                    // Create
+                    case MessageBoxResult.Yes:
+                        File.Delete(Paths.configFile);
 
-                    // Restart Program
-                    Process.Start(Application.ResourceAssembly.Location);
-                    Application.Current.Shutdown();
-                }
-                // No
-                else if (dialogResult == System.Windows.Forms.DialogResult.No)
-                {
-                    //do nothing
+                        // Reload Control Defaults
+                        LoadDefaults(mainwindow, vm);
+
+                        // Restart Program
+                        Process.Start(Application.ResourceAssembly.Location);
+                        Application.Current.Shutdown();
+                        break;
+
+                    // Use Default
+                    case MessageBoxResult.No:
+                        break;
                 }
             }
-            // If Stellar Folder Not Found
+            // If config.ini Not Found
             else
             {
-                MessageBox.Show("No Previous Settings Found.",
+                MessageBox.Show("No Previous Config File Found.",
                                 "Notice",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Information);
+
+                return;
             }
-
-            //// Revert 7-Zip
-            //vm.SevenZip_Text = "<auto>";
-            //sevenZipPath = vm.SevenZip_Text;
-
-            //// Revert WinRAR
-            //vm.WinRAR_Text = "<auto>";
-            //winRARPath = vm.WinRAR_Text;
-
-            //// Revert Log
-            //vm.LogPath_IsChecked = false;
-            //vm.LogPath_Text = string.Empty;
-            //logPath = string.Empty;
-
-            //// Save Current Window Location
-            //// Prevents MainWindow from moving to Top 0 Left 0 while running
-            //double left = mainwindow.Left;
-            //double top = mainwindow.Top;
-
-            //// Reset AppData Settings
-            //Settings.Default.Reset();
-            //Settings.Default.Reload();
-
-            //// Set Window Location
-            //mainwindow.Left = left;
-            //mainwindow.Top = top;
         }
 
         // -----------------------------------------------
@@ -904,7 +382,7 @@ namespace Stellar
             // Milky Way
             else if (vm.Theme_SelectedItem == "Milky Way")
             {
-                theme = "MilkyWay";
+                theme = vm.Theme_SelectedItem.Replace(" ", string.Empty);
 
                 // Change Theme Resource
                 App.Current.Resources.MergedDictionaries.Clear();
@@ -920,7 +398,7 @@ namespace Stellar
             // Spiral Galaxy
             else if (vm.Theme_SelectedItem == "Spiral Galaxy")
             {
-                theme = "SpiralGalaxy";
+                theme = vm.Theme_SelectedItem.Replace(" ", string.Empty);
 
                 // Change Theme Resource
                 App.Current.Resources.MergedDictionaries.Clear();
@@ -936,7 +414,7 @@ namespace Stellar
             // Spiral Nebula
             else if (vm.Theme_SelectedItem == "Spiral Nebula")
             {
-                theme = "SpiralNebula";
+                theme = vm.Theme_SelectedItem.Replace(" ", string.Empty);
 
                 // Change Theme Resource
                 App.Current.Resources.MergedDictionaries.Clear();
@@ -952,7 +430,7 @@ namespace Stellar
             // Solar Flare
             else if (vm.Theme_SelectedItem == "Solar Flare")
             {
-                theme = "SolarFlare";
+                theme = vm.Theme_SelectedItem.Replace(" ", string.Empty);
 
                 // Change Theme Resource
                 App.Current.Resources.MergedDictionaries.Clear();
@@ -968,7 +446,7 @@ namespace Stellar
             // Flaming Star
             else if (vm.Theme_SelectedItem == "Flaming Star")
             {
-                theme = "FlamingStar";
+                theme = vm.Theme_SelectedItem.Replace(" ", string.Empty);
 
                 // Change Theme Resource
                 App.Current.Resources.MergedDictionaries.Clear();
@@ -984,7 +462,7 @@ namespace Stellar
             // Dark Galaxy
             else if (vm.Theme_SelectedItem == "Dark Galaxy")
             {
-                theme = "DarkGalaxy";
+                theme = vm.Theme_SelectedItem.Replace(" ", string.Empty);
 
                 // Change Theme Resource
                 App.Current.Resources.MergedDictionaries.Clear();
@@ -1000,7 +478,7 @@ namespace Stellar
             // Lagoon
             else if (vm.Theme_SelectedItem == "Lagoon")
             {
-                theme = "Lagoon";
+                theme = vm.Theme_SelectedItem.Replace(" ", string.Empty);
 
                 // Change Theme Resource
                 App.Current.Resources.MergedDictionaries.Clear();
@@ -1016,7 +494,7 @@ namespace Stellar
             // Dark Nebula
             else if (vm.Theme_SelectedItem == "Dark Nebula")
             {
-                theme = "DarkNebula";
+                theme = vm.Theme_SelectedItem.Replace(" ", string.Empty);
 
                 // Change Theme Resource
                 App.Current.Resources.MergedDictionaries.Clear();
@@ -1031,7 +509,7 @@ namespace Stellar
             // Star Dust
             else if (vm.Theme_SelectedItem == "Star Dust")
             {
-                theme = "StarDust";
+                theme = vm.Theme_SelectedItem.Replace(" ", string.Empty);
 
                 // Change Theme Resource
                 App.Current.Resources.MergedDictionaries.Clear();
@@ -1046,7 +524,7 @@ namespace Stellar
             // Chaos
             else if (vm.Theme_SelectedItem == "Chaos")
             {
-                theme = "Chaos";
+                theme = vm.Theme_SelectedItem.Replace(" ", string.Empty);
 
                 // Change Theme Resource
                 App.Current.Resources.MergedDictionaries.Clear();
@@ -1061,7 +539,7 @@ namespace Stellar
             // Cosmic Web
             else if (vm.Theme_SelectedItem == "Cosmic Web")
             {
-                theme = "CosmicWeb";
+                theme = vm.Theme_SelectedItem.Replace(" ", string.Empty);
 
                 // Change Theme Resource
                 App.Current.Resources.MergedDictionaries.Clear();
@@ -1073,27 +551,286 @@ namespace Stellar
                 // Image Credit
                 labelTheme.Content = "Volker Springel, MPA";
             }
+        }
 
-            // -------------------------
-            // Save Selected Theme
-            // -------------------------
+
+        /// <summary>
+        ///    INI Reader
+        /// </summary>
+        /*
+        * Source: GitHub Sn0wCrack
+        * https://gist.github.com/Sn0wCrack/5891612
+        */
+        public partial class INIFile
+        {
+            public string path { get; private set; }
+
+            [DllImport("kernel32", CharSet = CharSet.Unicode)]
+            private static extern long WritePrivateProfileString(string section, string key, string val, string filePath);
+            [DllImport("kernel32", CharSet = CharSet.Unicode)]
+            private static extern int GetPrivateProfileString(string section, string key, string def, StringBuilder retVal, int size, string filePath);
+
+            public INIFile(string INIPath)
+            {
+                path = INIPath;
+            }
+            public void Write(string Section, string Key, string Value)
+            {
+                WritePrivateProfileString(Section, Key, Value, this.path);
+            }
+
+            public string Read(string Section, string Key)
+            {
+                StringBuilder temp = new StringBuilder(255);
+                int i = GetPrivateProfileString(Section, Key, "", temp, 255, this.path);
+                return temp.ToString();
+            }
+        }
+
+
+
+        /// <summary>
+        ///    Export Config
+        /// </summary>
+        public static void ExportConfig(MainWindow mainwindow, ViewModel vm, string configFile)
+        {
+            // Check if Profiles Directory exists
+            bool exists = Directory.Exists(Paths.configDir);
+
+            // If not, create it
+            if (Directory.Exists(Paths.configDir) == false)
+            {
+                // Yes/No Dialog Confirmation
+                //
+                MessageBoxResult resultExport = MessageBox.Show("Config Folder does not exist. Automatically create it?",
+                                                                "Directory Not Found",
+                                                                MessageBoxButton.YesNo,
+                                                                MessageBoxImage.Information);
+                switch (resultExport)
+                {
+                    // Create
+                    case MessageBoxResult.Yes:
+                        try
+                        {
+                            Directory.CreateDirectory(Paths.configDir);
+                        }
+                        catch
+                        {
+                            MessageBox.Show("Could not create Config folder. May require Administrator privileges.",
+                                            "Error",
+                                            MessageBoxButton.OK,
+                                            MessageBoxImage.Error);
+                        }
+                        break;
+                    // Use Default
+                    case MessageBoxResult.No:
+                        break;
+                }
+            }
+
+            // If Dir Exists, Save config file
+            else if (Directory.Exists(Paths.configDir) == true)
+            {
+                // Start INI File Write
+                INIFile inif = new INIFile(configFile);
+
+                // -------------------------
+                // Main Window
+                // -------------------------
+                // Window Position Top
+                inif.Write("Main Window", "Position_Top", Convert.ToString(mainwindow.Top));
+
+                // Window Position Left
+                inif.Write("Main Window", "Position_Left", Convert.ToString(mainwindow.Left));
+
+                // Location
+                inif.Write("Main Window", "Location_Text", vm.Location_Text);
+
+                // Server
+                inif.Write("Main Window", "Server_SelectedItem", vm.Server_SelectedItem);
+
+                // Download
+                inif.Write("Main Window", "Download_SelectedItem", vm.Download_SelectedItem);
+
+                // Architecture
+                inif.Write("Main Window", "Architecture_SelectedItem", vm.Architecture_SelectedItem);
+
+
+                // -------------------------
+                // Configure Window
+                // -------------------------
+                // 7-Zip Path
+                inif.Write("Configure Window", "SevenZipPath_Text", vm.SevenZipPath_Text);
+
+                // WinRAR Path
+                inif.Write("Configure Window", "WinRARPath_Text", vm.WinRARPath_Text);
+
+                // Log Path CheckBox
+                inif.Write("Configure Window", "LogPath_IsChecked", Convert.ToString(vm.LogPath_IsChecked).ToLower());
+
+                // Log Path
+                inif.Write("Configure Window", "LogPath_Text", vm.LogPath_Text);
+
+                // Theme
+                inif.Write("Configure Window", "Theme_SelectedItem", vm.Theme_SelectedItem);
+
+                // Update Auto Check
+                inif.Write("Configure Window", "UpdateAutoCheck_IsChecked", Convert.ToString(vm.UpdateAutoCheck_IsChecked).ToLower());
+            }   
+        }
+
+
+        public static void ImportConfig(MainWindow mainwindow, ViewModel vm, string configFile)
+        {
             try
             {
-                // Save Theme
-                Settings.Default.themes = Configure.theme;
-                Settings.Default.Save();
-                Settings.Default.Reload();
+                List<string> listFailedImports = new List<string>();
 
-                // Save ComboBox Selected Item
-                Settings.Default.comboBoxThemes = vm.Theme_SelectedItem;
-                Settings.Default.Save();
-                Settings.Default.Reload();
+                // Start INI File Read
+                INIFile inif = null;
+                if (File.Exists(configFile) == true)
+                {
+                    inif = new INIFile(configFile);
+                }
+
+                // -------------------------
+                // Main Window
+                // -------------------------
+                // Window Position Top
+                double? top = Double.Parse(inif.Read("Main Window", "Position_Top"));
+                if (top != null)
+                {
+                    mainwindow.Top = Convert.ToDouble(inif.Read("Main Window", "Position_Top"));
+                }
+
+                // Window Position Left
+                double? left = Double.Parse(inif.Read("Main Window", "Position_Left"));
+                if (left != null)
+                {
+                    mainwindow.Left = Convert.ToDouble(inif.Read("Main Window", "Position_Left"));
+                }
+
+                // Location
+                vm.Location_Text = inif.Read("Main Window", "Location_Text");
+
+                // Server
+                string server = inif.Read("Main Window", "Server_SelectedItem");
+                if (vm.Server_Items.Contains(server))
+                    vm.Server_SelectedItem = server;
+                else
+                    listFailedImports.Add("Main Window: Server");
+
+                // Download
+                string download = inif.Read("Main Window", "Download_SelectedItem");
+                if (vm.Download_Items.Contains(download))
+                    vm.Download_SelectedItem = download;
+                else
+                    listFailedImports.Add("Main Window: Download");
+
+                // Architecture
+                string architecture = inif.Read("Main Window", "Architecture_SelectedItem");
+                if (vm.Architecture_Items.Contains(architecture))
+                    vm.Architecture_SelectedItem = architecture;
+                else
+                    listFailedImports.Add("Main Window: Architecture");
+
+                // -------------------------
+                // Configure Window
+                // -------------------------
+                // 7-Zip Path
+                vm.SevenZipPath_Text = inif.Read("Configure Window", "SevenZipPath_Text");
+
+                // WinRAR Path
+                vm.WinRARPath_Text = inif.Read("Configure Window", "WinRARPath_Text");
+
+                // Logh Path
+                vm.LogPath_IsChecked = Convert.ToBoolean(inif.Read("Configure Window", "LogPath_IsChecked").ToLower());
+
+                // Log Path CheckBox
+                vm.LogPath_Text = inif.Read("Configure Window", "LogPath_Text");
+
+                // Theme
+                string theme = inif.Read("Configure Window", "Theme_SelectedItem");
+                if (vm.Theme_Items.Contains(theme))
+                    vm.Theme_SelectedItem = theme;
+                else
+                    listFailedImports.Add("Main Window: Theme");
+
+                // Update Auto Check
+                vm.UpdateAutoCheck_IsChecked = Convert.ToBoolean(inif.Read("Configure Window", "UpdateAutoCheck_IsChecked").ToLower());
+
+
+                // --------------------------------------------------
+                // Failed Imports
+                // --------------------------------------------------
+                if (listFailedImports.Count > 0 && listFailedImports != null)
+                {
+                    failedImportMessage = string.Join(Environment.NewLine, listFailedImports);
+
+                    // Detect which screen we're on
+                    var allScreens = System.Windows.Forms.Screen.AllScreens.ToList();
+                    var thisScreen = allScreens.SingleOrDefault(s => mainwindow.Left >= s.WorkingArea.Left && mainwindow.Left < s.WorkingArea.Right);
+
+                    // Start Window
+                    FailedImportWindow failedimportwindow = new FailedImportWindow();
+
+                    // Position Relative to MainWindow
+                    failedimportwindow.Left = Math.Max((mainwindow.Left + (mainwindow.Width - failedimportwindow.Width) / 2), thisScreen.WorkingArea.Left);
+                    failedimportwindow.Top = Math.Max((mainwindow.Top + (mainwindow.Height - failedimportwindow.Height) / 2), thisScreen.WorkingArea.Top);
+
+                    // Open Window
+                    failedimportwindow.Show();
+                }
             }
+
+            // Error Loading config.ini
+            //
             catch
             {
+                // Delete config.ini and Restart
+                // Check if config.ini Exists
+                if (File.Exists(Paths.configFile))
+                {
+                    // Yes/No Dialog Confirmation
+                    //
+                    MessageBoxResult result = MessageBox.Show(
+                        "Could not load config.ini. \n\nDelete config and reload defaults?",
+                        "Error",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Error);
+                    switch (result)
+                    {
+                        // Create
+                        case MessageBoxResult.Yes:
+                            File.Delete(Paths.configFile);
 
+                            // Reload Control Defaults
+                            LoadDefaults(mainwindow, vm);
+
+                            // Restart Program
+                            Process.Start(Application.ResourceAssembly.Location);
+                            Application.Current.Shutdown();
+                            break;
+
+                        // Use Default
+                        case MessageBoxResult.No:
+                            // Force Shutdown
+                            System.Windows.Forms.Application.ExitThread();
+                            Environment.Exit(0);
+                            return;
+                    }
+                }
+                // If config.ini Not Found
+                else
+                {
+                    MessageBox.Show("No Previous Config File Found.",
+                                    "Notice",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Information);
+
+                    return;
+                }
             }
-
         }
 
 

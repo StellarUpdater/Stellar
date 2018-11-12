@@ -51,16 +51,6 @@ namespace Stellar
         // --------------------------------------------------
         public ViewModel()
         {
-            // --------------------------------------------------
-            // StartUp Defaults
-            // --------------------------------------------------
-            // Main Window
-            Download_SelectedItem = "RetroArch";
-            Architecture_SelectedItem = "64-Bit";
-            Server_SelectedItem = "buildbot";
-            Update_Text = "Update";
-            //UpdateAutoCheck_IsChecked = true;
-            //UpdateAutoCheck_Text = "On";
         }
 
         // ----------------------------------------------------------------------------------------------------
@@ -413,19 +403,19 @@ namespace Stellar
         // 7-Zip - TextBox
         // --------------------------------------------------
         // Text
-        private string _SevenZip_Text;
-        public string SevenZip_Text
+        private string _SevenZipPath_Text;
+        public string SevenZipPath_Text
         {
-            get { return _SevenZip_Text; }
+            get { return _SevenZipPath_Text; }
             set
             {
-                if (_SevenZip_Text == value)
+                if (_SevenZipPath_Text == value)
                 {
                     return;
                 }
 
-                _SevenZip_Text = value;
-                OnPropertyChanged("SevenZip_Text");
+                _SevenZipPath_Text = value;
+                OnPropertyChanged("SevenZipPath_Text");
             }
         }
 
@@ -434,19 +424,19 @@ namespace Stellar
         // WinRAR - TextBox
         // --------------------------------------------------
         // Text
-        private string _WinRAR_Text;
-        public string WinRAR_Text
+        private string _WinRARPath_Text;
+        public string WinRARPath_Text
         {
-            get { return _WinRAR_Text; }
+            get { return _WinRARPath_Text; }
             set
             {
-                if (_WinRAR_Text == value)
+                if (_WinRARPath_Text == value)
                 {
                     return;
                 }
 
-                _WinRAR_Text = value;
-                OnPropertyChanged("WinRAR_Text");
+                _WinRARPath_Text = value;
+                OnPropertyChanged("WinRARPath_Text");
             }
         }
 

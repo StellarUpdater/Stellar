@@ -626,7 +626,7 @@
                PreviewMouseDown="labelLocation_PreviewMouseDown"
                ToolTip="Click and Select your RetroArch Folder Path." />
 
-        <TextBox x:Name="textBoxLocation"
+        <TextBox x:Name="tbxLocation"
                  Text="{Binding Location_Text, Mode=TwoWay}"
                  IsEnabled="{Binding Location_IsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"                  
                  Style="{DynamicResource TextBoxStyleCustom}"
@@ -637,8 +637,8 @@
                  Width="369" 
                  Background="Black" 
                  Foreground="White" 
-                 PreviewMouseDown="textBoxLocation_PreviewMouseDown" 
-                 TextChanged="textBoxLocation_TextChanged" 
+                 PreviewMouseDown="tbxLocation_PreviewMouseDown" 
+                 TextChanged="tbxLocation_TextChanged" 
                  ToolTip="Click and Select your RetroArch Folder Path." />
 
 
