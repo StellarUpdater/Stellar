@@ -622,9 +622,9 @@ namespace Stellar
         private void buttonRetroArchExplorer_Click(object sender, RoutedEventArgs e)
         {
             // Paths.retroarchPath string is set when user chooses location from textbox
-            if (Paths.retroarchPath != "")
+            if (!string.IsNullOrEmpty(vm.RetroArchPath_Text))
             {
-                Process.Start("explorer.exe", @Paths.retroarchPath);
+                Process.Start("explorer.exe", @vm.RetroArchPath_Text);
             }
             else
             {
