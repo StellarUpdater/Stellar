@@ -30,11 +30,10 @@ namespace Stellar
         public static string tempPath = System.IO.Path.GetTempPath();
 
         // System Paths
-        // Paths
         public static string appDir = AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\') + @"\"; // Stellar.exe directory
         public static string userDir = Environment.ExpandEnvironmentVariables(@"%USERPROFILE%").TrimEnd('\\') + @"\"; // C:\Users\User1\
         public static string appDataDir = userDir + @"AppData\Roaming\Stellar\"; // %AppData%
-        public static string configDir = appDir; // config.ini
+        public static string configDir = appDir; // config.ini Folder
         public static string configFile = appDir + "config.ini"; // config.ini
         public static string retroarchPath; // Location of User's RetroArch Folder
         public static string coresPath; // Location of User's cores folder

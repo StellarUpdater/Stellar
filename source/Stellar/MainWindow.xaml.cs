@@ -46,7 +46,7 @@ namespace Stellar
     public partial class MainWindow : Window
     {
         // View Model
-        public ViewModel vm = new ViewModel();
+        public static ViewModel vm = new ViewModel();
 
         // Current Version
         public static Version currentVersion;
@@ -224,6 +224,8 @@ namespace Stellar
             // Export Defaults & Currently Selected
             else if (File.Exists(Paths.configFile) == false)
             {
+                Configure.INIFile inif = new Configure.INIFile(Paths.configFile);
+
                 Configure.ExportConfig(this, vm, Paths.configFile);
             }
 
@@ -949,11 +951,10 @@ namespace Stellar
         }
 
 
-        // -----------------------------------------------
-        // Update Button
-        // -----------------------------------------------
-        // Launches Download and 7-Zip Extraction
-        private void buttonUpdate_Click(object sender, RoutedEventArgs e)
+        // ----------------------------------------------------------------------------------------------
+        // Update
+        // ----------------------------------------------------------------------------------------------
+        public void Update()
         {
             Download.waiter.Reset();
             Download.waiter = new ManualResetEvent(false);
@@ -978,7 +979,7 @@ namespace Stellar
 
 
             // If RetroArch Path is empty, halt progress
-            if (string.IsNullOrEmpty(Paths.retroarchPath) 
+            if (string.IsNullOrEmpty(Paths.retroarchPath)
                 && vm.Download_SelectedItem != "Stellar") // ignore if Stellar Self Update
             {
                 ready = false;
@@ -1060,7 +1061,7 @@ namespace Stellar
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Warning);
                     }
-                }              
+                }
             }
 
 
@@ -1097,8 +1098,8 @@ namespace Stellar
             // RetroArch+Cores or Cores Only Update
             // -----------------------------------------------
             if (vm.Download_SelectedItem == "New Install"
-                || vm.Download_SelectedItem == "RA+Cores" 
-                || vm.Download_SelectedItem == "Cores" 
+                || vm.Download_SelectedItem == "RA+Cores"
+                || vm.Download_SelectedItem == "Cores"
                 || vm.Download_SelectedItem == "New Cores")
             {
                 // Progress Info
@@ -1148,6 +1149,15 @@ namespace Stellar
                 // Call Garbage Collector
                 GC.Collect();
             }
+        }
+
+        // -----------------------------------------------
+        // Update Button
+        // -----------------------------------------------
+        // Launches Download and 7-Zip Extraction
+        private void buttonUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            Update();
         }
 
     }
