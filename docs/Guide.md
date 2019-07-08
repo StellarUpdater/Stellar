@@ -34,7 +34,7 @@ Program needs [7-zip](http://www.7-zip.org/download.html) installed in order to 
 - `RetroArch` - Updates RetroArch to the latest version, excluding Redistributables and Configs.
 - `RA + Cores` - Updates RetroArch and currently installed Cores.
 - `Cores` - Updates currently installed Cores.
-- `New Cores` - Installs Cores that are newly releseased or missing from your current install.
+- `New Cores` - Installs Cores that are newly released or missing from your current install.
 - `Redist` - Installs Redistributables. Helpful if RetroArch won't start after update.
 - `Stellar` - Updates Stellar
 <br>
