@@ -168,7 +168,7 @@
             Width="332"/>
 
         <ListView x:Name="listViewCoresToUpdate" 
-                  Margin="11,43,0,60" 
+                  Margin="11,45,0,62" 
                   Background="Transparent"
                   Foreground="White"
                   BorderThickness="0"
@@ -266,7 +266,7 @@
 
         <!-- Select All -->
         <Button x:Name="buttonSelectAll" 
-                Margin="34,0,0,18" 
+                Margin="29,0,0,18" 
                 Click="buttonSelectAll_Click" 
                 Background="Black" 
                 Foreground="White" 
@@ -282,7 +282,7 @@
 
         <!-- Deselect All -->
         <Button x:Name="buttonDeselectAll"
-                Margin="117,0,0,18" 
+                Margin="112,0,0,18" 
                 Background="Black" 
                 Foreground="White" 
                 BorderBrush="White" 
@@ -298,7 +298,7 @@
 
         <!-- Advanced -->
         <Button x:Name="buttonAdvanced"
-                Margin="200,0,0,18" 
+                Margin="195,0,0,18" 
                 Background="Black"
                 Foreground="White" 
                 BorderBrush="White"
@@ -314,7 +314,7 @@
 
         <!-- OK -->
         <Button x:Name="btnOK"
-                Margin="283,0,0,18" 
+                Margin="278,0,0,18" 
                 Background="Black"
                 Foreground="White" 
                 BorderBrush="White"
@@ -341,8 +341,8 @@
 
         <ListView x:Name="listBoxPcCoresNameDate" 
                   HorizontalAlignment="Left"
-                  Height="338"
-                  Margin="357,43,-363,0" 
+                  Height="334"
+                  Margin="357,45,-363,0" 
                   VerticalAlignment="Top" 
                   Width="360"
                   Background="Transparent" 
@@ -454,8 +454,8 @@
 
         <ListView x:Name="listBoxBuildbotCoresNameDate" 
                   HorizontalAlignment="Left" 
-                  Height="338" 
-                  Margin="741,43,-747,0" 
+                  Height="334" 
+                  Margin="741,45,-747,0" 
                   VerticalAlignment="Top"
                   Width="360" 
                   Background="Transparent"
