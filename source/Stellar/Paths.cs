@@ -46,12 +46,12 @@ namespace Stellar
         // -----------------------------------------------
         // Select Architecture, Change URL to Parse
         // -----------------------------------------------
-        public static void SetArchitecture(ViewModel vm) // Method
+        public static void SetArchitecture() // Method
         {
             // -------------------------
             // auto Server
             // -------------------------
-            if (vm.Server_SelectedItem == "auto")
+            if (VM.MainView.Server_SelectedItem == "auto")
             {
                 Parse.libretro_x86 = "https://raw.libretro.com/nightly/windows/x86/"; // Download URL 32-bit
                 Parse.libretro_x86_64 = "https://raw.libretro.com/nightly/windows/x86_64/"; // Download URL 64-bit
@@ -61,7 +61,7 @@ namespace Stellar
             // -------------------------
             // raw Server
             // -------------------------
-            else if (vm.Server_SelectedItem == "raw")
+            else if (VM.MainView.Server_SelectedItem == "raw")
             {
                 Parse.libretro_x86 = "https://raw.libretro.com/nightly/windows/x86/"; // Download URL 32-bit
                 Parse.libretro_x86_64 = "https://raw.libretro.com/nightly/windows/x86_64/"; // Download URL 64-bit
@@ -71,7 +71,7 @@ namespace Stellar
             // -------------------------
             // buildbot Server
             // -------------------------
-            else if (vm.Server_SelectedItem == "buildbot")
+            else if (VM.MainView.Server_SelectedItem == "buildbot")
             {
                 // Change Server to Buildbot
                 Parse.libretro_x86 = "https://buildbot.libretro.com/nightly/windows/x86/"; // Download URL 32-bit
@@ -83,7 +83,7 @@ namespace Stellar
             // -------------------------
             // If 32-bit Selected, change Download Architecture to x86
             // -------------------------
-            if (vm.Architecture_SelectedItem == "32-bit")
+            if (VM.MainView.Architecture_SelectedItem == "32-bit")
             {
                 // Set Parse URL
                 Parse.parseUrl = Parse.libretro_x86;
@@ -98,7 +98,7 @@ namespace Stellar
             // -------------------------
             // If 64-bit Selected, change Download Architecture to x86_64
             // -------------------------
-            else if (vm.Architecture_SelectedItem == "64-bit")
+            else if (VM.MainView.Architecture_SelectedItem == "64-bit")
             {
                 // Set Parse URL
                 Parse.parseUrl = Parse.libretro_x86_64;
@@ -117,49 +117,49 @@ namespace Stellar
         // Set URLs
         // -----------------------------------------------
         // Display URLs in Download Textbox
-        public static void SetUrls(ViewModel vm)
+        public static void SetUrls()
         {
             // -------------------------
             // If New Install Selected, Textbox will display URL
             // -------------------------
             //
-            if (vm.Download_SelectedItem == "New Install")
+            if (VM.MainView.Download_SelectedItem == "New Install")
             {
-                vm.DownloadURL_Text = Parse.parseUrl;
+                VM.MainView.DownloadURL_Text = Parse.parseUrl;
             }
 
             // -------------------------
             // If RA+Cores or Cores Selected, Textbox will display URL
             // -------------------------
-            else if (vm.Download_SelectedItem == "RA+Cores" 
-                || vm.Download_SelectedItem == "RetroArch")
+            else if (VM.MainView.Download_SelectedItem == "RA+Cores" ||
+                     VM.MainView.Download_SelectedItem == "RetroArch")
             {
-                vm.DownloadURL_Text = Parse.parseUrl;
+                VM.MainView.DownloadURL_Text = Parse.parseUrl;
             }
 
             // -------------------------
             // If Cores Selected, Textbox will display URL
             // -------------------------
-            else if (vm.Download_SelectedItem == "Cores" 
-                || vm.Download_SelectedItem == "New Cores")
+            else if (VM.MainView.Download_SelectedItem == "Cores" ||
+                     VM.MainView.Download_SelectedItem == "New Cores")
             {
-                vm.DownloadURL_Text = Parse.parseCoresUrl;
+                VM.MainView.DownloadURL_Text = Parse.parseCoresUrl;
             }
 
             // -------------------------
             // If Redist Selected, Textbox will display URL
             // -------------------------
-            else if (vm.Download_SelectedItem == "Redist")
+            else if (VM.MainView.Download_SelectedItem == "Redist")
             {
-                vm.DownloadURL_Text = Parse.parseUrl;
+                VM.MainView.DownloadURL_Text = Parse.parseUrl;
             }
 
             // -------------------------
             // If Stellar Selected, Textbox will display URL
             // -------------------------
-            else if (vm.Download_SelectedItem == "Stellar")
+            else if (VM.MainView.Download_SelectedItem == "Stellar")
             {
-                vm.DownloadURL_Text = Parse.parseGitHubUrl;
+                VM.MainView.DownloadURL_Text = Parse.parseGitHubUrl;
             }
 
         }

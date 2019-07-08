@@ -26,17 +26,29 @@
         xmlns:System="clr-namespace:System;assembly=mscorlib" 
         xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
         xmlns:Themes1="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2" 
+        xmlns:my="clr-namespace:Stellar"
+        xmlns:local="clr-namespace:Stellar"
+        xmlns:settings="clr-namespace:Stellar.Properties"
         mc:Ignorable="d"
        
         Title="Checklist" 
         Icon="Resources/Images/Icons/checklist.ico"
         Height="470"
-        Width="340" 
+        Width="360" 
         Foreground="White"
         ResizeMode="CanMinimize" 
         UseLayoutRounding="True"
         >
+
+    <Window.DataContext>
+        <local:VM/>
+    </Window.DataContext>
+
+
     <Window.Resources>
+
+        <local:IndexConverter x:Key="IndexConverter" />
+
         <SolidColorBrush x:Key="ListBorder" Color="#828790"/>
         <Style x:Key="{x:Static GridView.GridViewScrollViewerStyleKey}" TargetType="{x:Type ScrollViewer}">
             <Setter Property="Focusable" Value="false"/>
@@ -138,41 +150,44 @@
             </Setter>
         </Style>
     </Window.Resources>
+
     <Window.Background>
         <ImageBrush ImageSource="Resources/Images/Backgrounds/Checklist.jpg" Stretch="None"/>
     </Window.Background>
-    
+
     <Grid>
 
         <!-- ListView Cores To Download -->
         <Label 
             Content="Cores To Download" 
-            HorizontalContentAlignment="Center" 
-            HorizontalAlignment="Left"
+            HorizontalContentAlignment="Center"
             Margin="10,9,0,0" 
             VerticalAlignment="Top"
             Foreground="White" 
-            Width="303"/>
-        
-        <ListView x:Name="listViewUpdatedCores" 
-                    HorizontalAlignment="Left" 
-                    Height="338" 
-                    Margin="11,40,0,0"
-                    VerticalAlignment="Top" 
-                    Width="302" 
-                    Background="Transparent"
-                    Foreground="White"
-                    BorderThickness="0"
-                    SelectionMode="Multiple"
-                    ItemsSource="{Binding}"
-                    IsSynchronizedWithCurrentItem="True"
-                    SelectionChanged="listViewUpdatedCores_SelectionChanged">
+            HorizontalAlignment="Left"
+            Width="332"/>
+
+        <ListView x:Name="listViewCoresToUpdate" 
+                  Margin="11,43,0,60" 
+                  Background="Transparent"
+                  Foreground="White"
+                  BorderThickness="0"
+                  SelectionMode="Multiple"
+                  ItemsSource="{Binding}"
+                  IsSynchronizedWithCurrentItem="True"
+                  ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                  SelectionChanged="listViewUpdatedCores_SelectionChanged" 
+                  HorizontalAlignment="Left" 
+                  Width="320">
             <ListView.Resources>
                 <Style TargetType="{x:Type GridViewColumnHeader}">
                     <Setter Property="Visibility" Value="Collapsed" />
                 </Style>
                 <Style TargetType="ListViewItem">
-
+                </Style>
+                <Style TargetType="ScrollBar">
+                    <Setter Property="Background" Value="#FF000000"/>
+                    <Setter Property="BorderBrush" Value="#FF000000"/>
                 </Style>
             </ListView.Resources>
             <ListView.ItemContainerStyle>
@@ -186,18 +201,18 @@
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type ListViewItem}">
-                                <Border CornerRadius="2" SnapsToDevicePixels="True"  
+                                <Border CornerRadius="0" SnapsToDevicePixels="True"  
                                 BorderThickness="{TemplateBinding BorderThickness}"   
                                 BorderBrush="{TemplateBinding BorderBrush}"   
                                 Background="{TemplateBinding Background}">
-                                    <Border Name="InnerBorder" CornerRadius="1" BorderThickness="1">
+                                    <Border Name="InnerBorder" CornerRadius="1" BorderThickness="0">
                                         <Grid>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition MaxHeight="11" />
                                                 <RowDefinition />
                                             </Grid.RowDefinitions>
 
-                                            <Rectangle Name="UpperHighlight" Visibility="Collapsed" Fill="#75FFFFFF" />
+                                            <Rectangle Name="UpperHighlight" Visibility="Collapsed" Fill="Transparent" />
                                             <GridViewRowPresenter Grid.RowSpan="2"   
                                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}"   
                                             SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
@@ -210,29 +225,6 @@
                                         <Setter Property="BorderBrush" Value="#FF06b025" />
                                         <Setter TargetName="UpperHighlight" Property="Visibility" Value="Visible" />
                                     </Trigger>
-                                    <!--<Trigger Property="IsSelected" Value="True">
-                                <Setter Property="Background" Value="{StaticResource ListItemSelectedFill}" />
-                                <Setter Property="BorderBrush" Value="#FF98DDFB" />
-                                <Setter TargetName="InnerBorder" Property="BorderBrush" Value="#80FFFFFF" />
-                                <Setter TargetName="UpperHighlight" Property="Visibility" Value="Visible" />
-                                <Setter TargetName="UpperHighlight" Property="Fill" Value="#40FFFFFF" />
-                            </Trigger>-->
-                                    <!--<MultiTrigger> 
-                <MultiTrigger.Conditions> 
-                    <Condition Property="IsSelected" Value="True" /> 
-                    <Condition Property="Selector.IsSelectionActive" Value="False" /> 
-                </MultiTrigger.Conditions> 
-                <Setter Property="Background" Value="{StaticResource ListItemSelectedInactiveFill}" /> 
-                <Setter Property="BorderBrush" Value="#FFCFCFCF" /> 
-            </MultiTrigger>-->
-                                    <!--<MultiTrigger>
-                                <MultiTrigger.Conditions>
-                                    <Condition Property="IsSelected" Value="True" />
-                                    <Condition Property="IsMouseOver" Value="True" />
-                                </MultiTrigger.Conditions>
-                                <Setter Property="Background" Value="{StaticResource ListItemSelectedHoverFill}" />
-                                <Setter Property="BorderBrush" Value="#FF98DDFB" />
-                            </MultiTrigger>-->
                                     <Trigger Property="IsEnabled" Value="False">
                                         <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
                                     </Trigger>
@@ -241,59 +233,132 @@
                         </Setter.Value>
                     </Setter>
                 </Style>
+
             </ListView.ItemContainerStyle>
-            <!-- List Checkboxes -->
+
+            <!-- Cores to Download List -->
             <ListView.View>
                 <GridView>
+
+                    <!-- Checkboxes Column -->
                     <GridViewColumn>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <CheckBox Tag="{Binding ItemCore}" IsChecked="{Binding IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListViewItem}}}" />
+                                <CheckBox IsChecked="{Binding IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListViewItem}}}" />
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
+
+                    <!-- Index Column -->
+                    <GridViewColumn Width="35" 
+                                    DisplayMemberBinding="{Binding RelativeSource=
+                                    {RelativeSource FindAncestor, AncestorType={x:Type ListViewItem}}, 
+                                    Converter={StaticResource IndexConverter}}" />
+
+                    <!--Names Column -->
                     <GridViewColumn>
                         <GridViewColumn/>
                     </GridViewColumn>
+
                 </GridView>
             </ListView.View>
         </ListView>
-        <Button x:Name="buttonSelectAll" HorizontalAlignment="Left" Margin="37,391,0,0" VerticalAlignment="Top" Width="75" Click="buttonSelectAll_Click" Background="Black" Foreground="White" BorderBrush="White" Height="23" Cursor="Hand">
-            <TextBlock Text="Select All" Margin="0,-1,0,0"/>
+
+        <!-- Select All -->
+        <Button x:Name="buttonSelectAll" 
+                Margin="34,0,0,18" 
+                Click="buttonSelectAll_Click" 
+                Background="Black" 
+                Foreground="White" 
+                BorderBrush="White" 
+                Cursor="Hand" 
+                Height="23" 
+                HorizontalAlignment="Left" 
+                VerticalAlignment="Bottom"
+                Width="75">
+            <TextBlock Text="Select All" 
+                       Margin="0,-1,0,0"/>
         </Button>
-        <Button x:Name="buttonDeselectAll" HorizontalAlignment="Left" Margin="124,391,0,0" VerticalAlignment="Top" Width="75" Background="Black" Foreground="White" BorderBrush="White" Height="23" Click="buttonDeselectAll_Click" Cursor="Hand">
-            <TextBlock Text="Deselect All" Margin="0,-1,0,0"/>
+
+        <!-- Deselect All -->
+        <Button x:Name="buttonDeselectAll"
+                Margin="117,0,0,18" 
+                Background="Black" 
+                Foreground="White" 
+                BorderBrush="White" 
+                Click="buttonDeselectAll_Click" 
+                Cursor="Hand" 
+                Height="23" 
+                VerticalAlignment="Bottom" 
+                HorizontalAlignment="Left" 
+                Width="75">
+            <TextBlock Text="Deselect All" 
+                       Margin="0,-1,0,0"/>
         </Button>
-        <Button x:Name="buttonAdvanced" HorizontalAlignment="Left" Margin="211,391,0,0" VerticalAlignment="Top" Width="75" Background="Black" Foreground="White" BorderBrush="White" Height="23" Click="buttonAdvanced_Click" Cursor="Hand">
-            <TextBlock Text="Advanced" Margin="0,-1,0,0"/>
+
+        <!-- Advanced -->
+        <Button x:Name="buttonAdvanced"
+                Margin="200,0,0,18" 
+                Background="Black"
+                Foreground="White" 
+                BorderBrush="White"
+                Click="buttonAdvanced_Click" 
+                Cursor="Hand" 
+                Height="23" 
+                VerticalAlignment="Bottom" 
+                HorizontalAlignment="Left"
+                Width="75">
+            <TextBlock Text="Advanced" 
+                       Margin="0,-1,0,0"/>
         </Button>
-        
-        
+
+        <!-- OK -->
+        <Button x:Name="btnOK"
+                Margin="283,0,0,18" 
+                Background="Black"
+                Foreground="White" 
+                BorderBrush="White"
+                Cursor="Hand" 
+                Click="btnOK_Click" 
+                Height="23" 
+                VerticalAlignment="Bottom" 
+                HorizontalAlignment="Left" 
+                Width="37">
+            <TextBlock Text="OK" 
+                       Margin="0,-1,0,0"/>
+        </Button>
+
+
         <!-- ListView PC Core Dates -->
         <Label
             Content="PC Core Dates"
             HorizontalContentAlignment="Center" 
             HorizontalAlignment="Left" 
-            Margin="365,9,-334,0"
+            Margin="385,9,-334,0"
             VerticalAlignment="Top"
             Foreground="White" 
             Width="303"/>
-        
+
         <ListView x:Name="listBoxPcCoresNameDate" 
-                HorizontalAlignment="Left"
-                Height="338"
-                Margin="337,40,-363,0" 
-                VerticalAlignment="Top" 
-                Width="360"
-                Background="Transparent" 
-                Foreground="White"
-                BorderThickness="0"
-                SelectionMode="Multiple"
-                ItemsSource="{Binding}"
-                IsSynchronizedWithCurrentItem="True">
+                  HorizontalAlignment="Left"
+                  Height="338"
+                  Margin="357,43,-363,0" 
+                  VerticalAlignment="Top" 
+                  Width="360"
+                  Background="Transparent" 
+                  Foreground="White"
+                  BorderThickness="0"
+                  SelectionMode="Multiple"
+                  ItemsSource="{Binding}"
+                  ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                  IsSynchronizedWithCurrentItem="True">
             <ListView.Resources>
                 <Style TargetType="{x:Type GridViewColumnHeader}">
                     <Setter Property="Visibility" Value="Collapsed" />
+                </Style>
+                <Style TargetType="ScrollBar">
+                    <Setter Property="Background" Value="#FF000000"/>
+                    <Setter Property="BorderBrush" Value="#FF000000"/>
                 </Style>
                 <Style TargetType="{x:Type ListViewItem}"/>
             </ListView.Resources>
@@ -314,18 +379,18 @@
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type ListViewItem}">
-                                <Border CornerRadius="2" SnapsToDevicePixels="True"  
+                                <Border CornerRadius="0" SnapsToDevicePixels="True"  
         							BorderThickness="{TemplateBinding BorderThickness}"   
         							BorderBrush="{TemplateBinding BorderBrush}"   
         							Background="{TemplateBinding Background}">
-                                    <Border x:Name="InnerBorder" CornerRadius="1" BorderThickness="1">
+                                    <Border x:Name="InnerBorder" CornerRadius="1" BorderThickness="0">
                                         <Grid>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition MaxHeight="11" />
                                                 <RowDefinition />
                                             </Grid.RowDefinitions>
 
-                                            <Rectangle x:Name="UpperHighlight" Visibility="Collapsed" Fill="#75FFFFFF" />
+                                            <Rectangle x:Name="UpperHighlight" Visibility="Collapsed" Fill="Transparent" />
                                             <GridViewRowPresenter Grid.RowSpan="2"   
         										VerticalAlignment="{TemplateBinding VerticalContentAlignment}"   
         										SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
@@ -355,42 +420,58 @@
                     </Setter>
                 </Style>
             </ListView.ItemContainerStyle>
+
+            <!-- PC Cores List -->
             <ListView.View>
                 <GridView>
 
+                    <!-- Index Column -->
+                    <GridViewColumn Width="35" 
+                                    DisplayMemberBinding="{Binding RelativeSource=
+                                    {RelativeSource FindAncestor, AncestorType={x:Type ListViewItem}}, 
+                                    Converter={StaticResource IndexConverter}}" />
+
+                    <!-- Names Column -->
                     <GridViewColumn>
                         <GridViewColumn/>
                     </GridViewColumn>
+
                 </GridView>
             </ListView.View>
+
         </ListView>
-        
-        
+
+
         <!-- ListView Buildbot Core Dates -->
         <Label
             Content="Buildbot Core Dates" 
             HorizontalContentAlignment="Center"
             HorizontalAlignment="Left" 
-            Margin="749,9,-718,0" 
+            Margin="769,9,-718,0" 
             VerticalAlignment="Top" 
             Foreground="White" 
             Width="303"/>
-        
+
         <ListView x:Name="listBoxBuildbotCoresNameDate" 
-                    HorizontalAlignment="Left" 
-                    Height="338" 
-                    Margin="721,40,-747,0" 
-                    VerticalAlignment="Top"
-                    Width="360" 
-                    Background="Transparent"
-                    Foreground="White" 
-                    BorderThickness="0"
-                    SelectionMode="Multiple"
-                    ItemsSource="{Binding}"
-                    IsSynchronizedWithCurrentItem="True">
+                  HorizontalAlignment="Left" 
+                  Height="338" 
+                  Margin="741,43,-747,0" 
+                  VerticalAlignment="Top"
+                  Width="360" 
+                  Background="Transparent"
+                  Foreground="White" 
+                  BorderThickness="0"
+                  SelectionMode="Multiple"
+                  ItemsSource="{Binding}"
+                  ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                  IsSynchronizedWithCurrentItem="True">
             <ListView.Resources>
                 <Style TargetType="{x:Type GridViewColumnHeader}">
                     <Setter Property="Visibility" Value="Collapsed" />
+                </Style>
+                <Style TargetType="ScrollBar">
+                    <Setter Property="Background" Value="#FF000000"/>
+                    <Setter Property="BorderBrush" Value="#FF000000"/>
                 </Style>
                 <Style TargetType="{x:Type ListViewItem}"/>
             </ListView.Resources>
@@ -411,18 +492,18 @@
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type ListViewItem}">
-                                <Border CornerRadius="2" SnapsToDevicePixels="True"  
+                                <Border CornerRadius="0" SnapsToDevicePixels="True"  
         							BorderThickness="{TemplateBinding BorderThickness}"   
         							BorderBrush="{TemplateBinding BorderBrush}"   
         							Background="{TemplateBinding Background}">
-                                    <Border x:Name="InnerBorder" CornerRadius="1" BorderThickness="1">
+                                    <Border x:Name="InnerBorder" CornerRadius="1" BorderThickness="0">
                                         <Grid>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition MaxHeight="11" />
                                                 <RowDefinition />
                                             </Grid.RowDefinitions>
 
-                                            <Rectangle x:Name="UpperHighlight" Visibility="Collapsed" Fill="#75FFFFFF" />
+                                            <Rectangle x:Name="UpperHighlight" Visibility="Collapsed" Fill="Transparent" />
                                             <GridViewRowPresenter Grid.RowSpan="2"   
         										VerticalAlignment="{TemplateBinding VerticalContentAlignment}"   
         										SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
@@ -451,15 +532,25 @@
                     </Setter>
                 </Style>
             </ListView.ItemContainerStyle>
+
+            <!-- Buildbot Cores List -->
             <ListView.View>
                 <GridView>
 
+                    <!-- Index Column -->
+                    <GridViewColumn Width="35" 
+                                    DisplayMemberBinding="{Binding RelativeSource=
+                                    {RelativeSource FindAncestor, AncestorType={x:Type ListViewItem}}, 
+                                    Converter={StaticResource IndexConverter}}" />
+
+                    <!-- Names Column -->
                     <GridViewColumn>
                         <GridViewColumn/>
                     </GridViewColumn>
+
                 </GridView>
             </ListView.View>
         </ListView>
-        
+
     </Grid>
 </Window>

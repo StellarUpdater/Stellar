@@ -43,7 +43,7 @@ namespace Stellar
         //        // -------------------------
         //        if (args.Contains("-download cores"))
         //        {
-        //            vm.Download_SelectedItem = "Cores";
+        //            VM.MainView.Download_SelectedItem = "Cores";
         //        }
 
         //        // -------------------------
@@ -51,7 +51,7 @@ namespace Stellar
         //        // -------------------------
         //        if (args.Contains("-arch 64-bit"))
         //        {
-        //            vm.Architecture_SelectedItem = "64-bit";
+        //            VM.MainView.Architecture_SelectedItem = "64-bit";
         //        }
 
         //        // -------------------------
@@ -59,7 +59,7 @@ namespace Stellar
         //        // -------------------------
         //        if (args.Contains("-server buildbot"))
         //        {
-        //            vm.Server_SelectedItem = "buildbot";
+        //            VM.MainView.Server_SelectedItem = "buildbot";
         //        }
 
         //        // -------------------------

@@ -60,14 +60,14 @@ namespace Stellar
         // -----------------------------------------------
         private void btnTest_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel vm = mainwindow.DataContext as ViewModel;
+            //() = mainwindow.DataContext as MainViewModel;
 
             // -------------------------
             // Check
             // -------------------------
-            if (vm.Download_SelectedItem == "RA+Cores"
-            || vm.Download_SelectedItem == "Cores"
-            || vm.Download_SelectedItem == "New Cores")
+            if (VM.MainView.Download_SelectedItem == "RA+Cores" ||
+                VM.MainView.Download_SelectedItem == "Cores" ||
+                VM.MainView.Download_SelectedItem == "New Cores")
             {
                 // -------------------------
                 // Clear
@@ -153,50 +153,50 @@ namespace Stellar
                     Queue.Collection_ExcludedCores_Name = null;
                 }
                 // Updated ObservableCollection
-                if (Queue.Collection_UpdatedCores_Name != null)
+                if (Queue.Collection_CoresToUpdate_Name != null)
                 {
-                    Queue.Collection_UpdatedCores_Name = null;
+                    Queue.Collection_CoresToUpdate_Name = null;
                 }
 
 
                 // -------------------------
                 // Call SetArchitecture Method
                 // -------------------------
-                Paths.SetArchitecture(vm);
+                Paths.SetArchitecture();
 
                 // -------------------------
                 // If Download Combobox Cores or RA+Cores selected
                 // -------------------------
-                if (vm.Download_SelectedItem == "RA+Cores"
-                    || vm.Download_SelectedItem == "Cores"
-                    || vm.Download_SelectedItem == "New Cores")
+                if (VM.MainView.Download_SelectedItem == "RA+Cores" ||
+                    VM.MainView.Download_SelectedItem == "Cores" ||
+                    VM.MainView.Download_SelectedItem == "New Cores")
                 {
                     // Parse index-extended
-                    Parse.ParseBuildbotCoresIndex(vm);
+                    Parse.ParseBuildbotCoresIndex();
 
                     // Get PC Cores
-                    Parse.ScanPcCoresDir(vm);
+                    Parse.ScanPcCoresDir();
 
                     // New Cores List - Debugger Only
                     // Subtract PC List from Buildbot List
                     Queue.List_BuildbotCores_NewName = Queue.List_BuildbotCores_Name.Except(Queue.List_PcCores_Name).ToList();
 
                     // Get Updated Cores
-                    Queue.UpdatedCores(vm);
+                    Queue.CoresToUpdate();
 
                     // Call Cores Up To Date Method
                     // If All Cores up to date, display message
-                    Queue.CoresUpToDateCheck(vm);
+                    Queue.CoresUpToDateCheck();
                 }
 
 
                 // -------------------------
                 // Display
                 // -------------------------
-                if (Queue.List_UpdatedCores_Name.Count != 0)
+                if (Queue.List_CoresToUpdate_Name.Count != 0)
                 {
                     // Trim List if new
-                    Queue.List_UpdatedCores_Name.TrimExcess();
+                    Queue.List_CoresToUpdate_Name.TrimExcess();
 
                     // -------------------------
                     // Add List to Obvservable Collection
@@ -222,7 +222,7 @@ namespace Stellar
                     // Excluded
                     Queue.Collection_ExcludedCores_Name = new ObservableCollection<string>(Queue.List_ExcludedCores_Name);
                     // To Update
-                    Queue.Collection_UpdatedCores_Name = new ObservableCollection<string>(Queue.List_UpdatedCores_Name);
+                    Queue.Collection_CoresToUpdate_Name = new ObservableCollection<string>(Queue.List_CoresToUpdate_Name);
 
 
                     // -------------------------
@@ -249,7 +249,7 @@ namespace Stellar
                     // Excluded
                     listBoxExcluded.ItemsSource = Queue.Collection_ExcludedCores_Name;
                     // To Update
-                    listBoxUpdate.ItemsSource = Queue.Collection_UpdatedCores_Name;
+                    listBoxUpdate.ItemsSource = Queue.Collection_CoresToUpdate_Name;
 
 
                     // -------------------------
@@ -287,7 +287,7 @@ namespace Stellar
                     count = (from x in Queue.List_ExcludedCores_Name select x).Count();
                     labelExcludedCount.Content = count.ToString();
                     // Update
-                    count = (from x in Queue.List_UpdatedCores_Name select x).Count();
+                    count = (from x in Queue.List_CoresToUpdate_Name select x).Count();
                     labelUpdateCount.Content = count.ToString();
                 }
 
@@ -337,5 +337,6 @@ namespace Stellar
             //var message = string.Join(Environment.NewLine, compareNames);
             //MessageBox.Show(message);
         }
+
     }
 }

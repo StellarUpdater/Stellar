@@ -24,8 +24,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.IO;
-using Stellar.Properties;
-using System.Configuration;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -53,11 +51,11 @@ namespace Stellar
         public static string failedImportMessage;
 
 
-        public Configure(MainWindow mainwindow, ViewModel vm)
+        public Configure()
         {
             InitializeComponent();
 
-            this.mainwindow = mainwindow;
+            //this.mainwindow = mainwindow;
 
             this.MinWidth = 450;
             this.MinHeight = 235;
@@ -70,18 +68,18 @@ namespace Stellar
             ///     Control Binding
             /// </summary>
             // -----------------------------------------------------------------
-            DataContext = vm;
+            //DataContext = vm;
 
             // --------------------------------------------------
             // Load Update Auto Check Text
             // --------------------------------------------------
-            if (vm.UpdateAutoCheck_IsChecked == true)
+            if (VM.MainView.UpdateAutoCheck_IsChecked == true)
             {
-                vm.UpdateAutoCheck_Text = "On";
+                VM.MainView.UpdateAutoCheck_Text = "On";
             }
-            else if (vm.UpdateAutoCheck_IsChecked == false)
+            else if (VM.MainView.UpdateAutoCheck_IsChecked == false)
             {
-                vm.UpdateAutoCheck_Text = "Off";
+                VM.MainView.UpdateAutoCheck_Text = "Off";
             }
         }
 
@@ -91,20 +89,16 @@ namespace Stellar
         /// </summary>
         private void tglUpdateAutoCheck_Checked(object sender, RoutedEventArgs e)
         {
-            ViewModel vm = mainwindow.DataContext as ViewModel;
-
             // Update Toggle Text
-            vm.UpdateAutoCheck_Text = "On";
+            VM.MainView.UpdateAutoCheck_Text = "On";
         }
         /// <summary>
         ///    Updates Auto Check - Unchecked
         /// </summary>
         private void tglUpdateAutoCheck_Unchecked(object sender, RoutedEventArgs e)
         {
-            ViewModel vm = mainwindow.DataContext as ViewModel;
-
             // Update Toggle Text
-            vm.UpdateAutoCheck_Text = "Off";
+            VM.MainView.UpdateAutoCheck_Text = "Off";
         }
 
 
@@ -115,29 +109,29 @@ namespace Stellar
         // -----------------------------------------------
         // Load Control Defaults
         // -----------------------------------------------
-        public static void LoadDefaults(MainWindow mainwindow, ViewModel vm)
+        public static void LoadDefaults(MainWindow mainwindow )
         {
             // Main Window
             mainwindow.Top = 0;
             mainwindow.Left = 0;
-            vm.RetroArchPath_Text = string.Empty;
-            vm.Download_SelectedItem = "RetroArch";
-            vm.Architecture_SelectedItem = "64-bit";
-            vm.Server_SelectedItem = "buildbot";
-            vm.SevenZipPath_Text = "<auto>";
-            vm.WinRARPath_Text = "<auto>";
-            vm.LogPath_IsChecked = false;
-            vm.LogPath_Text = string.Empty;
-            //vm.LogPath_IsEnabled = false;
-            vm.Theme_SelectedItem = "Milky Way";
-            vm.UpdateAutoCheck_IsChecked = true;
-            vm.Update_Text = "Update";
+            VM.MainView.RetroArchPath_Text = string.Empty;
+            VM.MainView.Download_SelectedItem = "RetroArch";
+            VM.MainView.Architecture_SelectedItem = "64-bit";
+            VM.MainView.Server_SelectedItem = "buildbot";
+            VM.MainView.SevenZipPath_Text = "<auto>";
+            VM.MainView.WinRARPath_Text = "<auto>";
+            VM.MainView.LogPath_IsChecked = false;
+            VM.MainView.LogPath_Text = string.Empty;
+            //VM.MainView.LogPath_IsEnabled = false;
+            VM.MainView.Theme_SelectedItem = "Milky Way";
+            VM.MainView.UpdateAutoCheck_IsChecked = true;
+            VM.MainView.Update_Text = "Update";
         }
 
         // -----------------------------------------------
         // 7-Zip Folder Browser Popup 
         // -----------------------------------------------
-        public void sevenZipFolderBrowser(ViewModel vm) // Method
+        public void sevenZipFolderBrowser() // Method
         {
             var OpenFileDialog = new System.Windows.Forms.OpenFileDialog();
             System.Windows.Forms.DialogResult result = OpenFileDialog.ShowDialog();
@@ -146,17 +140,17 @@ namespace Stellar
             if (result == System.Windows.Forms.DialogResult.OK)
             {
                 // Display Folder Path in Textbox
-                vm.SevenZipPath_Text = OpenFileDialog.FileName;
+                VM.MainView.SevenZipPath_Text = OpenFileDialog.FileName;
 
                 // Set the sevenZipPath string
-                sevenZipPath = vm.SevenZipPath_Text;
+                sevenZipPath = VM.MainView.SevenZipPath_Text;
             }
         }
 
         // -----------------------------------------------
         // WinRAR Folder Browser Popup 
         // -----------------------------------------------
-        public void winRARFolderBrowser(ViewModel vm) // Method
+        public void winRARFolderBrowser() // Method
         {
             var OpenFileDialog = new System.Windows.Forms.OpenFileDialog();
             System.Windows.Forms.DialogResult result = OpenFileDialog.ShowDialog();
@@ -165,17 +159,17 @@ namespace Stellar
             if (result == System.Windows.Forms.DialogResult.OK)
             {
                 // Display Folder Path in Textbox
-                vm.WinRARPath_Text = OpenFileDialog.FileName;
+                VM.MainView.WinRARPath_Text = OpenFileDialog.FileName;
 
                 // Set the winRARPath string
-                winRARPath = vm.WinRARPath_Text;
+                winRARPath = VM.MainView.WinRARPath_Text;
             }
         }
 
         // -----------------------------------------------
         // Log Folder Browser Popup 
         // -----------------------------------------------
-        public void logFolderBrowser(ViewModel vm) // Method
+        public void logFolderBrowser() // Method
         {
             var folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             System.Windows.Forms.DialogResult result = folderBrowserDialog.ShowDialog();
@@ -184,10 +178,10 @@ namespace Stellar
             if (result == System.Windows.Forms.DialogResult.OK)
             {
                 // Display Folder Path in Textbox
-                vm.LogPath_Text = folderBrowserDialog.SelectedPath + "\\"; //end with backslash
+                VM.MainView.LogPath_Text = folderBrowserDialog.SelectedPath + "\\"; //end with backslash
 
                 // Set the winRARPath string
-                logPath = vm.LogPath_Text;
+                logPath = VM.MainView.LogPath_Text;
             }
         }
 
@@ -202,9 +196,7 @@ namespace Stellar
         // -----------------------------------------------
         private void textBox7zipConfig_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            ViewModel vm = mainwindow.DataContext as ViewModel;
-
-            sevenZipFolderBrowser(vm);
+            sevenZipFolderBrowser();
         }
 
         // -----------------------------------------------
@@ -220,13 +212,11 @@ namespace Stellar
         // -----------------------------------------------
         private void button7zipAuto_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel vm = mainwindow.DataContext as ViewModel;
-
             // Display Folder Path in Textbox
-            vm.SevenZipPath_Text = "<auto>";
+            VM.MainView.SevenZipPath_Text = "<auto>";
 
             // Set the sevenZipPath string
-            sevenZipPath = vm.SevenZipPath_Text; //<auto>
+            sevenZipPath = VM.MainView.SevenZipPath_Text; //<auto>
         }
 
 
@@ -236,9 +226,9 @@ namespace Stellar
         // -----------------------------------------------
         private void textBoxWinRARConfig_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            ViewModel vm = mainwindow.DataContext as ViewModel;
+            
 
-            winRARFolderBrowser(vm);
+            winRARFolderBrowser();
         }
 
         // -----------------------------------------------
@@ -246,13 +236,11 @@ namespace Stellar
         // -----------------------------------------------
         private void buttonWinRARAuto_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel vm = mainwindow.DataContext as ViewModel;
-
             // Display Folder Path in Textbox
-            vm.WinRARPath_Text = "<auto>";
+            VM.MainView.WinRARPath_Text = "<auto>";
 
             // Set the winRARPath string
-            winRARPath = vm.WinRARPath_Text; //<auto>
+            winRARPath = VM.MainView.WinRARPath_Text; //<auto>
         }
 
 
@@ -262,7 +250,7 @@ namespace Stellar
         // -----------------------------------------------
         private void checkBoxLogConfig_Checked(object sender, RoutedEventArgs e)
         {
-            ViewModel vm = mainwindow.DataContext as ViewModel;
+            
 
             // Enable the Log
             logEnable = true;
@@ -273,8 +261,6 @@ namespace Stellar
         // -----------------------------------------------
         private void checkBoxLogConfig_Unchecked(object sender, RoutedEventArgs e)
         {
-            ViewModel vm = mainwindow.DataContext as ViewModel;
-
             // Disable the Log
             logEnable = false;
         }
@@ -284,9 +270,7 @@ namespace Stellar
         // -----------------------------------------------
         private void textBoxLogConfig_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            ViewModel vm = mainwindow.DataContext as ViewModel;
-
-            logFolderBrowser(vm);
+            logFolderBrowser();
         }
 
         // -----------------------------------------------
@@ -294,14 +278,12 @@ namespace Stellar
         // -----------------------------------------------
         private void buttonLogAuto_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel vm = mainwindow.DataContext as ViewModel;
-
             // Uncheck Log Checkbox
-            vm.LogPath_IsChecked = false;
+            VM.MainView.LogPath_IsChecked = false;
             checkBoxLogConfig.IsChecked = false;
 
             // Clear Path in Textbox
-            vm.LogPath_Text = string.Empty;
+            VM.MainView.LogPath_Text = string.Empty;
 
             // Set the logPath string
             logPath = string.Empty;
@@ -312,8 +294,6 @@ namespace Stellar
         // -----------------------------------------------
         private void buttonClearAllSavedSettings_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel vm = mainwindow.DataContext as ViewModel;
-
             // Check if config.ini Exists
             if (File.Exists(Paths.configFile))
             {
@@ -331,7 +311,7 @@ namespace Stellar
                         File.Delete(Paths.configFile);
 
                         // Reload Control Defaults
-                        LoadDefaults(mainwindow, vm);
+                        LoadDefaults(mainwindow);
 
                         // Restart Program
                         Process.Start(Application.ResourceAssembly.Location);
@@ -370,19 +350,17 @@ namespace Stellar
         // -----------------------------------------------
         private void comboBoxThemeConfig_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ViewModel vm = mainwindow.DataContext as ViewModel;
-
             // Black
-            if (vm.Theme_SelectedItem == "Black") //not used
+            if (VM.MainView.Theme_SelectedItem == "Black") //not used
             {
                 // Call Method
                 //removeTheme();
             }
 
             // Milky Way
-            else if (vm.Theme_SelectedItem == "Milky Way")
+            else if (VM.MainView.Theme_SelectedItem == "Milky Way")
             {
-                theme = vm.Theme_SelectedItem.Replace(" ", string.Empty);
+                theme = VM.MainView.Theme_SelectedItem.Replace(" ", string.Empty);
 
                 // Change Theme Resource
                 App.Current.Resources.MergedDictionaries.Clear();
@@ -396,9 +374,9 @@ namespace Stellar
             }
 
             // Spiral Galaxy
-            else if (vm.Theme_SelectedItem == "Spiral Galaxy")
+            else if (VM.MainView.Theme_SelectedItem == "Spiral Galaxy")
             {
-                theme = vm.Theme_SelectedItem.Replace(" ", string.Empty);
+                theme = VM.MainView.Theme_SelectedItem.Replace(" ", string.Empty);
 
                 // Change Theme Resource
                 App.Current.Resources.MergedDictionaries.Clear();
@@ -412,9 +390,9 @@ namespace Stellar
             }
 
             // Spiral Nebula
-            else if (vm.Theme_SelectedItem == "Spiral Nebula")
+            else if (VM.MainView.Theme_SelectedItem == "Spiral Nebula")
             {
-                theme = vm.Theme_SelectedItem.Replace(" ", string.Empty);
+                theme = VM.MainView.Theme_SelectedItem.Replace(" ", string.Empty);
 
                 // Change Theme Resource
                 App.Current.Resources.MergedDictionaries.Clear();
@@ -428,9 +406,9 @@ namespace Stellar
             }
 
             // Solar Flare
-            else if (vm.Theme_SelectedItem == "Solar Flare")
+            else if (VM.MainView.Theme_SelectedItem == "Solar Flare")
             {
-                theme = vm.Theme_SelectedItem.Replace(" ", string.Empty);
+                theme = VM.MainView.Theme_SelectedItem.Replace(" ", string.Empty);
 
                 // Change Theme Resource
                 App.Current.Resources.MergedDictionaries.Clear();
@@ -444,9 +422,9 @@ namespace Stellar
             }
 
             // Flaming Star
-            else if (vm.Theme_SelectedItem == "Flaming Star")
+            else if (VM.MainView.Theme_SelectedItem == "Flaming Star")
             {
-                theme = vm.Theme_SelectedItem.Replace(" ", string.Empty);
+                theme = VM.MainView.Theme_SelectedItem.Replace(" ", string.Empty);
 
                 // Change Theme Resource
                 App.Current.Resources.MergedDictionaries.Clear();
@@ -460,9 +438,9 @@ namespace Stellar
             }
 
             // Dark Galaxy
-            else if (vm.Theme_SelectedItem == "Dark Galaxy")
+            else if (VM.MainView.Theme_SelectedItem == "Dark Galaxy")
             {
-                theme = vm.Theme_SelectedItem.Replace(" ", string.Empty);
+                theme = VM.MainView.Theme_SelectedItem.Replace(" ", string.Empty);
 
                 // Change Theme Resource
                 App.Current.Resources.MergedDictionaries.Clear();
@@ -476,9 +454,9 @@ namespace Stellar
             }
 
             // Lagoon
-            else if (vm.Theme_SelectedItem == "Lagoon")
+            else if (VM.MainView.Theme_SelectedItem == "Lagoon")
             {
-                theme = vm.Theme_SelectedItem.Replace(" ", string.Empty);
+                theme = VM.MainView.Theme_SelectedItem.Replace(" ", string.Empty);
 
                 // Change Theme Resource
                 App.Current.Resources.MergedDictionaries.Clear();
@@ -492,9 +470,9 @@ namespace Stellar
             }
 
             // Dark Nebula
-            else if (vm.Theme_SelectedItem == "Dark Nebula")
+            else if (VM.MainView.Theme_SelectedItem == "Dark Nebula")
             {
-                theme = vm.Theme_SelectedItem.Replace(" ", string.Empty);
+                theme = VM.MainView.Theme_SelectedItem.Replace(" ", string.Empty);
 
                 // Change Theme Resource
                 App.Current.Resources.MergedDictionaries.Clear();
@@ -507,9 +485,9 @@ namespace Stellar
                 labelTheme.Content = "NASA, Rho Ophiuchi";
             }
             // Star Dust
-            else if (vm.Theme_SelectedItem == "Star Dust")
+            else if (VM.MainView.Theme_SelectedItem == "Star Dust")
             {
-                theme = vm.Theme_SelectedItem.Replace(" ", string.Empty);
+                theme = VM.MainView.Theme_SelectedItem.Replace(" ", string.Empty);
 
                 // Change Theme Resource
                 App.Current.Resources.MergedDictionaries.Clear();
@@ -522,9 +500,9 @@ namespace Stellar
                 labelTheme.Content = "NASA, N159";
             }
             // Chaos
-            else if (vm.Theme_SelectedItem == "Chaos")
+            else if (VM.MainView.Theme_SelectedItem == "Chaos")
             {
-                theme = vm.Theme_SelectedItem.Replace(" ", string.Empty);
+                theme = VM.MainView.Theme_SelectedItem.Replace(" ", string.Empty);
 
                 // Change Theme Resource
                 App.Current.Resources.MergedDictionaries.Clear();
@@ -537,9 +515,9 @@ namespace Stellar
                 labelTheme.Content = "NASA, NGC 6357";
             }
             // Cosmic Web
-            else if (vm.Theme_SelectedItem == "Cosmic Web")
+            else if (VM.MainView.Theme_SelectedItem == "Cosmic Web")
             {
-                theme = vm.Theme_SelectedItem.Replace(" ", string.Empty);
+                theme = VM.MainView.Theme_SelectedItem.Replace(" ", string.Empty);
 
                 // Change Theme Resource
                 App.Current.Resources.MergedDictionaries.Clear();
@@ -592,13 +570,13 @@ namespace Stellar
         /// <summary>
         ///    Export Config
         /// </summary>
-        public static void ExportConfig(MainWindow mainwindow, ViewModel vm, string configFile)
+        public static void ExportConfig(MainWindow mainwindow, /*MainViewModel vm,*/ string configFile)
         {
             // Check if Profiles Directory exists
-            bool exists = Directory.Exists(Paths.configDir);
+            //bool exists = Directory.Exists(Paths.configDir);
 
-            // If not, create it
-            if (Directory.Exists(Paths.configDir) == false)
+            // Check if Directory Exists
+            if (!Directory.Exists(Paths.configDir))
             {
                 // Yes/No Dialog Confirmation
                 //
@@ -629,7 +607,7 @@ namespace Stellar
             }
 
             // If Dir Exists, Save config file
-            else if (Directory.Exists(Paths.configDir) == true)
+            else if (Directory.Exists(Paths.configDir))
             {
                 // Start INI File Write
                 INIFile inif = new INIFile(configFile);
@@ -644,43 +622,46 @@ namespace Stellar
                 inif.Write("Main Window", "Position_Left", Convert.ToString(mainwindow.Left));
 
                 // RetroArch Path
-                inif.Write("Main Window", "RetroArchPath_Text", vm.RetroArchPath_Text);
+                inif.Write("Main Window", "RetroArchPath_Text", VM.MainView.RetroArchPath_Text);
 
                 // Server
-                inif.Write("Main Window", "Server_SelectedItem", vm.Server_SelectedItem);
+                inif.Write("Main Window", "Server_SelectedItem", VM.MainView.Server_SelectedItem);
 
                 // Download
-                inif.Write("Main Window", "Download_SelectedItem", vm.Download_SelectedItem);
+                inif.Write("Main Window", "Download_SelectedItem", VM.MainView.Download_SelectedItem);
 
                 // Architecture
-                inif.Write("Main Window", "Architecture_SelectedItem", vm.Architecture_SelectedItem);
+                inif.Write("Main Window", "Architecture_SelectedItem", VM.MainView.Architecture_SelectedItem);
 
 
                 // -------------------------
                 // Configure Window
                 // -------------------------
                 // 7-Zip Path
-                inif.Write("Configure Window", "SevenZipPath_Text", vm.SevenZipPath_Text);
+                inif.Write("Configure Window", "SevenZipPath_Text", VM.MainView.SevenZipPath_Text);
 
                 // WinRAR Path
-                inif.Write("Configure Window", "WinRARPath_Text", vm.WinRARPath_Text);
+                inif.Write("Configure Window", "WinRARPath_Text", VM.MainView.WinRARPath_Text);
 
                 // Log Path CheckBox
-                inif.Write("Configure Window", "LogPath_IsChecked", Convert.ToString(vm.LogPath_IsChecked).ToLower());
+                inif.Write("Configure Window", "LogPath_IsChecked", Convert.ToString(VM.MainView.LogPath_IsChecked).ToLower());
 
                 // Log Path
-                inif.Write("Configure Window", "LogPath_Text", vm.LogPath_Text);
+                inif.Write("Configure Window", "LogPath_Text", VM.MainView.LogPath_Text);
 
                 // Theme
-                inif.Write("Configure Window", "Theme_SelectedItem", vm.Theme_SelectedItem);
+                inif.Write("Configure Window", "Theme_SelectedItem", VM.MainView.Theme_SelectedItem);
 
                 // Update Auto Check
-                inif.Write("Configure Window", "UpdateAutoCheck_IsChecked", Convert.ToString(vm.UpdateAutoCheck_IsChecked).ToLower());
+                inif.Write("Configure Window", "UpdateAutoCheck_IsChecked", Convert.ToString(VM.MainView.UpdateAutoCheck_IsChecked).ToLower());
             }   
         }
 
 
-        public static void ImportConfig(MainWindow mainwindow, ViewModel vm, string configFile)
+        /// <summary>
+        ///    Import Config
+        /// </summary>
+        public static void ImportConfig(MainWindow mainwindow,/* MainViewModel vm,*/ string configFile)
         {
             try
             {
@@ -711,26 +692,26 @@ namespace Stellar
                 }
 
                 // RetroArch Path
-                vm.RetroArchPath_Text = inif.Read("Main Window", "RetroArchPath_Text");
+                VM.MainView.RetroArchPath_Text = inif.Read("Main Window", "RetroArchPath_Text");
 
                 // Server
                 string server = inif.Read("Main Window", "Server_SelectedItem");
-                if (vm.Server_Items.Contains(server))
-                    vm.Server_SelectedItem = server;
+                if (VM.MainView.Server_Items.Contains(server))
+                    VM.MainView.Server_SelectedItem = server;
                 else
                     listFailedImports.Add("Main Window: Server");
 
                 // Download
                 string download = inif.Read("Main Window", "Download_SelectedItem");
-                if (vm.Download_Items.Contains(download))
-                    vm.Download_SelectedItem = download;
+                if (VM.MainView.Download_Items.Contains(download))
+                    VM.MainView.Download_SelectedItem = download;
                 else
                     listFailedImports.Add("Main Window: Download");
 
                 // Architecture
                 string architecture = inif.Read("Main Window", "Architecture_SelectedItem");
-                if (vm.Architecture_Items.Contains(architecture))
-                    vm.Architecture_SelectedItem = architecture;
+                if (VM.MainView.Architecture_Items.Contains(architecture))
+                    VM.MainView.Architecture_SelectedItem = architecture;
                 else
                     listFailedImports.Add("Main Window: Architecture");
 
@@ -738,26 +719,26 @@ namespace Stellar
                 // Configure Window
                 // -------------------------
                 // 7-Zip Path
-                vm.SevenZipPath_Text = inif.Read("Configure Window", "SevenZipPath_Text");
+                VM.MainView.SevenZipPath_Text = inif.Read("Configure Window", "SevenZipPath_Text");
 
                 // WinRAR Path
-                vm.WinRARPath_Text = inif.Read("Configure Window", "WinRARPath_Text");
+                VM.MainView.WinRARPath_Text = inif.Read("Configure Window", "WinRARPath_Text");
 
                 // Logh Path
-                vm.LogPath_IsChecked = Convert.ToBoolean(inif.Read("Configure Window", "LogPath_IsChecked").ToLower());
+                VM.MainView.LogPath_IsChecked = Convert.ToBoolean(inif.Read("Configure Window", "LogPath_IsChecked").ToLower());
 
                 // Log Path CheckBox
-                vm.LogPath_Text = inif.Read("Configure Window", "LogPath_Text");
+                VM.MainView.LogPath_Text = inif.Read("Configure Window", "LogPath_Text");
 
                 // Theme
                 string theme = inif.Read("Configure Window", "Theme_SelectedItem");
-                if (vm.Theme_Items.Contains(theme))
-                    vm.Theme_SelectedItem = theme;
+                if (VM.MainView.Theme_Items.Contains(theme))
+                    VM.MainView.Theme_SelectedItem = theme;
                 else
-                    listFailedImports.Add("Main Window: Theme");
+                    listFailedImports.Add("Configure Window: Theme");
 
                 // Update Auto Check
-                vm.UpdateAutoCheck_IsChecked = Convert.ToBoolean(inif.Read("Configure Window", "UpdateAutoCheck_IsChecked").ToLower());
+                VM.MainView.UpdateAutoCheck_IsChecked = Convert.ToBoolean(inif.Read("Configure Window", "UpdateAutoCheck_IsChecked").ToLower());
 
 
                 // --------------------------------------------------
@@ -805,7 +786,7 @@ namespace Stellar
                             File.Delete(Paths.configFile);
 
                             // Reload Control Defaults
-                            LoadDefaults(mainwindow, vm);
+                            LoadDefaults(mainwindow);
 
                             // Restart Program
                             Process.Start(Application.ResourceAssembly.Location);

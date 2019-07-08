@@ -27,41 +27,56 @@ namespace Stellar
 {
     public partial class Log
     {
-        public static void WriteLog(ViewModel vm)
+        public static void WriteLog()
         {
             // Write Log Append
             // Only if Log is Enabled through Config Checkbox
-            if (vm.LogPath_IsChecked == true && 
-                !string.IsNullOrEmpty(vm.LogPath_Text)) 
+            if (VM.MainView.LogPath_IsChecked == true && 
+                !string.IsNullOrEmpty(VM.MainView.LogPath_Text)) 
             {
-                // Check for Save Error
-                try
+                // Check if Path Exists
+                if (Directory.Exists(VM.MainView.LogPath_Text))
                 {
-                    using (FileStream fs = new FileStream(vm.LogPath_Text + "stellar.log", FileMode.Append, FileAccess.Write))
-                    using (StreamWriter sw = new StreamWriter(fs))
+                    // Check for Save Error
+                    try
                     {
-                        sw.WriteLine(DateTime.Now);
-                        sw.WriteLine("--------------------------------------\r\n");
-
-                        // Append List
-                        for (int x = 0; x < Queue.List_UpdatedCores_Name.Count; x++)
+                        using (FileStream fs = new FileStream(VM.MainView.LogPath_Text + "stellar.log", FileMode.Append, FileAccess.Write))
+                        using (StreamWriter sw = new StreamWriter(fs))
                         {
-                            sw.WriteLine(Queue.List_UpdatedCores_Name[x]);
+                            sw.WriteLine(DateTime.Now);
+                            sw.WriteLine("--------------------------------------\r\n");
+
+                            // Append List
+                            for (int x = 0; x < Queue.List_CoresToUpdate_Name.Count; x++)
+                            {
+                                sw.WriteLine(Queue.List_CoresToUpdate_Name[x]);
+                            }
+
+                            sw.WriteLine("\r\n");
+
+                            sw.Close();
                         }
-
-                        sw.WriteLine("\r\n");
-
-                        sw.Close();
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Error Saving Output Log to " + "\"" + VM.MainView.LogPath_Text + "\"" + ". May require Administrator Privileges.",
+                                        "Error",
+                                        MessageBoxButton.OK,
+                                        MessageBoxImage.Error);
                     }
                 }
-                catch
+
+                // Path does not exist
+                else
                 {
-                    MessageBox.Show("Error Saving Output Log to " + "\"" + vm.LogPath_Text + "\"" + ". May require Administrator Privileges.",
+                    MessageBox.Show("Directory " + "\"" + VM.MainView.LogPath_Text + "\"" + " does not exist.",
                                     "Error",
                                     MessageBoxButton.OK,
                                     MessageBoxImage.Error);
                 }
             }
+
         }
     }
+
 }

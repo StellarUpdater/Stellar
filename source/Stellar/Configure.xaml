@@ -26,6 +26,9 @@
         xmlns:System="clr-namespace:System;assembly=mscorlib" 
         xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
         xmlns:Themes1="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2" 
+        xmlns:my="clr-namespace:Stellar"
+        xmlns:local="clr-namespace:Stellar"
+        xmlns:settings="clr-namespace:Stellar.Properties"
         mc:Ignorable="d"
 
         Title="Configure Settings" 
@@ -35,6 +38,11 @@
         UseLayoutRounding="True" 
         Background="Black"
         >
+
+    <Window.DataContext>
+        <local:VM/>
+    </Window.DataContext>
+    
     <Window.Resources>
 
         <!-- ComboBox -->
@@ -625,6 +633,7 @@
                ToolTip="Path to 7-Zip exe"/>
 
         <TextBox x:Name="textBox7zipConfig"
+                 DataContext="{Binding MainView}"
                  Style="{DynamicResource TextBoxStyleCustom}"
                  Text="{Binding SevenZipPath_Text, Mode=TwoWay}"
                  HorizontalAlignment="Left" 
@@ -674,6 +683,7 @@
                ToolTip="Path to WinRAR exe"/>
 
         <TextBox x:Name="textBoxWinRARConfig" 
+                 DataContext="{Binding MainView}"
                  Style="{DynamicResource TextBoxStyleCustom}"
                  Text="{Binding WinRARPath_Text, Mode=TwoWay}"
                  HorizontalAlignment="Left"
@@ -721,6 +731,7 @@
                Foreground="White" 
                ToolTip="Path to Save Log"/>
         <TextBox x:Name="textBoxLogConfig"
+                 DataContext="{Binding MainView}"
                  IsEnabled="{Binding IsChecked, ElementName=checkBoxLogConfig}" 
                  Style="{DynamicResource TextBoxStyleCustom}"
                  Text="{Binding LogPath_Text, Mode=TwoWay}"
@@ -761,6 +772,7 @@
 
         <!-- Log Enable/Disable Checkbox -->
         <CheckBox x:Name="checkBoxLogConfig" 
+                  DataContext="{Binding MainView}"
                   IsChecked="{Binding LogPath_IsChecked}"
                   IsEnabled="{Binding LogPath_IsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                   HorizontalAlignment="Left"
@@ -782,6 +794,7 @@
                FontSize="11"/>
 
         <ComboBox x:Name="comboBoxThemeConfig" 
+                  DataContext="{Binding MainView}"
                   ItemContainerStyle="{DynamicResource ComboBoxItemCustom}"
                   ItemsSource="{Binding Theme_Items}"
                   SelectedIndex="{Binding Theme_SelectedIndex}"
@@ -814,12 +827,13 @@
         <!-- Update Toggle  -->
         <Label Content="Update Check" 
                HorizontalAlignment="Left" 
-               Margin="10,154,0,0"
+               Margin="10,153,0,0"
                VerticalAlignment="Top" 
                Height="26" 
                Foreground="White" 
                ToolTip="Path to Save Log" Width="90"/>
         <ToggleButton x:Name="tglUpdateAutoCheck"
+                      DataContext="{Binding MainView}"
                       Style="{DynamicResource ToggleButtonCustom}"
                       IsChecked="{Binding UpdateAutoCheck_IsChecked}"
                       IsEnabled="{Binding UpdateAutoCheck_IsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -831,7 +845,7 @@
                       Height="22" 
                       Checked="tglUpdateAutoCheck_Checked"
                       Unchecked="tglUpdateAutoCheck_Unchecked" 
-                      Margin="105,158,0,0">
+                      Margin="105,157,0,0">
             <TextBlock x:Name="tblkUpdatesAutoCheck" 
                        Text="{Binding UpdateAutoCheck_Text, Mode=TwoWay}"
                        Margin="0,-2,0,0" />
@@ -849,7 +863,7 @@
         <Button x:Name="buttonClearAllSavedSettings"
                 Style="{DynamicResource ButtonCustom}"
                 HorizontalAlignment="Left"
-                Margin="262,157,0,0" 
+                Margin="262,156,0,0" 
                 VerticalAlignment="Top"
                 Width="75" 
                 Background="Black" 
@@ -868,7 +882,7 @@
         <Button x:Name="btnDebug"
             Style="{DynamicResource ButtonCustom}"
             HorizontalAlignment="Left"
-            Margin="345,157,0,0" 
+            Margin="345,156,0,0" 
             VerticalAlignment="Top"
             Width="75" 
             Background="Black" 

@@ -27,6 +27,7 @@
         xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
         xmlns:Themes1="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2" 
         xmlns:my="clr-namespace:Stellar"
+        xmlns:local="clr-namespace:Stellar"
         xmlns:settings="clr-namespace:Stellar.Properties"
         mc:Ignorable="d"
         
@@ -46,6 +47,11 @@
       
         Style="{DynamicResource WindowStyleTheme}"
         >
+    
+    <Window.DataContext>
+        <local:VM/>
+    </Window.DataContext>
+    
     <Window.Resources>
 
         <!-- ComboBox -->
@@ -613,7 +619,8 @@
         </Grid.Background>
 
         <!-- RetroArch Path TextBox -->
-        <Label x:Name="labelRetroArchPath" 
+        <Label x:Name="labelRetroArchPath"
+               DataContext="{Binding MainView}"
                Content="RA Folder"
                IsEnabled="{Binding RetroArchPath_IsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                HorizontalAlignment="Left"
@@ -627,6 +634,7 @@
                ToolTip="Click and Select your RetroArch Folder Path." />
 
         <TextBox x:Name="tbxRetroArchPath"
+                 DataContext="{Binding MainView}"
                  Text="{Binding RetroArchPath_Text, Mode=TwoWay}"
                  IsEnabled="{Binding RetroArchPath_IsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"                  
                  Style="{DynamicResource TextBoxStyleCustom}"
@@ -655,6 +663,7 @@
                ToolTip="File to be fetched."/>
 
         <TextBox x:Name="textBoxDownload" 
+                 DataContext="{Binding MainView}"
                  Text="{Binding DownloadURL_Text, Mode=TwoWay}"
                  Style="{DynamicResource TextBoxStyleCustom}"
                  HorizontalAlignment="Left"
@@ -673,6 +682,7 @@
 
         <!-- RetroArch Path Open Button -->
         <Button x:Name="buttonRetroArchExplorer" 
+                DataContext="{Binding MainView}"
                 Style="{DynamicResource ButtonStyleQuickBrowse}"
                 IsEnabled="{Binding RetroArchPath_IsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 HorizontalAlignment="Left"
@@ -720,6 +730,7 @@
 
         <!-- Progres Info -->
         <TextBlock x:Name="textBlockProgressInfo" 
+                    DataContext="{Binding MainView}"
                    Text="{Binding ProgressInfo_Text, Mode=TwoWay}"
                    HorizontalAlignment="Left" 
                    VerticalAlignment="Top"
@@ -732,7 +743,10 @@
 
         <!-- Progres Bar -->
         <ProgressBar x:Name="progressBar" 
-                     Minimum="0" Maximum="100"                   
+                     DataContext="{Binding MainView}"
+                     Minimum="0" 
+                     Maximum="100"    
+                     Value="{Binding Progress_Value}"
                      HorizontalAlignment="Left" 
                      Height="23" 
                      Margin="12,105,0,0" 
@@ -833,6 +847,7 @@
 
         <!-- Download ComboBox -->
         <ComboBox x:Name="comboBoxDownload"
+                  DataContext="{Binding MainView}"
                   ItemsSource="{Binding Download_Items}"
                   SelectedIndex="{Binding Download_SelectedIndex}"
                   SelectedItem="{Binding Download_SelectedItem}"
@@ -848,18 +863,11 @@
                   BorderBrush="White" 
                   SelectionChanged="comboBoxDownload_SelectionChanged"
                   ToolTip="Select Download"  >
-            <!--<System:String>New Install</System:String>
-            <System:String>Upgrade</System:String>
-            <System:String>RetroArch</System:String>
-            <System:String>RA+Cores</System:String>
-            <System:String>Cores</System:String>
-            <System:String>New Cores</System:String>
-            <System:String>Redist</System:String>
-            <System:String>Stellar</System:String>-->
         </ComboBox>
 
         <!-- Architecture ComboBox -->
         <ComboBox x:Name="comboBoxArchitecture" 
+                  DataContext="{Binding MainView}"
                   ItemsSource="{Binding Architecture_Items}"
                   SelectedIndex="{Binding Architecture_SelectedIndex}"
                   SelectedItem="{Binding Architecture_SelectedItem}"
@@ -874,8 +882,6 @@
                   BorderBrush="White"
                   SelectionChanged="comboBoxArchitecture_SelectionChanged" 
                   ToolTip="Architecture Type">
-            <!--<System:String>32-bit</System:String>
-            <System:String>64-bit</System:String>-->
         </ComboBox>
 
         <!-- Check Button -->
@@ -900,6 +906,7 @@
 
         <!-- Update Button -->
         <Button x:Name="buttonUpdate"
+                DataContext="{Binding MainView}"
                 Style="{DynamicResource ButtonStyleCustom}"
                 Padding="0" 
                 VerticalContentAlignment="Center" 
@@ -919,6 +926,7 @@
         </Button>
 
         <ComboBox x:Name="cboServer" 
+                  DataContext="{Binding MainView}"
                   ItemContainerStyle="{DynamicResource ComboBoxItemCustom}"
                   ItemsSource="{Binding Server_Items}"
                   SelectedIndex="{Binding Server_SelectedIndex}"
@@ -932,9 +940,6 @@
                   FontSize="11"
                   ToolTip="Download Server" 
                   SelectionChanged="cboServer_SelectionChanged">
-            <!--<System:String>auto</System:String>-->
-            <!--<System:String>buildbot</System:String>
-            <System:String>raw</System:String>-->
         </ComboBox>
 
     </Grid>

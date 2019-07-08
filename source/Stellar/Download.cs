@@ -27,25 +27,36 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading;
-using System.Windows.Forms;
-using System.Windows.Threading;
+using System.Threading.Tasks;
+using System.Windows;
 
 namespace Stellar
 {
     public partial class Download
     {
-        private static MainWindow mainwindow = ((MainWindow)System.Windows.Application.Current.MainWindow);
-
-        // Thread
-        //public static Thread worker = null;
-
         // Web Downloads
         public static ManualResetEvent waiter = new ManualResetEvent(false); // Download one at a time
                                                                              
-        public static string progressInfo; // Progress Label Info
-        
         public static string extractArgs; // Unzip Arguments
 
+        /// <summary>
+        ///     WebClient Custom
+        /// </summary>
+        public class WebClientCustom : WebClient
+        {
+            protected override WebRequest GetWebRequest(Uri address)
+            {
+                HttpWebRequest request = base.GetWebRequest(address) as HttpWebRequest;
+                request.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
+
+                if (request is HttpWebRequest)
+                {
+                    ((HttpWebRequest)request).KeepAlive = false;
+                }
+
+                return request;
+            }
+        }
 
 
         // -----------------------------------------------
@@ -56,26 +67,10 @@ namespace Stellar
         // -------------------------
         public static void wc_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
-            // Progress Info
-            mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
-            {
-                ViewModel vm = mainwindow.DataContext as ViewModel;
-                vm.ProgressInfo_Text = progressInfo;
-            });
-
-            // Progress Bar
-            mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
-            {
-                //ViewModel vm = mainwindow.DataContext as ViewModel;
-
-                double bytesIn = double.Parse(e.BytesReceived.ToString());
-                double totalBytes = double.Parse(e.TotalBytesToReceive.ToString());
-                double percentage = bytesIn / totalBytes * 100;
-                mainwindow.progressBar.Value = double.Parse(Math.Truncate(percentage).ToString());
-                //vm.CurrentProgress_Value = double.Parse(Math.Truncate(percentage).ToString());
-            });
-
-            //DownloadProgressChanged(mainwindow, e);
+            double bytesIn = double.Parse(e.BytesReceived.ToString());
+            double totalBytes = double.Parse(e.TotalBytesToReceive.ToString());
+            double percentage = bytesIn / totalBytes * 100;
+            VM.MainView.Progress_Value = double.Parse(Math.Truncate(percentage).ToString());
         }
 
         // -------------------------
@@ -83,149 +78,127 @@ namespace Stellar
         // -------------------------
         public static void wc_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
-            
-
             // Set the waiter Release
             // Must be here
             waiter.Set();
-
-            // Progress Info
-            mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
-            {
-                ViewModel vm = mainwindow.DataContext as ViewModel;
-                vm.ProgressInfo_Text = progressInfo;
-            });
-
-            //DownloadComplete(mainwindow);
         }
 
 
         // -----------------------------------------------
-        // Downloads
-        // -----------------------------------------------
-
-        // -----------------------------------------------
         // Start Download (Method)
         // -----------------------------------------------
-        public static void StartDownload(ViewModel vm)
+        /// <summary>
+        ///    Start Process
+        /// </summary>
+        public static async Task<int> StartDownloadProcess()
         {
-            // -------------------------
-            // RetroArch Standalone
-            // -------------------------
-            if (vm.Download_SelectedItem == "Upgrade"
-                || vm.Download_SelectedItem == "RetroArch"
-                || vm.Download_SelectedItem == "Redist")
+            int count = 0;
+            await Task.Factory.StartNew(() =>
             {
-                // Start New Thread
-                //
-                Thread worker = new Thread(() =>
+                using (var wc = new WebClientCustom())
                 {
-                    RetroArchDownload(vm);
-                });
-                worker.IsBackground = true;
-                
+                    waiter = new ManualResetEvent(false);
 
-                // Start Download Thread
-                //
-                worker.Start();
-            }
+                    ServicePointManager.Expect100Continue = true;
+                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
-            // -------------------------
-            // RetroArch + Cores
-            // -------------------------
-            else if (vm.Download_SelectedItem == "New Install"
-                || vm.Download_SelectedItem == "RA+Cores")
-            {
-                // Start New Thread
-                //
-                Thread worker = new Thread(() =>
-                {
-                    RetroArchDownload(vm);
+                    wc.Proxy = null;
 
-                    CoresDownload(vm);
-                });
-                worker.IsBackground = true;
+                    wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wc_DownloadProgressChanged);
+                    wc.DownloadFileCompleted += new AsyncCompletedEventHandler(wc_DownloadFileCompleted);
 
-                // Start Download Thread
-                //
-                worker.Start();
-            }
+                    // -------------------------
+                    // RetroArch Standalone
+                    // -------------------------
+                    if (VM.MainView.Download_SelectedItem == "Upgrade" ||
+                    VM.MainView.Download_SelectedItem == "RetroArch" ||
+                    VM.MainView.Download_SelectedItem == "Redist")
+                    {
+                        //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
-            // -------------------------
-            // Cores Only
-            // -------------------------
-            else if (vm.Download_SelectedItem == "Cores"
-                || vm.Download_SelectedItem == "New Cores")
-            {
-                // Start New Thread
-                Thread worker = new Thread(() =>
-                {
-                    CoresDownload(vm);
-                });
-                worker.IsBackground = true;
+                        RetroArchDownload(wc);
+                    }
 
-                // Start Download Thread
-                //
-                worker.Start();
-            }
+                    // -------------------------
+                    // RetroArch + Cores
+                    // -------------------------
+                    else if (VM.MainView.Download_SelectedItem == "New Install" ||
+                             VM.MainView.Download_SelectedItem == "RA+Cores")
+                    {
+                        //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
-            // -------------------------
-            // Stellar Self-Update
-            // -------------------------
-            else if (vm.Download_SelectedItem == "Stellar")
-            {
-                // Start New Thread
-                Thread worker = new Thread(() =>
-                {
-                    StellarDownload(vm);
-                });
+                        RetroArchDownload(wc);
 
-                // Start Download Thread
-                //
-                worker.Start();
-            }
+                        CoresDownload(wc);
+                    }
 
+                    // -------------------------
+                    // Cores Only
+                    // -------------------------
+                    else if (VM.MainView.Download_SelectedItem == "Cores" ||
+                             VM.MainView.Download_SelectedItem == "New Cores")
+                    {
+                        CoresDownload(wc);
+                    }
+
+                    // -------------------------
+                    // Stellar Self-Update
+                    // -------------------------
+                    else if (VM.MainView.Download_SelectedItem == "Stellar")
+                    {
+                        StellarDownload(wc);
+                    }
+
+                    wc.Dispose();
+
+                } // End WebClient
+            });
+
+            return count;
+        }
+
+        public static async void StartDownload()
+        {
+            Task<int> task = StartDownloadProcess();
+            int count = await task;
         }
 
 
         // -------------------------
         // Stellar Self-Update Download (Method)
         // -------------------------
-        public static void StellarDownload(ViewModel vm)
+        public static void StellarDownload(WebClientCustom wc)
         {
-            WebClient wc = new WebClient();
-
-            wc.Proxy = null;
-
-            ServicePointManager.Expect100Continue = true;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-
-            // UserAgent Header
+            // Headers
+            //wc.Headers.Add("Host", "www.example.com");
             wc.Headers.Add(HttpRequestHeader.UserAgent, "Stellar Updater (https://github.com/StellarUpdater/Stellar)" + " v" + MainWindow.currentVersion + "-" + MainWindow.currentBuildPhase + " Self-Update");
+            wc.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip, deflate, br");
+            //wc.Headers.Add(HttpRequestHeader.Accept, "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
+            //wc.Headers.Add("dnt", "1");
+            //wc.Headers.Add(HttpRequestHeader.Upgrade, "1");
 
             // -------------------------
             // Download
             // -------------------------
-            waiter = new ManualResetEvent(false); //start a new waiter for next pass (clicking update again)
+            //start a new waiter for next pass (clicking update again)
+            waiter = new ManualResetEvent(false); 
 
-            Uri downloadUrl = new Uri(Parse.stellarUrl); // Parse.stellarUrl = Version + Parse.stellar7z
-            //Uri downloadUrl = new Uri("http://127.0.0.1:8888/Stellar.7z"); // TESTING Virtual Server URL
-            //Async
-            wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wc_DownloadProgressChanged);
-            wc.DownloadFileCompleted += new AsyncCompletedEventHandler(wc_DownloadFileCompleted);
+            Uri downloadUrl = new Uri(Parse.stellarUrl); //Uri downloadUrl = new Uri("http://127.0.0.1:8888/Stellar.7z"); // TESTING Virtual Server URL
+
+            // Download File
             wc.DownloadFileAsync(downloadUrl, Paths.tempPath + Parse.stellar7z);
 
             // Progress Info
-            progressInfo = "Downloading Stellar...";
+            VM.MainView.ProgressInfo_Text = "Downloading Stellar...";
 
+            // Wait until download is finished
             waiter.WaitOne();
-
 
             // -------------------------
             // Extract
             // -------------------------
             // Progress Info
-            progressInfo = "Extracting Stellar...";
+            VM.MainView.ProgressInfo_Text = "Extracting Stellar...";
 
             // -------------------------
             // 7-Zip
@@ -311,8 +284,6 @@ namespace Stellar
                 // Close Stellar before updating exe
                 Environment.Exit(0);
             }
-
-            wc.Dispose();
         }
 
 
@@ -320,58 +291,37 @@ namespace Stellar
         // -------------------------
         // RetroArch Download (Method)
         // -------------------------
-        public static void RetroArchDownload(ViewModel vm)
+        public static void RetroArchDownload(WebClientCustom wc)
         {
-            WebClient wc = new WebClient();
+            // Headers
+            //wc.Headers.Add("Host", "www.example.com");
+            wc.Headers.Add(HttpRequestHeader.UserAgent, "Stellar Updater (https://github.com/StellarUpdater/Stellar)" + " v" + MainWindow.currentVersion + "-" + MainWindow.currentBuildPhase + " RetroArch Download");
+            wc.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip, deflate, br");
+            //wc.Headers.Add(HttpRequestHeader.Accept, "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
+            //wc.Headers.Add("dnt", "1");
+            //wc.Headers.Add(HttpRequestHeader.Upgrade, "1");
 
-            wc.Proxy = null;
-
-            // -------------------------
-            // Download
-            // -------------------------
-            //mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
-            //{
-            //waiter = new ManualResetEvent(false); //start a new waiter for next pass (clicking update again)
-            //});
-
-            //ServicePointManager.Expect100Continue = true;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-
-            // UserAgent Header
-            wc.Headers.Add(HttpRequestHeader.UserAgent, "Stellar Updater (https://github.com/StellarUpdater/Stellar)" + " v" + MainWindow.currentVersion + "-" + MainWindow.currentBuildPhase);
-
-            progressInfo = "Preparing Download...";
+            // Progress Info
+            VM.MainView.ProgressInfo_Text = "Preparing Download...";
 
             //MessageBox.Show(Parse.nightlyUrl); //debug
-            Uri downloadUrl = new Uri(Parse.nightlyUrl); // Parse.nightlyUrl = x84/x86_64 + Parse.nightly7z
-
+            Uri downloadUrl = new Uri(Parse.nightlyUrl);
             //Uri downloadUrl = new Uri("http://127.0.0.1:8888/RetroArch.7z"); // TESTING Virtual Server URL
 
-            //Async
-            //wc.Headers.Add("User-Agent: Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)");
-            //wc.Headers.Add("Accept-Encoding", "gzip,deflate");
-
-            wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wc_DownloadProgressChanged);
-            wc.DownloadFileCompleted += new AsyncCompletedEventHandler(wc_DownloadFileCompleted);
+            // Download File
             wc.DownloadFileAsync(downloadUrl, Paths.tempPath + Parse.nightly7z);
 
             // Progress Info
-            //mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
-            //{
-            progressInfo = "Downloading RetroArch...";
+            VM.MainView.ProgressInfo_Text = "Downloading RetroArch...";
 
+            // Wait until download is finished
             waiter.WaitOne();
-            //});
 
             // -------------------------
             // Extract
             // -------------------------
             // Progress Info
-            //mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
-            //{
-            progressInfo = "Extracting RetroArch...";
-
-            //});
+            VM.MainView.ProgressInfo_Text = "Extracting RetroArch...";
 
             using (Process execExtract = new Process())
             {
@@ -391,53 +341,125 @@ namespace Stellar
                 // -------------------------
                 if (Archiver.extract == "7-Zip")
                 {
+                        // -------------------------
+                        // New Install
+                        // -------------------------
+                        if (VM.MainView.Download_SelectedItem == "New Install")
+                        {
+                            // Extract All Files
+                            List<string> extractArgs = new List<string>() {
+                                                            "-r -y x",
+                                                            "\"" + Paths.tempPath + Parse.nightly7z + "\"",
+                                                            "-o\"" + Paths.retroarchPath + "\"",
+                                                            "*",
+                                                            };
+
+                            // Join List with Spaces
+                            execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
+                        }
+                        // -------------------------
+                        // Upgrade
+                        // -------------------------
+                        else if (VM.MainView.Download_SelectedItem == "Upgrade")
+                        {
+                            // Extract All Files, Exclude Configs
+                            List<string> extractArgs = new List<string>() {
+                                                        "-r -y x",
+                                                        "\"" + Paths.tempPath + Parse.nightly7z + "\"",
+                                                        "-xr!config -xr!saves -xr!states -xr!retroarch.default.cfg -xr!retroarch.cfg", //exclude files
+                                                        "-o\"" + Paths.retroarchPath + "\"",
+                                                        "*"
+                                                        };
+
+                            // Join List with Spaces
+                            execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
+                        }
+                        // -------------------------
+                        // Update
+                        // -------------------------
+                        else if (VM.MainView.Download_SelectedItem == "RetroArch" ||
+                                VM.MainView.Download_SelectedItem == "RA+Cores")
+                        {
+                            // Extract only retroarch.exe & retroarch_debug.exe
+                            List<string> extractArgs = new List<string>() {
+                                                            "-r -y e",
+                                                            "\"" + Paths.tempPath + Parse.nightly7z + "\"",
+                                                            "-o\"" + Paths.retroarchPath + "\"",
+                                                            "retroarch.exe retroarch_debug.exe"
+                                                        };
+
+                            // Join List with Spaces
+                            execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
+                        }
+                        // -------------------------
+                        // Redist
+                        // -------------------------
+                        else if (VM.MainView.Download_SelectedItem == "Redist")
+                        {
+                            // Extract All Files
+                            List<string> extractArgs = new List<string>() {
+                                                        "-r -y e",
+                                                        "\"" + Paths.tempPath + Parse.nightly7z + "\"",
+                                                        "-o\"" + Paths.retroarchPath + "\"",
+                                                        "*"
+                                                    };
+
+                            // Join List with Spaces
+                            execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
+                        }
+                    }
+
                     // -------------------------
-                    // New Install
+                    // WinRAR
                     // -------------------------
-                    if (vm.Download_SelectedItem == "New Install")
+                    else if (Archiver.extract == "WinRAR")
                     {
-                        // Extract All Files
-                        List<string> extractArgs = new List<string>() {
-                            "-r -y x",
-                            "\"" + Paths.tempPath + Parse.nightly7z + "\"",
-                            "-o\"" + Paths.retroarchPath + "\"",
-                            "*",
-                        };
+                        // -------------------------
+                        // New Install
+                        // -------------------------
+                        if (VM.MainView.Download_SelectedItem == "New Install")
+                        {
+                            // Extract All Files
+                            List<string> extractArgs = new List<string>() {
+                                                            "-y x",
+                                                            "\"" + Paths.tempPath + Parse.nightly7z + "\"",
+                                                            "*",
+                                                            "\"" + Paths.retroarchPath + "\"",
+                                                        };
 
-                        // Join List with Spaces
-                        execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
-
+                            // Join List with Spaces
+                            execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
                     }
                     // -------------------------
                     // Upgrade
                     // -------------------------
-                    else if (vm.Download_SelectedItem == "Upgrade")
+                    else if (VM.MainView.Download_SelectedItem == "Upgrade")
                     {
                         // Extract All Files, Exclude Configs
                         List<string> extractArgs = new List<string>() {
-                            "-r -y x",
-                            "\"" + Paths.tempPath + Parse.nightly7z + "\"",
-                            "-xr!config -xr!saves -xr!states -xr!retroarch.default.cfg -xr!retroarch.cfg", //exclude files
-                            "-o\"" + Paths.retroarchPath + "\"",
-                            "*"
-                        };
+                                                        "-y x",
+                                                        "\"" + Paths.tempPath + Parse.nightly7z + "\"",
+                                                        "-xconfig -xsaves -xstates -xretroarch.default.cfg -xretroarch.cfg", //exclude files
+                                                        "\"" + Paths.retroarchPath + "\""
+                                                    };
 
                         // Join List with Spaces
                         execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
+
                     }
                     // -------------------------
                     // Update
                     // -------------------------
-                    else if (vm.Download_SelectedItem == "RetroArch" 
-                            || vm.Download_SelectedItem == "RA+Cores")
+                    else if (VM.MainView.Download_SelectedItem == "RetroArch" ||
+                            VM.MainView.Download_SelectedItem == "RA+Cores")
                     {
                         // Extract only retroarch.exe & retroarch_debug.exe
                         List<string> extractArgs = new List<string>() {
-                            "-r -y e",
-                            "\"" + Paths.tempPath + Parse.nightly7z + "\"",
-                            "-o\"" + Paths.retroarchPath + "\"",
-                            "retroarch.exe retroarch_debug.exe"
-                        };
+                                                        "-y x",
+                                                        "\"" + Paths.tempPath + Parse.nightly7z + "\"",
+                                                        "retroarch.exe retroarch_debug.exe",
+                                                        "\"" + Paths.retroarchPath + "\""
+                                                    };
 
                         // Join List with Spaces
                         execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
@@ -445,88 +467,15 @@ namespace Stellar
                     // -------------------------
                     // Redist
                     // -------------------------
-                    else if (vm.Download_SelectedItem == "Redist")
-                    {
-                        // Extract All Files
-                        List<string> extractArgs = new List<string>() {
-                            "-r -y e",
-                            "\"" + Paths.tempPath + Parse.nightly7z + "\"",
-                            "-o\"" + Paths.retroarchPath + "\"",
-                            "*"
-                        };
-
-                        // Join List with Spaces
-                        execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
-                    }
-                }
-
-                // -------------------------
-                // WinRAR
-                // -------------------------
-                else if (Archiver.extract == "WinRAR")
-                {
-                    // -------------------------
-                    // New Install
-                    // -------------------------
-                    if (vm.Download_SelectedItem == "New Install")
-                    {
-                        // Extract All Files
-                        List<string> extractArgs = new List<string>() {
-                            "-y x",
-                            "\"" + Paths.tempPath + Parse.nightly7z + "\"",
-                            "*",
-                            "\"" + Paths.retroarchPath + "\"",
-                        };
-
-                        // Join List with Spaces
-                        execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
-                    }
-                    // -------------------------
-                    // Upgrade
-                    // -------------------------
-                    else if (vm.Download_SelectedItem == "Upgrade")
-                    {
-                        // Extract All Files, Exclude Configs
-                        List<string> extractArgs = new List<string>() {
-                            "-y x",
-                            "\"" + Paths.tempPath + Parse.nightly7z + "\"",
-                            "-xconfig -xsaves -xstates -xretroarch.default.cfg -xretroarch.cfg", //exclude files
-                            "\"" + Paths.retroarchPath + "\""
-                        };
-
-                        // Join List with Spaces
-                        execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
-
-                    }
-                    // -------------------------
-                    // Update
-                    // -------------------------
-                    else if (vm.Download_SelectedItem == "RetroArch"
-                            || vm.Download_SelectedItem == "RA+Cores")
+                    else if (VM.MainView.Download_SelectedItem == "Redist")
                     {
                         // Extract only retroarch.exe & retroarch_debug.exe
                         List<string> extractArgs = new List<string>() {
-                            "-y x",
-                            "\"" + Paths.tempPath + Parse.nightly7z + "\"",
-                            "retroarch.exe retroarch_debug.exe",
-                            "\"" + Paths.retroarchPath + "\""
-                        };
-
-                        // Join List with Spaces
-                        execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
-                    }
-                    // -------------------------
-                    // Redist
-                    // -------------------------
-                    else if (vm.Download_SelectedItem == "Redist")
-                    {
-                        // Extract only retroarch.exe & retroarch_debug.exe
-                        List<string> extractArgs = new List<string>() {
-                            "-y x",
-                            "\"" + Paths.tempPath + Parse.nightly7z + "\"",
-                            "*",
-                            "\"" + Paths.retroarchPath + "\"",
-                        };
+                                                        "-y x",
+                                                        "\"" + Paths.tempPath + Parse.nightly7z + "\"",
+                                                        "*",
+                                                        "\"" + Paths.retroarchPath + "\"",
+                                                    };
 
                         // Join List with Spaces
                         execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
@@ -588,16 +537,8 @@ namespace Stellar
             // RetroArch Download Complete
             // -------------------------
             // Cross Thread
-            mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
-            {
-                vm.ProgressInfo_Text = "RetroArch Complete";
-                MainWindow.ClearRetroArchVars();
-            });
-
-            // End Thread
-            //worker.Abort();
-
-            wc.Dispose();
+            VM.MainView.ProgressInfo_Text = "RetroArch Complete";
+            MainWindow.ClearRetroArchVars();
         }
 
 
@@ -605,7 +546,7 @@ namespace Stellar
         // -------------------------
         // Cores Download (Method)
         // -------------------------
-        public static void CoresDownload(ViewModel vm)
+        public static void CoresDownload(WebClientCustom wc)
         {
             //waiter = new ManualResetEvent(false);
 
@@ -613,140 +554,128 @@ namespace Stellar
             // New Install
             // -------------------------
             // Change Cores List to All Available Buildbot Cores
-            // Cross Thread
-            mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
+            if (VM.MainView.Download_SelectedItem == "New Install")
             {
-                if (vm.Download_SelectedItem == "New Install")
-                {
-                    Queue.List_UpdatedCores_Name = Queue.List_BuildbotCores_Name;
-                    Queue.List_UpdatedCores_Name.TrimExcess();
-                }
-            });
-
+                Queue.List_CoresToUpdate_Name = Queue.List_BuildbotCores_Name;
+                Queue.List_CoresToUpdate_Name.TrimExcess();
+            }
 
             // -------------------------
-            // Rejected
+            // Core To Update Empty Check
             // -------------------------
-            // Remove Rejected Core Names from the Update List
-            //Queue.List_UpdatedCores_Name = Queue.List_UpdatedCores_Name.Except(Queue.List_RejectedCores_Name).ToList();
-            //Queue.List_UpdatedCores_Name.TrimExcess();
+            //if (Queue.List_CoresToUpdate_Name.Count > 0 &&
+            //    Queue.List_CoresToUpdate_Name != null)
+            //{
 
-            //// Remove Rejected Names & Dates from the Update List
-            try
-            {
-                int updateCount = Queue.List_UpdatedCores_Name.Count();
-                for (int r = updateCount - 1; r >= 0; r--)
+                // -------------------------
+                // Rejected
+                // -------------------------
+                // Remove Rejected Names & Dates from the Update List
+                try
                 {
-                    if (Queue.List_RejectedCores_Name.Contains(Queue.List_UpdatedCores_Name[r]))
+                    int updateCount = Queue.List_CoresToUpdate_Name.Count();
+                    for (int r = updateCount - 1; r >= 0; r--)
                     {
-                        // Name
-                        if (Queue.List_UpdatedCores_Name.Count() > r
-                            && Queue.List_UpdatedCores_Name.Count() != 0) // null check
+                        if (Queue.List_RejectedCores_Name.Contains(Queue.List_CoresToUpdate_Name[r]))
                         {
-                            Queue.List_UpdatedCores_Name.RemoveAt(r);
-                            Queue.List_UpdatedCores_Name.TrimExcess();
-                        }
+                            // Name
+                            if (Queue.List_CoresToUpdate_Name.Count() > r &&
+                                Queue.List_CoresToUpdate_Name.Count() != 0) // null check
+                            {
+                                Queue.List_CoresToUpdate_Name.RemoveAt(r);
+                                Queue.List_CoresToUpdate_Name.TrimExcess();
+                            }
 
-                        // Date
-                        if (Queue.List_UpdatedCores_Date.Count() > r
-                            && Queue.List_UpdatedCores_Date.Count() != 0) // null check
-                        {
-                            Queue.List_UpdatedCores_Date.RemoveAt(r);
-                            Queue.List_UpdatedCores_Date.TrimExcess();
+                            // Date
+                            if (Queue.List_UpdatedCores_Date.Count() > r &&
+                                Queue.List_UpdatedCores_Date.Count() != 0) // null check
+                            {
+                                Queue.List_UpdatedCores_Date.RemoveAt(r);
+                                Queue.List_UpdatedCores_Date.TrimExcess();
+                            }
                         }
                     }
                 }
-            }
-            catch
-            {
-                MessageBox.Show("Error: Problem Excluding cores from Update List.");
-            }
-
+                catch
+                {
+                    MessageBox.Show("Problem Excluding cores from Update List.",
+                                    "Error",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Error);
+                }
 
             //debug
-            //var messageNames = string.Join(Environment.NewLine, Queue.List_UpdatedCores_Name);
+            //var messageNames = string.Join(Environment.NewLine, Queue.List_CoresToUpdate_Name);
             //MessageBox.Show(messageNames);
             //var messageDates = string.Join(Environment.NewLine, Queue.List_UpdatedCores_Date);
             //MessageBox.Show(messageDates);
 
-            WebClient wc = new WebClient();
+            // Headers
+            // wc.Headers.Add("Host", "www.example.com");
+            wc.Headers.Add(HttpRequestHeader.UserAgent, "Stellar Updater (https://github.com/StellarUpdater/Stellar)" + " v" + MainWindow.currentVersion + "-" + MainWindow.currentBuildPhase + " Cores Download");
+            wc.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip, deflate, br");
+            //wc.Headers.Add(HttpRequestHeader.Accept, "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
+            //wc.Headers.Add("dnt", "1");
+            //wc.Headers.Add(HttpRequestHeader.Upgrade, "1");
 
-            wc.Proxy = null;
-
-            //ServicePointManager.Expect100Continue = true;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-
-            // UserAgent Header
-            wc.Headers.Add(HttpRequestHeader.UserAgent, "Stellar Updater (https://github.com/StellarUpdater/Stellar)" + " v" + MainWindow.currentVersion + "-" + MainWindow.currentBuildPhase);
 
             // -------------------------
             // Download
             // -------------------------
-            for (int i = 0; i < Queue.List_UpdatedCores_Name.Count; i++) //problem core count & Parse.nightly7z
+            for (int i = 0; i < Queue.List_CoresToUpdate_Name.Count; i++) //problem core count & Parse.nightly7z
             {
                 //Reset Waiter, Must be here
                 waiter.Reset();
 
-                Uri downloadUrl2 = new Uri(Parse.parseCoresUrl + Queue.List_UpdatedCores_Name[i] + ".zip");
-                //Uri downloadUrl2 = new Uri("http://127.0.0.1:8888/latest/" + Queue.List_UpdatedCores_Name[i] + ".zip"); //TESTING
-                //Async
-                wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wc_DownloadProgressChanged);
-                wc.DownloadFileCompleted += new AsyncCompletedEventHandler(wc_DownloadFileCompleted);
-                wc.DownloadFileAsync(downloadUrl2, Paths.tempPath + Queue.List_UpdatedCores_Name[i] + ".zip", i);
+                Uri downloadUrl2 = new Uri(Parse.parseCoresUrl + Queue.List_CoresToUpdate_Name[i] + ".zip");
+                //Uri downloadUrl2 = new Uri("http://127.0.0.1:8888/latest/" + Queue.List_CoresToUpdate_Name[i] + ".zip"); //TESTING
+
+                // Download File
+                wc.DownloadFileAsync(downloadUrl2, Paths.tempPath + Queue.List_CoresToUpdate_Name[i] + ".zip", i);
 
                 // Progress Info
-                progressInfo = "Downloading " + Queue.List_UpdatedCores_Name[i];
+                VM.MainView.ProgressInfo_Text = "Downloading " + Queue.List_CoresToUpdate_Name[i];
 
-                //Wait until download is finished
+                // Wait until download is finished
                 waiter.WaitOne();
 
 
 
                 // If Last item in List
                 //
-                if (i == Queue.List_UpdatedCores_Name.Count - 1)
+                if (i == Queue.List_CoresToUpdate_Name.Count - 1)
                 {
-                    // Cross Thread
-                    mainwindow.Dispatcher.BeginInvoke((MethodInvoker)delegate
+                    // New Install
+                    //
+                    if (VM.MainView.Download_SelectedItem == "New Install")
                     {
-                        // New Install
-                        //
-                        if (vm.Download_SelectedItem == "New Install")
-                        {
-                            // Progress Info
-                            progressInfo = "RetroArch + Cores Install Complete";
-                            vm.ProgressInfo_Text = progressInfo;
-                        }
+                        // Progress Info
+                        VM.MainView.ProgressInfo_Text = "RetroArch + Cores Install Complete";
+                    }
 
-                        // RA+Cores
-                        //
-                        else if (vm.Download_SelectedItem == "RA+Cores")
-                        {
-                            // Progress Info
-                            progressInfo = "RetroArch + Cores Update Complete";
-                            vm.ProgressInfo_Text = progressInfo;
-                        }
+                    // RA+Cores
+                    //
+                    else if (VM.MainView.Download_SelectedItem == "RA+Cores")
+                    {
+                        // Progress Info
+                        VM.MainView.ProgressInfo_Text = "RetroArch + Cores Update Complete";
+                    }
 
-                        // Cores
-                        //
-                        else if (vm.Download_SelectedItem == "Cores")
-                        {
-                            // Progress Info
-                            progressInfo = "Cores Update Complete";
-                            vm.ProgressInfo_Text = progressInfo;
-                        }
+                    // Cores
+                    //
+                    else if (VM.MainView.Download_SelectedItem == "Cores")
+                    {
+                        // Progress Info
+                        VM.MainView.ProgressInfo_Text = "Cores Update Complete";
+                    }
 
-                        // New Cores
-                        //
-                        else if (vm.Download_SelectedItem == "New Cores")
-                        {
-                            // Progress Info
-                            progressInfo = "Cores Install Complete";
-                            vm.ProgressInfo_Text = progressInfo;
-                        }
-                    });
-
-                    wc.Dispose();
+                    // New Cores
+                    //
+                    else if (VM.MainView.Download_SelectedItem == "New Cores")
+                    {
+                        // Progress Info
+                        VM.MainView.ProgressInfo_Text = "Cores Install Complete";
+                    }
                 }
 
                 // -------------------------
@@ -771,10 +700,10 @@ namespace Stellar
                     if (Archiver.extract == "7-Zip")
                     {
                         List<string> extractArgs = new List<string>() {
-                                "-y e",
-                                "\"" + Paths.tempPath + Queue.List_UpdatedCores_Name[i] + ".zip" + "\"",
-                                "-o\"" + Paths.coresPath + "\"",
-                            };
+                                                    "-y e",
+                                                    "\"" + Paths.tempPath + Queue.List_CoresToUpdate_Name[i] + ".zip" + "\"",
+                                                    "-o\"" + Paths.coresPath + "\"",
+                                                };
 
                         // Join List with Spaces
                         execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
@@ -785,10 +714,10 @@ namespace Stellar
                     else if (Archiver.extract == "WinRAR")
                     {
                         List<string> extractArgs = new List<string>() {
-                                "-y x",
-                                "\"" + Paths.tempPath + Queue.List_UpdatedCores_Name[i] + ".zip" + "\"",
-                                "\"" + Paths.coresPath + "\"",
-                            };
+                                                        "-y x",
+                                                        "\"" + Paths.tempPath + Queue.List_CoresToUpdate_Name[i] + ".zip" + "\"",
+                                                        "\"" + Paths.coresPath + "\"",
+                                                    };
 
                         // Join List with Spaces
                         execExtract.StartInfo.Arguments = string.Join(" ", extractArgs.Where(s => !string.IsNullOrEmpty(s)));
@@ -813,18 +742,18 @@ namespace Stellar
                             buildbotServerTime = Convert.ToDateTime(Queue.List_UpdatedCores_Date[i]);
                         }
                     }
-                    
+
                     // Convert Local Time to Server Time
                     // This doesn't work in a Method
-                    //DateTime utcTime = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
-                    //TimeZoneInfo tzi = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
-                    //DateTime libretroServerTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, tzi); // .AddHours(12) Needs to be 6-12 hours ahead to be more recent than server? 24 Hour AM/PM Problem?
+                    // DateTime utcTime = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
+                    // TimeZoneInfo tzi = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+                    // DateTime libretroServerTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, tzi); // .AddHours(12) Needs to be 6-12 hours ahead to be more recent than server? 24 Hour AM/PM Problem?
 
                     // Set the File Date Time Stamp - Very Important! Let's file sync compare for next update.
-                    if (File.Exists(Paths.coresPath + Queue.List_UpdatedCores_Name[i]))
+                    if (File.Exists(Paths.coresPath + Queue.List_CoresToUpdate_Name[i]))
                     {
-                        File.SetCreationTime(Paths.coresPath + Queue.List_UpdatedCores_Name[i], buildbotServerTime); // Created Date Time = Now, (used to be DateTime.Now)
-                        File.SetLastWriteTime(Paths.coresPath + Queue.List_UpdatedCores_Name[i], buildbotServerTime); //maybe disable modified date?
+                        File.SetCreationTime(Paths.coresPath + Queue.List_CoresToUpdate_Name[i], buildbotServerTime); // Created Date Time = Now, (used to be DateTime.Now)
+                        File.SetLastWriteTime(Paths.coresPath + Queue.List_CoresToUpdate_Name[i], buildbotServerTime); //maybe disable modified date?
                     }
                 }
 
@@ -841,7 +770,7 @@ namespace Stellar
                     deleteTemp.StartInfo.CreateNoWindow = true;
                     deleteTemp.StartInfo.RedirectStandardOutput = true; //set to false if using ShellExecute
                     deleteTemp.StartInfo.FileName = "cmd.exe";
-                    deleteTemp.StartInfo.Arguments = "/c del " + "\"" + Paths.tempPath + Queue.List_UpdatedCores_Name[i] + ".zip" + "\"";
+                    deleteTemp.StartInfo.Arguments = "/c del " + "\"" + Paths.tempPath + Queue.List_CoresToUpdate_Name[i] + ".zip" + "\"";
                     deleteTemp.Start();
                     deleteTemp.WaitForExit();
                     deleteTemp.Close();
@@ -850,11 +779,11 @@ namespace Stellar
 
                 // If Last item in List
                 //
-                if (i == Queue.List_UpdatedCores_Name.Count - 1)
+                if (i == Queue.List_CoresToUpdate_Name.Count - 1)
                 {
                     // Write Log Append
                     //
-                    Log.WriteLog(vm);
+                    Log.WriteLog();
 
                     // Clear list to prevent doubling up
                     //
@@ -869,6 +798,17 @@ namespace Stellar
                 }
 
             } // end for loop
+
+            // -------------------------
+            // Error: Cores Empty
+            // -------------------------
+            //else
+            //{
+            //    MessageBox.Show("No cores selected.",
+            //                    "Error",
+            //                    MessageBoxButton.OK,
+            //                    MessageBoxImage.Error);
+            //}
         }
 
 

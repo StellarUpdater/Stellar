@@ -80,7 +80,8 @@
     </Compile>
     <Compile Include="Log.cs" />
     <Compile Include="Queue.cs" />
-    <Compile Include="ViewModel.cs" />
+    <Compile Include="MainViewModel.cs" />
+    <Compile Include="ViewModelBase.cs" />
     <Page Include="Checklist.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

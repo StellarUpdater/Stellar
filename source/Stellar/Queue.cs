@@ -98,8 +98,8 @@ namespace Stellar
         // Updated Cores to Download
         // -----------------------------------------------
         // Name
-        public static List<string> List_UpdatedCores_Name = new List<string>();
-        public static ObservableCollection<string> Collection_UpdatedCores_Name;
+        public static List<string> List_CoresToUpdate_Name = new List<string>();
+        public static ObservableCollection<string> Collection_CoresToUpdate_Name;
         // Date
         public static List<string> List_UpdatedCores_Date = new List<string>();
 
@@ -234,22 +234,22 @@ namespace Stellar
 
 
         // -----------------------------------------------
-        // Create Updated Cores List
+        // Create Cores To Update List
         // Compare Dates
         // Add Names to Update List
         // -----------------------------------------------
-        public static void UpdatedCores(ViewModel vm)
+        public static void CoresToUpdate()
         {
             // -------------------------
             // New / Missing Cores
             // -------------------------
-            if (vm.Download_SelectedItem == "New Cores" 
-                || vm.Download_SelectedItem == "New Install")
+            if (VM.MainView.Download_SelectedItem == "New Cores" ||
+                VM.MainView.Download_SelectedItem == "New Install")
             {
                 // Make a List of All Buildbot Cores
                 // Make a List of All PC Cores
                 // Subtract PC List from Buildbot List
-                List_UpdatedCores_Name = List_BuildbotCores_Name.Except(List_PcCores_Name).ToList();
+                List_CoresToUpdate_Name = List_BuildbotCores_Name.Except(List_PcCores_Name).ToList();
             }
 
             // -------------------------
@@ -309,7 +309,7 @@ namespace Stellar
                                     {
                                         // Add Core to Updated
                                         // Name
-                                        List_UpdatedCores_Name.Add(bbArr[0]);
+                                        List_CoresToUpdate_Name.Add(bbArr[0]);
                                         // Date
                                         List_UpdatedCores_Date.Add(bbArr[1]);
                                     }
@@ -361,7 +361,7 @@ namespace Stellar
                 // -------------------------
                 // Create Update List
                 // -------------------------
-                List_UpdatedCores_Name = List_UpdatedCores_Name.Except(List_ExcludedCores_Name).ToList();
+                List_CoresToUpdate_Name = List_CoresToUpdate_Name.Except(List_ExcludedCores_Name).ToList();
 
             }
 
@@ -372,20 +372,20 @@ namespace Stellar
         // -----------------------------------------------
         // Cores Up To Date Check
         // -----------------------------------------------
-        public static void CoresUpToDateCheck(ViewModel vm)
+        public static void CoresUpToDateCheck()
         {
             // -------------------------
             // Cores - Already Up to Date
             // -------------------------
             // Update List is empty, but PC Cores have been found and scanned
-            if (List_UpdatedCores_Name.Count == 0 
-                && List_PcCores_Name.Count != 0 
-                && vm.Download_SelectedItem != "New Cores")
+            if (List_CoresToUpdate_Name.Count == 0 &&
+                List_PcCores_Name.Count != 0 &&
+                VM.MainView.Download_SelectedItem != "New Cores")
             {
                 MessageBox.Show("Cores already lastest version.");
 
                 // Prevent Updated Cores from doubling up on next check
-                if(vm.Download_SelectedItem != "RA+Cores") //ignore RA+Cores
+                if(VM.MainView.Download_SelectedItem != "RA+Cores") //ignore RA+Cores
                 {
                     MainWindow.ClearCoresVars();
                     MainWindow.ClearLists();
@@ -396,8 +396,8 @@ namespace Stellar
             // New Cores - Not Found
             // -------------------------
             // Updat List is Empty
-            if (vm.Download_SelectedItem == "New Cores" 
-                && List_UpdatedCores_Name.Count == 0)
+            if (VM.MainView.Download_SelectedItem == "New Cores" &&
+                List_CoresToUpdate_Name.Count == 0)
             {
                 MessageBox.Show("No New Cores available.");
 

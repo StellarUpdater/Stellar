@@ -19,18 +19,17 @@
     Image Credit: ESO & NASA (CC)
    ---------------------------------------------------------------------- */
 
-using Stellar.Properties;
 using System;
-using System.Configuration;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
 // Disable XML Comment warnings
@@ -45,9 +44,6 @@ namespace Stellar
     /// </summary>
     public partial class MainWindow : Window
     {
-        // View Model
-        public static ViewModel vm = new ViewModel();
-
         // Current Version
         public static Version currentVersion;
         // GitHub Latest Version
@@ -70,12 +66,12 @@ namespace Stellar
         public static Checklist checklist;
 
         // Ready Check
-        public static bool ready = true; // If 0 halt progress
+        public static bool ready = true;
 
         // -----------------------------------------------
         // Window Defaults
         // -----------------------------------------------
-        public MainWindow() // Pass Exclude Cores Data from Checklist
+        public MainWindow()
         {
             InitializeComponent();
 
@@ -99,7 +95,7 @@ namespace Stellar
             ///     Control Binding
             /// </summary>
             // -----------------------------------------------------------------
-            DataContext = vm;
+            //DataContext = vm;
 
 
             // --------------------------------------------------
@@ -112,12 +108,12 @@ namespace Stellar
             // config.ini settings
             if (File.Exists(Paths.configFile) == true)
             {
-                Configure.ImportConfig(this, vm, Paths.configFile);
+                Configure.ImportConfig(this, Paths.configFile);
             }
             // Defaults
             else
             {
-                Configure.LoadDefaults(this, vm);
+                Configure.LoadDefaults(this);
             }
 
             // -------------------------
@@ -130,28 +126,28 @@ namespace Stellar
             }
 
             // -------------------------
-            // Load MainWindow Defaults
+            // Load MainWindow Defaults Override
             // -------------------------
-            if (vm.Download_SelectedItem == "New Install" ||
-                vm.Download_SelectedItem == "Upgrade" ||
-                vm.Download_SelectedItem == "Redist" ||
-                vm.Download_SelectedItem == "Stellar")
+            if (VM.MainView.Download_SelectedItem == "New Install" ||
+                VM.MainView.Download_SelectedItem == "Upgrade" ||
+                VM.MainView.Download_SelectedItem == "Redist" ||
+                VM.MainView.Download_SelectedItem == "Stellar")
             {
-                vm.Download_SelectedItem = "RetroArch";
+                VM.MainView.Download_SelectedItem = "RetroArch";
             }
 
             // -------------------------
             // Load Configure Defaults
             // -------------------------
-            Configure.sevenZipPath = vm.SevenZipPath_Text;
-            Configure.winRARPath = vm.WinRARPath_Text;
+            Configure.sevenZipPath = VM.MainView.SevenZipPath_Text;
+            Configure.winRARPath = VM.MainView.WinRARPath_Text;
 
             // -------------------------
             // Load Theme
             // -------------------------
             try
             {
-                Configure.theme = vm.Theme_SelectedItem.Replace(" ", string.Empty);
+                Configure.theme = VM.MainView.Theme_SelectedItem.Replace(" ", string.Empty);
                 App.Current.Resources.MergedDictionaries.Clear();
                 App.Current.Resources.MergedDictionaries.Add(new ResourceDictionary()
                 {
@@ -204,29 +200,29 @@ namespace Stellar
                 if (// Main Window
                     this.Top != top ||
                     this.Left != left ||
-                    vm.RetroArchPath_Text != inif.Read("Main Window", "RetroArchPath_Text") ||
-                    vm.Server_SelectedItem != inif.Read("Main Window", "Server_SelectedItem") ||
-                    vm.Download_SelectedItem != inif.Read("Main Window", "Download_SelectedItem") ||
-                    vm.Architecture_SelectedItem != inif.Read("Main Window", "Architecture_SelectedItem") ||
+                    VM.MainView.RetroArchPath_Text != inif.Read("Main Window", "RetroArchPath_Text") ||
+                    VM.MainView.Server_SelectedItem != inif.Read("Main Window", "Server_SelectedItem") ||
+                    VM.MainView.Download_SelectedItem != inif.Read("Main Window", "Download_SelectedItem") ||
+                    VM.MainView.Architecture_SelectedItem != inif.Read("Main Window", "Architecture_SelectedItem") ||
                     // Configure Window
-                    vm.SevenZipPath_Text != inif.Read("Configure Window", "SevenZipPath_Text") ||
-                    vm.WinRARPath_Text != inif.Read("Configure Window", "WinRARPath_Text") ||
-                    vm.LogPath_IsChecked != Convert.ToBoolean(inif.Read("Configure Window", "LogPath_IsChecked").ToLower()) ||
-                    vm.LogPath_Text != inif.Read("Configure Window", "LogPath_Text") ||
-                    vm.Theme_SelectedItem != inif.Read("Configure Window", "Theme_SelectedItem") ||
-                    vm.UpdateAutoCheck_IsChecked != Convert.ToBoolean(inif.Read("Configure Window", "UpdateAutoCheck_IsChecked").ToLower())
+                    VM.MainView.SevenZipPath_Text != inif.Read("Configure Window", "SevenZipPath_Text") ||
+                    VM.MainView.WinRARPath_Text != inif.Read("Configure Window", "WinRARPath_Text") ||
+                    VM.MainView.LogPath_IsChecked != Convert.ToBoolean(inif.Read("Configure Window", "LogPath_IsChecked").ToLower()) ||
+                    VM.MainView.LogPath_Text != inif.Read("Configure Window", "LogPath_Text") ||
+                    VM.MainView.Theme_SelectedItem != inif.Read("Configure Window", "Theme_SelectedItem") ||
+                    VM.MainView.UpdateAutoCheck_IsChecked != Convert.ToBoolean(inif.Read("Configure Window", "UpdateAutoCheck_IsChecked").ToLower())
                     )
                 {
-                    Configure.ExportConfig(this, vm, Paths.configFile);
+                    Configure.ExportConfig(this, Paths.configFile);
                 }
             }
 
             // Export Defaults & Currently Selected
             else if (File.Exists(Paths.configFile) == false)
             {
-                Configure.INIFile inif = new Configure.INIFile(Paths.configFile);
+                //Configure.INIFile inif = new Configure.INIFile(Paths.configFile);
 
-                Configure.ExportConfig(this, vm, Paths.configFile);
+                Configure.ExportConfig(this, Paths.configFile);
             }
 
             // Exit
@@ -255,7 +251,7 @@ namespace Stellar
         {
             if (CheckForInternetConnection() == true)
             {
-                if (vm.UpdateAutoCheck_IsChecked == true)
+                if (VM.MainView.UpdateAutoCheck_IsChecked == true)
                 {
                     ServicePointManager.Expect100Continue = true;
                     ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
@@ -480,10 +476,10 @@ namespace Stellar
 
 
             // Updated Cores Name
-            if (Queue.List_UpdatedCores_Name != null)
+            if (Queue.List_CoresToUpdate_Name != null)
             {
-                Queue.List_UpdatedCores_Name.Clear();
-                Queue.List_UpdatedCores_Name.TrimExcess();
+                Queue.List_CoresToUpdate_Name.Clear();
+                Queue.List_CoresToUpdate_Name.TrimExcess();
             }
             // Updated Cores Date
             if (Queue.List_UpdatedCores_Date != null)
@@ -492,9 +488,9 @@ namespace Stellar
                 Queue.List_UpdatedCores_Date.TrimExcess();
             }
             // Updated Cores Name Collection
-            if (Queue.Collection_UpdatedCores_Name != null)
+            if (Queue.Collection_CoresToUpdate_Name != null)
             {
-                Queue.Collection_UpdatedCores_Name = null;
+                Queue.Collection_CoresToUpdate_Name = null;
             }
 
 
@@ -517,10 +513,10 @@ namespace Stellar
             if (result == System.Windows.Forms.DialogResult.OK)
             {
                 // Display Folder Path in Textbox
-                vm.RetroArchPath_Text = folderBrowserDialog.SelectedPath.TrimEnd('\\') + @"\";
+                VM.MainView.RetroArchPath_Text = folderBrowserDialog.SelectedPath.TrimEnd('\\') + @"\";
 
                 // Set the Paths.retroarchPath string
-                Paths.retroarchPath = vm.RetroArchPath_Text;
+                Paths.retroarchPath = VM.MainView.RetroArchPath_Text;
             }
         }
 
@@ -570,7 +566,7 @@ namespace Stellar
                 var thisScreen = allScreens.SingleOrDefault(s => Left >= s.WorkingArea.Left && Left < s.WorkingArea.Right);
 
                 // Open Configure Window
-                configure = new Configure(this, vm);
+                configure = new Configure();
 
                 // Keep Window on Top
                 configure.Owner = Window.GetWindow(this);
@@ -587,7 +583,7 @@ namespace Stellar
             catch
             {
                 // Open Configure Window
-                configure = new Configure(this, vm);
+                configure = new Configure();
 
                 // Keep Window on Top
                 configure.Owner = Window.GetWindow(this);
@@ -624,9 +620,9 @@ namespace Stellar
         private void buttonRetroArchExplorer_Click(object sender, RoutedEventArgs e)
         {
             // Paths.retroarchPath string is set when user chooses location from textbox
-            if (!string.IsNullOrEmpty(vm.RetroArchPath_Text))
+            if (!string.IsNullOrEmpty(VM.MainView.RetroArchPath_Text))
             {
-                Process.Start("explorer.exe", @vm.RetroArchPath_Text);
+                Process.Start("explorer.exe", @VM.MainView.RetroArchPath_Text);
             }
             else
             {
@@ -643,7 +639,7 @@ namespace Stellar
         private void buttonBuildBotDir_Click(object sender, RoutedEventArgs e)
         {
             // Open the URL
-            Process.Start(vm.DownloadURL_Text);
+            Process.Start(VM.MainView.DownloadURL_Text);
         }
 
         // -----------------------------------------------
@@ -669,9 +665,9 @@ namespace Stellar
         private void comboBoxArchitecture_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             // Set Architecture to show in URL Textbox
-            Paths.SetArchitecture(vm);
+            Paths.SetArchitecture();
             // Show URL in Textbox
-            Paths.SetUrls(vm);
+            Paths.SetUrls();
 
             // Clear for next pass
             ClearLists();
@@ -683,31 +679,31 @@ namespace Stellar
         private void comboBoxDownload_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             // Disable Server ComboBox
-            if (vm.Download_SelectedItem == "Stellar")
+            if (VM.MainView.Download_SelectedItem == "Stellar")
             {
-                vm.RetroArchPath_IsEnabled = false;
-                vm.Server_IsEnabled = false;
+                VM.MainView.RetroArchPath_IsEnabled = false;
+                VM.MainView.Server_IsEnabled = false;
             }
             // Enable Server ComboBox
             else
             {
-                vm.RetroArchPath_IsEnabled = true;
-                vm.Server_IsEnabled = true;
+                VM.MainView.RetroArchPath_IsEnabled = true;
+                VM.MainView.Server_IsEnabled = true;
             }
 
 
             // Reset Update Button Text to "Update"
-            vm.Update_Text = "Update";
+            VM.MainView.Update_Text = "Update";
 
 
             // Stellar Self-Update Selected, Disable Architecture ComboBox
-            if (vm.Download_SelectedItem == "Stellar")
+            if (VM.MainView.Download_SelectedItem == "Stellar")
             {
-                vm.Architecture_IsEnabled = false;
+                VM.MainView.Architecture_IsEnabled = false;
             }
             else
             {
-                vm.Architecture_IsEnabled = true;
+                VM.MainView.Architecture_IsEnabled = true;
             }
 
             // Cross Thread
@@ -715,10 +711,10 @@ namespace Stellar
             {
                 // New Install
                 //
-                if (vm.Download_SelectedItem== "New Install")
+                if (VM.MainView.Download_SelectedItem== "New Install")
                 {
                     // Change Update Button Text
-                    vm.Update_Text = "Install";
+                    VM.MainView.Update_Text = "Install";
 
                     // Warn user about New Install
                     MessageBox.Show("This will install a New Nightly RetroArch + Cores." 
@@ -731,10 +727,10 @@ namespace Stellar
 
                 // Upgrade
                 //
-                else if (vm.Download_SelectedItem == "Upgrade")
+                else if (VM.MainView.Download_SelectedItem == "Upgrade")
                 {
                     // Change Update Button Text
-                    vm.Update_Text = "Upgrade";
+                    VM.MainView.Update_Text = "Upgrade";
 
                     // Warn user about Upgrade
                     MessageBox.Show("Backup your configs and custom shaders! Large Download." 
@@ -748,18 +744,18 @@ namespace Stellar
 
                 // New Cores
                 //
-                else if (vm.Download_SelectedItem == "New Cores")
+                else if (VM.MainView.Download_SelectedItem == "New Cores")
                 {
                     // Change Update Button Text to "Upgrade"
-                    vm.Update_Text = "Download";
+                    VM.MainView.Update_Text = "Download";
                 }
             });
 
 
             // Call Set Architecture
-            Paths.SetArchitecture(vm);
+            Paths.SetArchitecture();
             // Call Set Urls Method
-            Paths.SetUrls(vm);
+            Paths.SetUrls();
 
             // Clear if checked/unchecked for next pass
             ClearLists();
@@ -772,7 +768,7 @@ namespace Stellar
         private void tbxRetroArchPath_TextChanged(object sender, TextChangedEventArgs e)
         {
             // Set the Paths.retroarchPath string
-            Paths.retroarchPath = vm.RetroArchPath_Text; //end with backslash
+            Paths.retroarchPath = VM.MainView.RetroArchPath_Text; //end with backslash
         }
 
 
@@ -782,10 +778,10 @@ namespace Stellar
         private void cboServer_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             // Set Architecture
-            Paths.SetArchitecture(vm);
+            Paths.SetArchitecture();
 
             // Set URLs
-            Paths.SetUrls(vm);
+            Paths.SetUrls();
         }
 
 
@@ -808,19 +804,19 @@ namespace Stellar
             //MessageBox.Show(message); //debug
 
             // Progress Info
-            vm.ProgressInfo_Text = "Checking...";
+            VM.MainView.ProgressInfo_Text = "Checking...";
 
             // Call SetArchitecture Method
-            Paths.SetArchitecture(vm);
+            Paths.SetArchitecture();
 
 
             // -------------------------
             // Stellar Self-Update
             // -------------------------
-            if (vm.Download_SelectedItem == "Stellar")
+            if (VM.MainView.Download_SelectedItem == "Stellar")
             {
                 // Parse GitHub Page HTML
-                Parse.ParseGitHubReleases(vm);
+                Parse.ParseGitHubReleases();
 
                 // Check if Stellar is the Latest Version
                 if (MainWindow.currentVersion != null && Parse.latestVersion != null)
@@ -850,14 +846,14 @@ namespace Stellar
             // -------------------------
             // RetroArch Part
             // -------------------------
-            if (vm.Download_SelectedItem == "New Install"
-                || vm.Download_SelectedItem == "Upgrade" 
-                || vm.Download_SelectedItem == "RA+Cores" 
-                || vm.Download_SelectedItem == "RetroArch" 
-                || vm.Download_SelectedItem == "Redist")
+            if (VM.MainView.Download_SelectedItem == "New Install" ||
+                VM.MainView.Download_SelectedItem == "Upgrade" ||
+                VM.MainView.Download_SelectedItem == "RA+Cores" ||
+                VM.MainView.Download_SelectedItem == "RetroArch" ||
+                VM.MainView.Download_SelectedItem == "Redist")
             {
                 // Parse Page (HTML) Method
-                Parse.ParseBuildbotPage(vm);
+                Parse.ParseBuildbotPage();
 
                 // Display message if download available
                 if (!string.IsNullOrEmpty(Parse.nightly7z)) // If Last Item in Nightlies List is available
@@ -874,35 +870,35 @@ namespace Stellar
             }
 
             // Progress Info
-            vm.ProgressInfo_Text = "";
+            VM.MainView.ProgressInfo_Text = "";
 
 
             // -------------------------
             // Cores Part
             // -------------------------
             // If Download Combobox Cores or RA+Cores selected
-            if (vm.Download_SelectedItem == "RA+Cores" 
-                || vm.Download_SelectedItem == "Cores"
-                || vm.Download_SelectedItem == "New Cores")
+            if (VM.MainView.Download_SelectedItem == "RA+Cores" ||
+                VM.MainView.Download_SelectedItem == "Cores" ||
+                VM.MainView.Download_SelectedItem == "New Cores")
             {
                 // Create Builtbot Cores List
-                Parse.ParseBuildbotCoresIndex(vm);
+                Parse.ParseBuildbotCoresIndex();
 
                 // Create PC Cores Lists
-                Parse.ScanPcCoresDir(vm);
+                Parse.ScanPcCoresDir();
 
                 // Create Cores to Update List
-                Queue.UpdatedCores(vm);
+                Queue.CoresToUpdate();
 
                 // Check if Cores Up To Date
                 // If All Cores up to date, display message
-                Queue.CoresUpToDateCheck(vm); //Note there are Clears() in this method
+                Queue.CoresUpToDateCheck(); //Note there are Clears() in this method
 
                 // -------------------------
                 // Window Checklist Popup
                 // -------------------------
                 // If Update List greater than 0, Popup Checklist
-                if (Queue.List_UpdatedCores_Name.Count != 0)
+                if (Queue.List_CoresToUpdate_Name.Count != 0)
                 {
                     // Prevent Monitor Resolution Window Crash
                     //
@@ -970,17 +966,17 @@ namespace Stellar
             //MessageBox.Show(message); //debug
 
             // Add backslash to Location Textbox path if missing
-            if (!string.IsNullOrEmpty(vm.RetroArchPath_Text) && !vm.RetroArchPath_Text.EndsWith("\\"))
+            if (!string.IsNullOrEmpty(VM.MainView.RetroArchPath_Text) && !VM.MainView.RetroArchPath_Text.EndsWith("\\"))
             {
-                vm.RetroArchPath_Text = vm.RetroArchPath_Text + "\\";
+                VM.MainView.RetroArchPath_Text = VM.MainView.RetroArchPath_Text + "\\";
             }
             // Load the User's RetroArch Location from Text Box / Saved Settings
-            Paths.retroarchPath = vm.RetroArchPath_Text; //end with backslash
+            Paths.retroarchPath = VM.MainView.RetroArchPath_Text; //end with backslash
 
 
             // If RetroArch Path is empty, halt progress
-            if (string.IsNullOrEmpty(Paths.retroarchPath)
-                && vm.Download_SelectedItem != "Stellar") // ignore if Stellar Self Update
+            if (string.IsNullOrEmpty(Paths.retroarchPath) &&
+                VM.MainView.Download_SelectedItem != "Stellar") // ignore if Stellar Self Update
             {
                 ready = false;
                 MessageBox.Show("Please select your RetroArch main folder.",
@@ -996,19 +992,19 @@ namespace Stellar
             // Maybe solve this by putting CLI Arguments in another method?
 
             // 1. Call SetArchitecture Method
-            Paths.SetArchitecture(vm);
+            Paths.SetArchitecture();
 
             // 2. Call parse Page (HTML) Method
-            if (vm.Download_SelectedItem == "New Install"
-                || vm.Download_SelectedItem == "Upgrade"
-                || vm.Download_SelectedItem == "RA+Cores"
-                || vm.Download_SelectedItem == "RetroArch"
-                || vm.Download_SelectedItem == "Redist")
+            if (VM.MainView.Download_SelectedItem == "New Install" ||
+                VM.MainView.Download_SelectedItem == "Upgrade" ||
+                VM.MainView.Download_SelectedItem == "RA+Cores" ||
+                VM.MainView.Download_SelectedItem == "RetroArch" ||
+                VM.MainView.Download_SelectedItem == "Redist")
             {
                 // Progress Info
-                vm.ProgressInfo_Text = "Fetching RetroArch List...";
+                VM.MainView.ProgressInfo_Text = "Fetching RetroArch List...";
 
-                Parse.ParseBuildbotPage(vm);
+                Parse.ParseBuildbotPage();
             }
 
             // 3. Call checkArchiver Method
@@ -1019,10 +1015,10 @@ namespace Stellar
             // -------------------------
             // Stellar Self-Update
             // -------------------------
-            if (vm.Download_SelectedItem == "Stellar")
+            if (VM.MainView.Download_SelectedItem == "Stellar")
             {
                 // Parse GitHub Page HTML
-                Parse.ParseGitHubReleases(vm);
+                Parse.ParseGitHubReleases();
 
                 if (Parse.latestVersion != null && MainWindow.currentVersion != null)
                 {
@@ -1068,7 +1064,7 @@ namespace Stellar
             // -----------------------------------------------
             // If New Install (RetroArch + Cores)
             // -----------------------------------------------
-            if (vm.Download_SelectedItem == "New Install")
+            if (VM.MainView.Download_SelectedItem == "New Install")
             {
                 // -------------------------
                 // Create Cores Folder
@@ -1089,7 +1085,7 @@ namespace Stellar
                 // Set Cores Folder (Dont Scan PC)
                 Paths.coresPath = Paths.retroarchPath + "cores\\";
                 // Call Parse Builtbot Page Method
-                Parse.ParseBuildbotCoresIndex(vm);
+                Parse.ParseBuildbotCoresIndex();
             }
 
 
@@ -1097,26 +1093,26 @@ namespace Stellar
             // -----------------------------------------------
             // RetroArch+Cores or Cores Only Update
             // -----------------------------------------------
-            if (vm.Download_SelectedItem == "New Install"
-                || vm.Download_SelectedItem == "RA+Cores"
-                || vm.Download_SelectedItem == "Cores"
-                || vm.Download_SelectedItem == "New Cores")
+            if (VM.MainView.Download_SelectedItem == "New Install" ||
+                VM.MainView.Download_SelectedItem == "RA+Cores" ||
+                VM.MainView.Download_SelectedItem == "Cores" ||
+                VM.MainView.Download_SelectedItem == "New Cores")
             {
                 // Progress Info
-                vm.ProgressInfo_Text = "Fetching Cores List...";
+                VM.MainView.ProgressInfo_Text = "Fetching Cores List...";
 
                 // Create Builtbot Cores List
-                Parse.ParseBuildbotCoresIndex(vm);
+                Parse.ParseBuildbotCoresIndex();
 
                 // Create PC Cores List
-                Parse.ScanPcCoresDir(vm);
+                Parse.ScanPcCoresDir();
 
                 // Create Cores to Update List
-                Queue.UpdatedCores(vm);
+                Queue.CoresToUpdate();
 
                 // Check if Cores Up To Date
                 // If All Cores up to date, display message
-                Queue.CoresUpToDateCheck(vm); //Note there are Clears() in this method
+                Queue.CoresUpToDateCheck(); //Note there are Clears() in this method
             }
 
 
@@ -1129,7 +1125,7 @@ namespace Stellar
                 // Start Download
                 if (CheckForInternetConnection() == true)
                 {
-                    Download.StartDownload(vm);
+                    Download.StartDownload();
                 }
                 // Internet Connection Failed
                 else
@@ -1161,4 +1157,27 @@ namespace Stellar
         }
 
     }
+
+
+    /// <summary>
+    ///    ListView Indexer Class
+    /// </summary>
+    // ListView Numbering
+    public class IndexConverter : IValueConverter
+    {
+        public object Convert(object value, Type TargetType, object parameter, CultureInfo culture)
+        {
+            var item = (ListViewItem)value;
+            var listView = ItemsControl.ItemsControlFromItemContainer(item) as ListView;
+            int index = listView.ItemContainerGenerator.IndexFromContainer(item) + 1;
+            return index.ToString();
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+
 }

@@ -19,18 +19,12 @@
     Image Credit: ESO & NASA (CC)
    ---------------------------------------------------------------------- */
 
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.ComponentModel;
-using System.Windows.Input;
 
 namespace Stellar
 {
-    public class ViewModel : INotifyPropertyChanged
+    public class MainViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
         private void OnPropertyChanged(string prop)
@@ -49,7 +43,7 @@ namespace Stellar
         // --------------------------------------------------
         // Main
         // --------------------------------------------------
-        public ViewModel()
+        public MainViewModel()
         {
         }
 
@@ -626,6 +620,26 @@ namespace Stellar
             }
         }
 
+
+        // --------------------------------------------------
+        // Progress Bar
+        // --------------------------------------------------
+        // Text
+        private double _Progress_Value;
+        public double Progress_Value
+        {
+            get { return _Progress_Value; }
+            set
+            {
+                if (_Progress_Value == value)
+                {
+                    return;
+                }
+
+                _Progress_Value = value;
+                OnPropertyChanged("Progress_Value");
+            }
+        }
 
     }
 }

@@ -26,6 +26,10 @@
         xmlns:System="clr-namespace:System;assembly=mscorlib" 
         xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
         xmlns:Themes1="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2" 
+        xmlns:my="clr-namespace:Stellar"
+        xmlns:local="clr-namespace:Stellar"
+        xmlns:settings="clr-namespace:Stellar.Properties"
+        mc:Ignorable="d"
         
         Loaded="Window_Loaded"
         

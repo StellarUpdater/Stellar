@@ -46,16 +46,16 @@ namespace Stellar
         {
             InitializeComponent();
 
-            this.MinWidth = 340;
+            this.MinWidth = 360;
             this.MinHeight = 470;
-            this.MaxWidth = 1117;
+            this.MaxWidth = 1137;
             this.MaxHeight = 470;
 
             // Trim List if new
-            Queue.List_UpdatedCores_Name.TrimExcess();
+            Queue.List_CoresToUpdate_Name.TrimExcess();
 
             // Add Updated Cores List to List Box
-            Queue.Collection_UpdatedCores_Name = new ObservableCollection<string>(Queue.List_UpdatedCores_Name);
+            Queue.Collection_CoresToUpdate_Name = new ObservableCollection<string>(Queue.List_CoresToUpdate_Name);
 
             // Add PC Cores Name+Date to List Box
             Queue.Collection_PcCores_NameDate = new ObservableCollection<string>(Queue.List_PcCores_NameDate);
@@ -65,9 +65,9 @@ namespace Stellar
 
 
             // Add to List View
-            listViewUpdatedCores.ItemsSource = Queue.Collection_UpdatedCores_Name;
+            listViewCoresToUpdate.ItemsSource = Queue.Collection_CoresToUpdate_Name;
             // Select All
-            listViewUpdatedCores.SelectAll();
+            listViewCoresToUpdate.SelectAll();
 
             // Load the Name+Date Lists
             // List Box Pc Cores Name+Date (Advanced)
@@ -79,18 +79,17 @@ namespace Stellar
             listBoxBuildbotCoresNameDate.SelectedIndex = -1; // Deselect All at Initialize
         }
 
-        // -----------------------------------------------
-        // Window Close
-        // -----------------------------------------------
+        /// <summary>
+        ///     Window Close
+        /// </summary>
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            // Clear Lists to prevent doubling up
-            // Once Update List has been cleared, you can't get it back
+           
         }
 
-        // -----------------------------------------------
-        // Rejected List
-        // -----------------------------------------------
+        /// <summary>
+        ///     Rejected List
+        /// </summary>
         private void listViewUpdatedCores_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             // If Unchecked
@@ -117,25 +116,25 @@ namespace Stellar
         // CONTROLS
         // ----------------------------------------------------------------------------------------------
 
-        // -----------------------------------------------
-        // Select All Button
-        // -----------------------------------------------
+        /// <summary>
+        ///     Select All Button
+        /// </summary>
         private void buttonSelectAll_Click(object sender, RoutedEventArgs e)
         {
-            listViewUpdatedCores.SelectAll();
+            listViewCoresToUpdate.SelectAll();
         }
 
-        // -----------------------------------------------
-        // Deselect All Button
-        // -----------------------------------------------
+        /// <summary>
+        ///     Deselect All Button
+        /// </summary>
         private void buttonDeselectAll_Click(object sender, RoutedEventArgs e)
         {
-            listViewUpdatedCores.SelectedIndex = -1;
+            listViewCoresToUpdate.SelectedIndex = -1;
         }
 
-        // -----------------------------------------------
-        // Advanced Button
-        // -----------------------------------------------
+        /// <summary>
+        ///     Advanced Button
+        /// </summary>
         private void buttonAdvanced_Click(object sender, RoutedEventArgs e)
         {
             // -------------------------
@@ -143,8 +142,8 @@ namespace Stellar
             // -------------------------
             if (toggleWindow == true)
             {
-                this.Width = 1117;
-                this.Left = this.Left - 387;
+                this.Width = 1137;
+                this.Left = this.Left - 407;
                 this.Title = "Checklist Advanced";
                 toggleWindow = false;
             }
@@ -154,13 +153,22 @@ namespace Stellar
             // -------------------------
             else if (toggleWindow == false)
             {
-                this.Width = 340;
-                this.Left = this.Left + 387;
+                this.Width = 360;
+                this.Left = this.Left + 407;
                 this.Title = "Checklist";
                 toggleWindow = true;
             }
 
         }
+
+        /// <summary>
+        ///     OK Button
+        /// </summary>
+        private void btnOK_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
 
     }
 }
